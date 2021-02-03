@@ -12,8 +12,7 @@ public class LoginRestController {
 
     @PostMapping("/login")
     public String dologin(HttpServletRequest request, @RequestBody Login login) {
-        System.out.println("getRequestURI : " + request.getRequestURI());
-        System.out.println("login : " + login.toString());
-        return "login";
+
+        return "success";
     }
 }

@@ -30,24 +30,22 @@
 </head>
 <body>
 <!-- Our application root element -->
-<div id="app">
+<div id="ita">
     <b-container>
         <b-jumbotron header="ITA" lead="통합 테스트 앱">
             <p>테스트 방법</p>
-            <b-btn variant="primary" href="https://bootstrap-vue.org/">More Info</b-btn>
+            <b-btn variant="primary" href="#/">More Info</b-btn>
         </b-jumbotron>
 
-        <b-form @submit="onSubmit" @reset="onReset" action="/login" method="post">
-
-            <b-form-group
-                    horizontal
-                    :label-cols="4"
-                    description="아이디를 입력하세요."
-                    label="아이디"
+        <b-form @submit="doLogin" action="/login" method="post" v-show="isShowLoginForm">
+            <b-form-group horizontal
+                          :label-cols="4"
+                          description="아이디를 입력하세요."
+                          label="아이디"
             >
                 <b-form-input
                         id="js-inp-user_id"
-                        v-model="form.user_id"
+                        v-model="loginForm.userId"
                         type="text"
                         placeholder="Enter user_id"
                         required
@@ -61,53 +59,50 @@
             >
                 <b-form-input
                         id="js-inp-user_pw"
-                        v-model="form.user_pw"
+                        v-model="loginForm.userPw"
                         type="password"
                         placeholder="Enter user_pw"
                         required
                 ></b-form-input>
             </b-form-group>
             <b-button type="submit" variant="primary">LOG-IN</b-button>
-            <b-button type="reset" variant="danger">Reset</b-button>
-
         </b-form>
 
-        <b-alert variant="success" :show="showAlert">Hello {{ form.user_id }}</b-alert>
+        <b-alert variant="success" :show="showAlert">Hello {{ loginForm.userId }}</b-alert>
     </b-container>
 </div>
 
-
 <!-- Start running your app -->
 <script>
-    window.app = new Vue({
-        el: '#app',
+    window.ita = new Vue({
+        el: '#ita',
         data: {
-            form: {
-                user_id: '',
-                user_pw: ''
+            status: {
+                isLogin: false,
+            }
+            ,
+            loginForm: {
+                userId: '',
+                userPw: ''
             }
         },
         computed: {
             showAlert() {
-                return this.form.user_id.length > 4 ? true : false
-            }
+                return this.loginForm.userId.length > 4
+            }, isShowLoginForm() {
+                return this.status.isLogin === false;
+            },
         },
         methods: {
-            onSubmit(event) {
-                event.preventDefault()
-                alert(JSON.stringify(this.form));
+            doLogin(event) {
+                event.preventDefault();
 
-                axios.post('/login', this.form)
-                    .then(function(res) {
-                        console.log(res.data)
-                    }, function() {
-                        console.log('failed')
+                axios.post('/login', this.loginForm)
+                    .then(function () {
+                        ita.status.isLogin = true;
+                    }, function () {
+                        ita.status.isLogin = false;
                     })
-            },
-            onReset(event) {
-                event.preventDefault()
-                // Reset our form values
-                alert('reset');
             }
         }
     })
