@@ -37,7 +37,7 @@
             <b-btn variant="primary" href="#/">More Info</b-btn>
         </b-jumbotron>
 
-        <b-form @submit="doLogin" action="/login" method="post" v-show="isShowLoginForm">
+        <b-form @submit="doLogin" action="/signIn" method="post" v-show="isShowLoginForm">
             <b-form-group horizontal
                           :label-cols="4"
                           description="아이디를 입력하세요."
@@ -97,7 +97,7 @@
             doLogin(event) {
                 event.preventDefault();
 
-                axios.post('/login', this.loginForm)
+                axios.post('/signIn', this.loginForm)
                     .then(function () {
                         ita.status.isLogin = true;
                     }, function () {
