@@ -4,14 +4,19 @@ import com.cafe24.apps.ita.entity.SignIn;
 import com.cafe24.apps.ita.entity.User;
 import com.cafe24.apps.ita.service.UserService;
 import com.cafe24.apps.ita.util.SessionUtil;
+import com.cafe24.apps.ita.util.WithoutSession;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
+@Log4j2
+@WithoutSession
 @Controller
 public class UserController {
     private final UserService userService;
@@ -25,9 +30,10 @@ public class UserController {
      *
      * @return
      */
+    @WithoutSession
     @GetMapping("/sign-up")
     public String signUp() {
-        return "sign-up";
+        return "/user/sign-up";
     }
 
     /**
@@ -38,12 +44,13 @@ public class UserController {
      * @return
      * @throws NoSuchAlgorithmException
      */
+    @WithoutSession
     @PostMapping(value = "/sign-up")
     public String signUp(HttpSession session, User user) throws NoSuchAlgorithmException {
         User regisertUser = userService.regisertUser(user);
         SessionUtil.setUserInfo(session, regisertUser);
 
-        return "main";
+        return "/main";
     }
 
     /**
@@ -52,14 +59,14 @@ public class UserController {
      * @param session
      * @return
      */
+    @WithoutSession
     @GetMapping("/sign-in")
     public String signIn(HttpSession session) {
         if (SessionUtil.isLogin(session)) {
-            System.out.println("이미 로그인 한 회원입니다.");
-            return "main";
+            return "/main";
         }
 
-        return "sign-in";
+        return "/user/sign-in";
     }
 
     /**
@@ -68,11 +75,12 @@ public class UserController {
      * @param session
      * @return
      */
+    @WithoutSession
     @GetMapping("/sign-out")
     public String signOut(HttpSession session) {
         SessionUtil.deleteUserInfo(session);
 
-        return "sign-in";
+        return "/user/sign-in";
     }
 
     /**
@@ -83,23 +91,29 @@ public class UserController {
      * @return
      * @throws Exception
      */
+    @WithoutSession
     @PostMapping(value = "/sign-in")
-    public String doLogin(HttpSession session, SignIn signIn) throws Exception {
+    public ModelAndView doLogin(HttpSession session, SignIn signIn) throws Exception {
         Optional<User> optionalUser = userService.getUser(signIn.getUserId());
+        ModelAndView mv = new ModelAndView();
         if (optionalUser.isEmpty()) {
-            System.out.println("회원 정보가 없습니다.");
-            return "sign-in";
+            mv.setViewName("/user/sign-in");
+            mv.addObject("error_msg", "회원 정보가 없습니다.");
+            return mv;
         }
 
         User user = optionalUser.get();
         boolean isLogin = userService.doLogin(signIn, user);
         if (!isLogin) {
-            System.out.println("패스워드를 틀렸습니다.");
-            return "sign-in";
+            mv.setViewName("/user/sign-in");
+            mv.addObject("error_msg", "패스워드를 틀렸습니다.");
+            return mv;
         }
 
+        log.info(signIn.getUserId() + " 회원이 로그인 하였습니다.");
         SessionUtil.setUserInfo(session, user);
+        mv.setViewName("/main");
 
-        return "main";
+        return mv;
     }
 }

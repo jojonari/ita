@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>ITA</title>
-    <script th:src="@{/js/common/jquery.js}"></script>
-    <script th:src="@{/js/member/sign-in.js}"></script>
 </head>
 <body>
-    <form id="js-form-signIn" th:action="@{/sign-in}" method="post">
+    <form th:action="@{/sign-in}" method="post">
         <input type="text" name="userId">
         <input type="password" name="userPw">
-        <input type="submit" th:value="LOG-IN">
+        <input type="submit" th:value="SIGN-IN">
     </form>
+    <div th:text="${error_msg}"></div>
 </body>
 </html>

@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>ITA</title>
-    <script th:src="@{/js/common/jquery.js}"></script>
-    <script th:src="@{/js/member/sign-up.js}"></script>
 </head>
 <body>
-<form id="js-form-sign-up" th:action="@{/sign-up}" method="post">
+<form th:action="@{/sign-up}" method="post">
     회원 아이디 : <input type="text" name="userId"><br>
     회원 비밀번호 : <input type="password" name="userPw"><br>
     회원 이름 : <input type="text" name="userName"><br>
     팀 이름 : <input type="text" name="teamName"><br>
-    <input type="submit" id="js-btn-signIn" th:value="LOG-IN">
+    <input type="submit" th:value="SIGN-UP">
 </form>
 </body>
 </html>

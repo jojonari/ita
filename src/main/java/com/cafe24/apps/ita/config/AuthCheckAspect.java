@@ -1,6 +1,6 @@
 package com.cafe24.apps.ita.config;
 
-import lombok.extern.log4j.Log4j2;
+import com.cafe24.apps.ita.util.SessionUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -14,19 +14,17 @@ import javax.servlet.http.HttpSession;
 
 @Aspect
 @Component
-@Log4j2
 public class AuthCheckAspect {
 
     /**
      * 로그인을 체크한다.
      */
-    @Before("execution(* com.cafe24.apps.ita.controller.*.*(..))")
+    @Before("execution(* com.cafe24.apps.ita.controller.*.*(..)) && !@annotation(com.cafe24.apps.ita.util.WithoutSession)")
     public void memberLoginCheck(JoinPoint joinPoint) {
-        System.out.println("AOP - Member Login Check Started");
-
         HttpSession session = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest().getSession();
 
-        if (session.getId() == null) {
+        //로그인 체크
+        if (!SessionUtil.isLogin(session)) {
             throw new HttpStatusCodeException(HttpStatus.UNAUTHORIZED, "NO_LOGIN") {
             };
         }
