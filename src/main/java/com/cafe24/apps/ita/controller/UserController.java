@@ -55,7 +55,7 @@ public class UserController {
         User regisertUser = userService.regisertUser(user);
         SessionUtil.setUserInfo(session, regisertUser);
 
-        mv.setViewName("/main");
+        mv.setViewName("redirect:/main");
         return mv;
     }
 
@@ -66,12 +66,13 @@ public class UserController {
      * @return
      */
     @GetMapping("/sign-in")
-    public String signIn(HttpSession session) {
-        if (SessionUtil.isLogin(session)) {
-            return "/main";
+    public ModelAndView signIn(HttpSession session, ModelAndView mv) {
+        if (SessionUtil.isSignIn(session)) {
+            mv.setViewName("redirect:/main");
         }
 
-        return "/user/sign-in";
+        mv.setViewName("/user/sign-in");
+        return mv;
     }
 
     /**
@@ -114,8 +115,8 @@ public class UserController {
 
         log.info(signIn.getUserId() + " 회원이 로그인 하였습니다.");
         SessionUtil.setUserInfo(session, user);
-        mv.setViewName("/main");
 
+        mv.setViewName("redirect:/main");
         return mv;
     }
 }

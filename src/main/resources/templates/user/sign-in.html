@@ -8,7 +8,8 @@
     <form th:action="@{/sign-in}" method="post">
         ID : <input type="text" name="userId"></br>
         PW : <input type="password" name="userPw"></br>
-        <input type="submit" th:value="SIGN-IN">
+        <b-icon icon="person-fill"></b-icon><input type="submit" th:value="SIGN-IN">
+        <a th:href="@{/sign-up}"><b-icon icon="person-plus-fill"></b-icon><input type="button" th:value="SIGN-UP"></a>
     </form>
     <div th:text="${error_msg}"></div>
 </body>

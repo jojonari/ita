@@ -24,9 +24,9 @@ public class ItaAspect {
         HttpSession session = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest().getSession();
 
         //로그인 체크
-        if (!SessionUtil.isLogin(session)) {
-            throw new HttpStatusCodeException(HttpStatus.UNAUTHORIZED, "NO_LOGIN") {
-            };
+        if (!SessionUtil.isSignIn(session)) {
+//            Todo : 개발중일때만 주석 - 로그인화면으로 보내야 할 것 같다.
+//            throw new HttpStatusCodeException(HttpStatus.UNAUTHORIZED, "NO_LOGIN") {};
         }
     }
 }

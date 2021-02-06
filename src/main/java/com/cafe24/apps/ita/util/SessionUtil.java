@@ -11,7 +11,7 @@ public class SessionUtil {
      * @param session
      * @return
      */
-    public static boolean isLogin(HttpSession session) {
+    public static boolean isSignIn(HttpSession session) {
         if (session.getAttribute(session.getId()) == null) {
             return false;
         }
@@ -33,6 +33,15 @@ public class SessionUtil {
     public static void setUserInfo(HttpSession session, User user) {
         user.deleteUserPw();
         session.setAttribute(session.getId(), user);
+    }
+
+    /**
+     * 세션 회원 정보 조회
+     *
+     * @param session
+     */
+    public static User getUserInfo(HttpSession session) {
+        return  (User) session.getAttribute(session.getId());
     }
 
     /**

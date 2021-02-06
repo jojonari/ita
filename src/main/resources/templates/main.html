@@ -1,111 +1,133 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
 
     <title>ITA</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/vendor/css/bootstrap.min.css}"/>
+    <link type="text/css" rel="stylesheet" th:href="@{/vendor/css/bootstrap-vue.min.css}"/>
 
-    <!-- Required Stylesheets -->
-    <link
-            type="text/css"
-            rel="stylesheet"
-            href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"
-    />
-    <link
-            type="text/css"
-            rel="stylesheet"
-            href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"
-    />
+    <script src="//polyfill.io/v3/polyfill.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>
 
-    <!-- Load polyfills to support older browsers -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
+    <script th:src="@{/vendor/js/vue.min.js}"></script>
+    <script th:src="@{/vendor/js/bootstrap-vue.min.js}"></script>
 
-    <!-- Required scripts -->
-    <script src="https://unpkg.com/vue@latest/dist/vue.js"></script>
-    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script th:src="@{/vendor/js/bootstrap-vue-icons.min.js}"></script>
+    <script th:src="@{/vendor/js/axios.min.js}"></script>
 </head>
 <body>
 <!-- Our application root element -->
 <div id="ita">
     <b-container>
-        <b-jumbotron header="ITA" lead="통합 테스트 앱">
-            <p>테스트 방법</p>
-            <b-btn variant="primary" href="#/">More Info</b-btn>
-        </b-jumbotron>
+        <div>
+            <b-navbar toggleable="lg" type="dark" variant="secondary" fixed="top" sticky="true">
+                <b-navbar-brand href="/main">
+                    <b-icon icon="stoplights"></b-icon>
+                    ITA
+                </b-navbar-brand>
 
-        <b-form @submit="doLogin" action="/signIn" method="post" v-show="isShowLoginForm">
-            <b-form-group horizontal
-                          :label-cols="4"
-                          description="아이디를 입력하세요."
-                          label="아이디"
-            >
-                <b-form-input
-                        id="js-inp-user_id"
-                        v-model="loginForm.userId"
-                        type="text"
-                        placeholder="Enter user_id"
-                        required
-                ></b-form-input>
-            </b-form-group>
-            <b-form-group
-                    horizontal
-                    :label-cols="4"
-                    description="비밀번호를 입력하세요."
-                    label="비밀번호"
-            >
-                <b-form-input
-                        id="js-inp-user_pw"
-                        v-model="loginForm.userPw"
-                        type="password"
-                        placeholder="Enter user_pw"
-                        required
-                ></b-form-input>
-            </b-form-group>
-            <b-button type="submit" variant="primary">LOG-IN</b-button>
-        </b-form>
+                <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
-        <b-alert variant="success" :show="showAlert">Hello {{ loginForm.userId }}</b-alert>
+                <b-collapse id="nav-collapse" is-nav>
+                    <!--<b-navbar-nav>
+                        <b-nav-item href="#">메뉴</b-nav-item>
+                    </b-navbar-nav>-->
+
+                    <b-navbar-nav class="ml-auto">
+                        <b-nav-form>
+                            <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
+                            <b-button size="sm" class="my-2 my-sm-0" type="submit">
+                                <b-icon icon="search"></b-icon>
+                                Search
+                            </b-button>
+                        </b-nav-form>
+
+                        <b-nav-item-dropdown right>
+                            <template #button-content>
+                                <b-button size="sm" class="my-2 my-sm-0">
+                                    <b-icon icon="person-circle"></b-icon>
+                                    <span th:text="${user.getUserName()+'['+user.getTeamName()+']'}"></span></b-button>
+                            </template>
+                            <b-dropdown-item href="/sign-out">
+                                <b-icon icon="person"></b-icon>
+                                Sign Out
+                            </b-dropdown-item>
+                        </b-nav-item-dropdown>
+                    </b-navbar-nav>
+                </b-collapse>
+            </b-navbar>
+        </div>
+        <hr>
+        <b-row>
+            <b-col cols="12">
+                <div>
+                    <b-card no-body>
+                        <b-tabs fill active-nav-item-class="font-weight-bold text-uppercase text-danger" content-class="mt-3">
+                            <b-tab active>
+                                <template #title>
+                                    <b-icon icon="app"></b-icon>
+                                    APP
+                                </template>
+                                <p class="p-3">
+                                    <b-table striped hover :items="items" :fields="fields"></b-table>
+                                </p>
+                            </b-tab>
+                            <b-tab>
+                                <template #title>
+                                    <b-icon icon="box-arrow-up-left"></b-icon>
+                                    API
+                                </template>
+                                <p class="p-3">
+                                    <b-table striped hover :items="items" :fields="fields"></b-table>
+                                </p>
+                            </b-tab>
+                            <b-tab>
+                                <template #title>
+                                    <b-icon icon="box-arrow-in-down-right"></b-icon>
+                                    WEBHOOK
+                                    <b-badge pill variant="info">10</b-badge>
+                                </template>
+                                <p class="p-3">
+                                    <b-table striped hover :items="items" :fields="fields"></b-table>
+                                </p>
+                            </b-tab>
+                        </b-tabs>
+                    </b-card>
+                </div>
+            </b-col>
+        </b-row>
+
+
+        <b-navbar toggleable="lg" type="dark" variant="secondary" fiexd="bottom" sticky="true">
+            <b-navbar-brand href="/main">
+                <b-icon icon="stoplights"></b-icon>
+                ITA
+            </b-navbar-brand>
+            <b-collapse id="nav-collapse" is-nav>
+                <b-navbar-nav class="ml-auto" right>
+                    <b-nav-form>
+                        <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
+                        <b-button size="sm" class="my-2 my-sm-0" type="submit">
+                            <b-icon icon="search"></b-icon>
+                            Search
+                        </b-button>
+                        <b-button type="button">
+                            <b-icon icon="upload" variant="dark"></b-icon>
+                        </b-button>
+                    </b-nav-form>
+                </b-navbar-nav>
+            </b-collapse>
+        </b-navbar>
     </b-container>
 </div>
 
-<!-- Start running your app -->
+<script th:src="@{/js/main.js}"/>
 <script>
-    window.ita = new Vue({
-        el: '#ita',
-        data: {
-            status: {
-                isLogin: false,
-            }
-            ,
-            loginForm: {
-                userId: '',
-                userPw: ''
-            }
-        },
-        computed: {
-            showAlert() {
-                return this.loginForm.userId.length > 4
-            }, isShowLoginForm() {
-                return this.status.isLogin === false;
-            },
-        },
-        methods: {
-            doLogin(event) {
-                event.preventDefault();
+    import ita from './main.js';
 
-                axios.post('/signIn', this.loginForm)
-                    .then(function () {
-                        ita.status.isLogin = true;
-                    }, function () {
-                        ita.status.isLogin = false;
-                    })
-            }
-        }
-    })
+    export default ita;
 </script>
 </body>
 </html>
