@@ -4,7 +4,6 @@ import com.cafe24.apps.ita.entity.SignIn;
 import com.cafe24.apps.ita.entity.User;
 import com.cafe24.apps.ita.service.UserService;
 import com.cafe24.apps.ita.util.SessionUtil;
-import com.cafe24.apps.ita.util.WithoutSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +15,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 @Log4j2
-@WithoutSession
 @Controller
 public class UserController {
     private final UserService userService;
@@ -30,7 +28,6 @@ public class UserController {
      *
      * @return
      */
-    @WithoutSession
     @GetMapping("/sign-up")
     public String signUp() {
         return "/user/sign-up";
@@ -44,13 +41,22 @@ public class UserController {
      * @return
      * @throws NoSuchAlgorithmException
      */
-    @WithoutSession
     @PostMapping(value = "/sign-up")
-    public String signUp(HttpSession session, User user) throws NoSuchAlgorithmException {
+    public ModelAndView signUp(HttpSession session, User user, ModelAndView mv) throws NoSuchAlgorithmException {
+        Optional<User> userInfo = userService.getUser(user.getUserId());
+        if (userInfo.isPresent()) {
+            user.deleteUserPw();
+            mv.addObject("user", user);
+            mv.setViewName("/user/sign-up");
+            mv.addObject("error_msg", "이미 사용중인 ID 입니다.");
+            return mv;
+        }
+
         User regisertUser = userService.regisertUser(user);
         SessionUtil.setUserInfo(session, regisertUser);
 
-        return "/main";
+        mv.setViewName("/main");
+        return mv;
     }
 
     /**
@@ -59,7 +65,6 @@ public class UserController {
      * @param session
      * @return
      */
-    @WithoutSession
     @GetMapping("/sign-in")
     public String signIn(HttpSession session) {
         if (SessionUtil.isLogin(session)) {
@@ -75,7 +80,6 @@ public class UserController {
      * @param session
      * @return
      */
-    @WithoutSession
     @GetMapping("/sign-out")
     public String signOut(HttpSession session) {
         SessionUtil.deleteUserInfo(session);
@@ -91,11 +95,9 @@ public class UserController {
      * @return
      * @throws Exception
      */
-    @WithoutSession
     @PostMapping(value = "/sign-in")
-    public ModelAndView doLogin(HttpSession session, SignIn signIn) throws Exception {
+    public ModelAndView doLogin(HttpSession session, SignIn signIn, ModelAndView mv) throws Exception {
         Optional<User> optionalUser = userService.getUser(signIn.getUserId());
-        ModelAndView mv = new ModelAndView();
         if (optionalUser.isEmpty()) {
             mv.setViewName("/user/sign-in");
             mv.addObject("error_msg", "회원 정보가 없습니다.");

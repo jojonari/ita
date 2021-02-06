@@ -14,12 +14,12 @@ import javax.servlet.http.HttpSession;
 
 @Aspect
 @Component
-public class AuthCheckAspect {
+public class ItaAspect {
 
     /**
      * 로그인을 체크한다.
      */
-    @Before("execution(* com.cafe24.apps.ita.controller.*.*(..)) && !@annotation(com.cafe24.apps.ita.util.WithoutSession)")
+    @Before("execution(* com.cafe24.apps.ita.controller.mainController.*(..))")
     public void memberLoginCheck(JoinPoint joinPoint) {
         HttpSession session = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest().getSession();
 

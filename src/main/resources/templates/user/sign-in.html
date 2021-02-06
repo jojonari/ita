@@ -6,8 +6,8 @@
 </head>
 <body>
     <form th:action="@{/sign-in}" method="post">
-        <input type="text" name="userId">
-        <input type="password" name="userPw">
+        ID : <input type="text" name="userId"></br>
+        PW : <input type="password" name="userPw"></br>
         <input type="submit" th:value="SIGN-IN">
     </form>
     <div th:text="${error_msg}"></div>

@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.cafe24.apps</groupId>
     <artifactId>ita</artifactId>
-    <version>v</version>
+    <version>v2</version>
     <name>ita</name>
     <description>Integrated testing of apps</description>
     <properties>

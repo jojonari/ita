@@ -1,12 +1,111 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <!-- Required meta tags -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
     <title>ITA</title>
-    <!--  vue.js  -->
-    <script th:src="@{/vendor/vue.js}"></script>
+
+    <!-- Required Stylesheets -->
+    <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"
+    />
+
+    <!-- Load polyfills to support older browsers -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
+
+    <!-- Required scripts -->
+    <script src="https://unpkg.com/vue@latest/dist/vue.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    main
+<!-- Our application root element -->
+<div id="ita">
+    <b-container>
+        <b-jumbotron header="ITA" lead="통합 테스트 앱">
+            <p>테스트 방법</p>
+            <b-btn variant="primary" href="#/">More Info</b-btn>
+        </b-jumbotron>
+
+        <b-form @submit="doLogin" action="/signIn" method="post" v-show="isShowLoginForm">
+            <b-form-group horizontal
+                          :label-cols="4"
+                          description="아이디를 입력하세요."
+                          label="아이디"
+            >
+                <b-form-input
+                        id="js-inp-user_id"
+                        v-model="loginForm.userId"
+                        type="text"
+                        placeholder="Enter user_id"
+                        required
+                ></b-form-input>
+            </b-form-group>
+            <b-form-group
+                    horizontal
+                    :label-cols="4"
+                    description="비밀번호를 입력하세요."
+                    label="비밀번호"
+            >
+                <b-form-input
+                        id="js-inp-user_pw"
+                        v-model="loginForm.userPw"
+                        type="password"
+                        placeholder="Enter user_pw"
+                        required
+                ></b-form-input>
+            </b-form-group>
+            <b-button type="submit" variant="primary">LOG-IN</b-button>
+        </b-form>
+
+        <b-alert variant="success" :show="showAlert">Hello {{ loginForm.userId }}</b-alert>
+    </b-container>
+</div>
+
+<!-- Start running your app -->
+<script>
+    window.ita = new Vue({
+        el: '#ita',
+        data: {
+            status: {
+                isLogin: false,
+            }
+            ,
+            loginForm: {
+                userId: '',
+                userPw: ''
+            }
+        },
+        computed: {
+            showAlert() {
+                return this.loginForm.userId.length > 4
+            }, isShowLoginForm() {
+                return this.status.isLogin === false;
+            },
+        },
+        methods: {
+            doLogin(event) {
+                event.preventDefault();
+
+                axios.post('/signIn', this.loginForm)
+                    .then(function () {
+                        ita.status.isLogin = true;
+                    }, function () {
+                        ita.status.isLogin = false;
+                    })
+            }
+        }
+    })
+</script>
 </body>
 </html>
