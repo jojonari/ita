@@ -70,9 +70,11 @@
                                     <b-icon icon="app"></b-icon>
                                     APP
                                 </template>
-                                <p class="p-3">
-                                    <b-table striped hover :items="items" :fields="fields"></b-table>
-                                </p>
+                                <div th:align="right">
+                                    <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm">APP 추가</b-button>
+                                </div>
+
+                                <b-table striped hover :items="items" :fields="fields"></b-table>
                             </b-tab>
                             <b-tab>
                                 <template #title>
@@ -98,8 +100,7 @@
                 </div>
             </b-col>
         </b-row>
-
-
+        <!--footer S-->
         <b-navbar toggleable="lg" type="dark" variant="secondary" fiexd="bottom" sticky="true">
             <b-navbar-brand href="/main">
                 <b-icon icon="stoplights"></b-icon>
@@ -120,8 +121,152 @@
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
+        <!--footer E-->
+
+        <!--modal : add app S-->
+        <b-modal id="modal-manage-app" size="lg" title="App 등록">
+            <div>
+                <b-card bg-variant="light">
+                    <b-form-group
+                            label-cols-lg="3"
+                            label="App을 등록합니다."
+                            label-size="sm"
+                            label-class="font-weight-bold pt-0"
+                            class="mb-0"
+                    >
+                        <b-form-group
+                                label="* App Name : "
+                                label-for="manage-app-name"
+                                label-cols-sm="3"
+                                label-align-sm="right"
+                        >
+                            <b-form-input id="manage-app-name"
+                                          v-model="app.manage.values.appName"
+                                          :state="stateAppName"
+                                          trim
+                                          required
+                            >
+                            </b-form-input>
+                        </b-form-group>
+
+                        <b-form-group
+                                label="* Client Id : "
+                                label-for="manage-app-client-id"
+                                label-cols-sm="3"
+                                label-align-sm="right"
+                        >
+                            <b-form-input id="manage-app-client-id"
+                                          v-model="app.manage.values.clientId"
+                                          :state="stateClientId"
+                                          trim required></b-form-input>
+                        </b-form-group>
+
+                        <b-form-group
+                                label="* Secret Key : "
+                                label-for="manage-app-secret-key"
+                                label-cols-sm="3"
+                                label-align-sm="right"
+                        >
+                            <b-form-input id="manage-app-secret-key"
+                                          v-model="app.manage.values.secretKey"
+                                          :state="stateSecretKey"
+                                          trim
+                                          required
+                            >
+                            </b-form-input>
+                        </b-form-group>
+
+                        <b-form-group
+                                label="Partner Id : "
+                                label-for="manage-app-partner-id"
+                                label-cols-sm="3"
+                                label-align-sm="right"
+                        >
+                            <b-form-input id="manage-app-partner-id"
+                                          v-model="app.manage.values.partnerId"
+                                          trim
+                            >
+                            </b-form-input>
+                        </b-form-group>
+
+                        <b-form-group
+                                label="* 인증 유형 : "
+                                label-cols-sm="3"
+                                label-align-sm="right"
+                                class="mb-0"
+                                v-slot="{ ariaDescribedby }"
+                        >
+                            <b-form-radio-group
+                                    class="pt-2"
+                                    v-model="app.manage.values.grantType"
+                                    :options="app.manage.options.grantType"
+                                    :aria-describedby="ariaDescribedby"
+                            >
+                            </b-form-radio-group>
+                        </b-form-group>
+                        <b-form-group
+                                label="* 토큰 관리 : "
+                                label-cols-sm="3"
+                                label-align-sm="right"
+                                class="mb-0"
+                                v-slot="{ ariaDescribedby }"
+                        >
+                            <b-form-radio-group
+                                    class="pt-2"
+                                    v-model="app.manage.values.manageToken"
+                                    :options="app.manage.options.manageToken"
+                                    :aria-describedby="ariaDescribedby"
+                            >
+                            </b-form-radio-group>
+                        </b-form-group>
+                        <b-form-group
+                                label="* 운영 환경 : "
+                                label-cols-sm="3"
+                                label-align-sm="right"
+                                class="mb-0"
+                                v-slot="{ ariaDescribedby }"
+                        >
+                            <b-form-radio-group
+                                    class="pt-2"
+                                    v-model="app.manage.values.operationLevel"
+                                    :options="app.manage.options.operationLevel"
+                                    :aria-describedby="ariaDescribedby"
+                            ></b-form-radio-group>
+                        </b-form-group>
+                    </b-form-group>
+                    <div>
+                        <b-form-group
+                                label="* API 사용권한 : "
+                                v-slot="{ ariaDescribedby }"
+                        >
+                            <b-row>
+                                <b-col>
+                                    <b-form-checkbox-group
+                                            v-model="app.manage.values.operationLevel"
+                                            :options="app.manage.options.operationLevel"
+                                            :aria-describedby="ariaDescribedby"
+                                            switches stacked
+                                    ></b-form-checkbox-group>
+                                </b-col>
+                                <b-col>
+                                    <b-form-checkbox-group
+                                            v-model="app.manage.values.operationLevel"
+                                            :options="app.manage.options.operationLevel"
+                                            :aria-describedby="ariaDescribedby"
+                                            switches stacked
+                                    ></b-form-checkbox-group>
+                                </b-col>
+                            </b-row>
+                        </b-form-group>
+                    </div>
+                </b-card>
+
+            </div>
+        </b-modal>
+        <!--modal : add app E-->
     </b-container>
 </div>
+
 
 <script th:src="@{/js/main.js}"/>
 <script>
