@@ -11,7 +11,7 @@ window.ita = new Vue({
                     grantType: 'code',
                     manageToken: 'refresh',
                     operationLevel: 'qa',
-                    scope: []
+                    scopes: []
                 },
                 options: {
                     grantType: [{text: 'code', value: 'code'}, {text: 'credential', value: 'credential'}],
@@ -21,7 +21,8 @@ window.ita = new Vue({
                         {text: 'AUTO', value: 'auto'},
                         {text: 'DEV', value: 'dev'},
                         {text: 'PROD', value: 'prod'}
-                    ]
+                    ],
+                    scopes: []
                 }
             }
         },
@@ -29,15 +30,6 @@ window.ita = new Vue({
         items: [
             {isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald'},
             {isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw'},
-            {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
-            {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
-            {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
-            {isActive: true, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
-            {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
-            {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
-            {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
-            {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
-            {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
             {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
             {isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney'}
         ]
@@ -51,6 +43,20 @@ window.ita = new Vue({
         },
         stateSecretKey() {
             return this.app.manage.values.secretKey.length > 16
+        },
+        scopesStr() {
+            return this.app.manage.values.scopes.join(',');
         }
+    },
+    created() {
+        console.log('created');
+    },
+    mounted() {
+        axios.get('/api/v1/scopes', [])
+            .then(function (res) {
+                ita.app.manage.options.scopes = res.data;
+            }, function () {
+                console.log('failed')
+            })
     }
 })

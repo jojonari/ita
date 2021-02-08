@@ -240,18 +240,18 @@
                                 v-slot="{ ariaDescribedby }"
                         >
                             <b-row>
+                                <b-form-input
+                                        v-model="scopesStr"
+                                        trim
+                                        disabled
+                                >
+                                </b-form-input>
+                            </b-row>
+                            <b-row>
                                 <b-col>
                                     <b-form-checkbox-group
-                                            v-model="app.manage.values.operationLevel"
-                                            :options="app.manage.options.operationLevel"
-                                            :aria-describedby="ariaDescribedby"
-                                            switches stacked
-                                    ></b-form-checkbox-group>
-                                </b-col>
-                                <b-col>
-                                    <b-form-checkbox-group
-                                            v-model="app.manage.values.operationLevel"
-                                            :options="app.manage.options.operationLevel"
+                                            v-model="app.manage.values.scopes"
+                                            :options="app.manage.options.scopes"
                                             :aria-describedby="ariaDescribedby"
                                             switches stacked
                                     ></b-form-checkbox-group>
