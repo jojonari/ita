@@ -18,16 +18,17 @@ public class ScopeService {
     }
 
     /**
-     * 스코프 조회
+     * 스코프 옵션 조회
      *
      * @return
      */
-    public List<TexeValue> getScopeBase() {
+    public List<TexeValue> getScopesOptions() {
         List<Scope> scopes = scopeRepository.findAll();
         List<TexeValue> texeValues = new ArrayList<>();
         for (Scope scope : scopes) {
             texeValues.add(scope.ToTextValue());
         }
+
         return texeValues;
     }
 }

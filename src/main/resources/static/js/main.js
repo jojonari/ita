@@ -48,15 +48,38 @@ window.ita = new Vue({
             return this.app.manage.values.scopes.join(',');
         }
     },
+    methods: {
+        getScopeOption() {
+            axios.get('/api/v1/scopes/options', [])
+                .then(function (res) {
+                    if (res.data.code !== 200) {
+                        console.error(res);
+                        alert("스코프 옵션 세팅에 실패했습니다.");
+                        return;
+                    }
+
+                    ita.app.manage.options.scopes = res.data.data;
+                }, function (err) {
+                    console.error(err);
+                });
+        },
+        saveApp() {
+            axios.post('/api/v1/app', this.app.manage.values)
+                .then(function (res) {
+                    if (res.data.code === 200) {
+                        return;
+                    }
+
+                    console.error(res);
+                    alert("앱 등록에 실패했습니다.(" + res.data.message + ")");
+                }, function (err) {
+                    console.error(err);
+                });
+        }
+    },
     created() {
-        console.log('created');
     },
     mounted() {
-        axios.get('/api/v1/scopes', [])
-            .then(function (res) {
-                ita.app.manage.options.scopes = res.data;
-            }, function () {
-                console.log('failed')
-            })
+        this.getScopeOption();
     }
 })

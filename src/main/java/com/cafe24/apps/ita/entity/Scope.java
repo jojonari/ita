@@ -1,9 +1,6 @@
 package com.cafe24.apps.ita.entity;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -18,36 +15,35 @@ public class Scope extends TimeEntity {
     private Long idx;
 
     @Column(length = 30, nullable = false)
-    private String scopeCode;
+    private String scope;
 
     @Column(length = 30, nullable = false)
     private String scopeName;
 
     @Column(length = 30, nullable = false)
-    private String authCode;
+    private String code;
 
     @Column(length = 30, nullable = false)
-    private String authName;
+    private String codeName;
 
     @Builder
-    public Scope(Long idx, String scopeCode, String scopeName, String authCode, String authName) {
+    public Scope(Long idx, String scope, String scopeName, String code, String codeName) {
         this.idx = idx;
-        this.scopeCode = scopeCode;
+        this.scope = scope;
         this.scopeName = scopeName;
-        this.authCode = authCode;
-        this.authName = authName;
+        this.code = code;
+        this.codeName = codeName;
     }
 
     public TexeValue  ToTextValue(){
         return new TexeValue(getText(), getValue());
     }
 
-
     private String getText() {
-        return authName + " : " + scopeName;
+        return codeName + " ::: " + scopeName;
     }
 
     private String getValue() {
-        return authCode;
+        return code;
     }
 }

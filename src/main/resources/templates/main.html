@@ -124,7 +124,7 @@
         <!--footer E-->
 
         <!--modal : add app S-->
-        <b-modal id="modal-manage-app" size="lg" title="App 등록">
+        <b-modal id="modal-manage-app" @ok="saveApp"  size="lg" title="App 등록">
             <div>
                 <b-card bg-variant="light">
                     <b-form-group
@@ -260,7 +260,6 @@
                         </b-form-group>
                     </div>
                 </b-card>
-
             </div>
         </b-modal>
         <!--modal : add app E-->
