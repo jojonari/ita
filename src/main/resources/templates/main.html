@@ -71,7 +71,7 @@
                                     APP
                                 </template>
                                 <div th:align="right">
-                                    <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm">APP 추가</b-button>
+                                    <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm" @click="createModalInit">APP 추가</b-button>
                                 </div>
 
                                 <b-table striped hover :items="items" :fields="fields"></b-table>
@@ -124,7 +124,7 @@
         <!--footer E-->
 
         <!--modal : add app S-->
-        <b-modal id="modal-manage-app" @ok="saveApp"  size="lg" title="App 등록">
+        <b-modal id="modal-manage-app" @ok="saveApp" size="lg" title="App 등록">
             <div>
                 <b-card bg-variant="light">
                     <b-form-group
@@ -141,6 +141,7 @@
                                 label-align-sm="right"
                         >
                             <b-form-input id="manage-app-name"
+                                          maxlength="30"
                                           v-model="app.manage.values.appName"
                                           :state="stateAppName"
                                           trim
@@ -156,6 +157,7 @@
                                 label-align-sm="right"
                         >
                             <b-form-input id="manage-app-client-id"
+                                          maxlength="30"
                                           v-model="app.manage.values.clientId"
                                           :state="stateClientId"
                                           trim required></b-form-input>
@@ -168,6 +170,7 @@
                                 label-align-sm="right"
                         >
                             <b-form-input id="manage-app-secret-key"
+                                          maxlength="64"
                                           v-model="app.manage.values.secretKey"
                                           :state="stateSecretKey"
                                           trim
@@ -183,6 +186,7 @@
                                 label-align-sm="right"
                         >
                             <b-form-input id="manage-app-partner-id"
+                                          maxlength="30"
                                           v-model="app.manage.values.partnerId"
                                           trim
                             >

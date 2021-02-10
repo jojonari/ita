@@ -3,7 +3,8 @@ window.ita = new Vue({
     data: {
         app: {
             manage: {
-                values: {
+                values: {},
+                defaultValues: {
                     appName: '',
                     clientId: '',
                     secretKey: '',
@@ -26,12 +27,17 @@ window.ita = new Vue({
                 }
             }
         },
-        fields: ['first_name', 'last_name', 'age'],
+        fields: [
+            {key: 'idx', label: 'IDX', sortable: true},
+            {key: 'clientId', label: 'client id', sortable: true},
+            {key: 'appName', label: '앱 이름', sortable: true},
+            {key: 'modifiedDate', label: '수정일시', sortable: true}
+        ],
         items: [
-            {isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald'},
-            {isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw'},
-            {isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson'},
-            {isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney'}
+            {isActive: false, idx: 401, clientId: '1Dicke23rson', appName: '4Macdon23ald', modifiedDate: '1Ma3cdonald'},
+            {isActive: false, idx: 402, clientId: '2Dick2erson', appName: '3Macdon23ald', modifiedDate: '2Mac23donald'},
+            {isActive: false, idx: 403, clientId: '3Dicke32rson', appName: '2Macdona2ld', modifiedDate: '3Ma32cdonald'},
+            {isActive: true, idx: 404, clientId: '4Dickers1on', appName: '1Macdona2ld', modifiedDate: '4Macd3onald'}
         ]
     },
     computed: {
@@ -39,17 +45,18 @@ window.ita = new Vue({
             return this.app.manage.values.appName.length > 3
         },
         stateClientId() {
-            return this.app.manage.values.clientId.length > 16
+            return this.app.manage.values.clientId.length > 20
         },
         stateSecretKey() {
-            return this.app.manage.values.secretKey.length > 16
+            return this.app.manage.values.secretKey.length > 20
         },
         scopesStr() {
             return this.app.manage.values.scopes.join(',');
         }
     },
     methods: {
-        getScopeOption() {
+        //스코프 옵션 초기화
+        getScopeOption: function () {
             axios.get('/api/v1/scopes/options', [])
                 .then(function (res) {
                     if (res.data.code !== 200) {
@@ -63,7 +70,8 @@ window.ita = new Vue({
                     console.error(err);
                 });
         },
-        saveApp() {
+        //앱 등록
+        saveApp: function () {
             axios.post('/api/v1/app', this.app.manage.values)
                 .then(function (res) {
                     if (res.data.code === 200) {
@@ -75,11 +83,16 @@ window.ita = new Vue({
                 }, function (err) {
                     console.error(err);
                 });
+        },
+        //앱 등록 모달 데이터 초기화
+        createModalInit: function () {
+            this.app.manage.values = JSON.parse(JSON.stringify(this.app.manage.defaultValues));
         }
     },
     created() {
+        this.getScopeOption();
+        this.createModalInit();
     },
     mounted() {
-        this.getScopeOption();
     }
 })

@@ -24,10 +24,13 @@ public class AppService {
 
     /**
      * App 조회
+     *
      * @param clientId
      * @return
      */
     public App getApp(String clientId) {
         return appRepository.findByClientId(clientId);
     }
+
+
 }

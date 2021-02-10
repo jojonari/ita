@@ -1,11 +1,13 @@
 package com.cafe24.apps.ita.entity;
 
+import com.cafe24.apps.ita.util.SessionUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.servlet.http.HttpSession;
 import java.util.Set;
 
 @Getter
@@ -18,29 +20,37 @@ public class App extends TimeEntity {
     @GeneratedValue
     private Long idx;
 
-    @Column(length = 30, nullable = false)
+    @ManyToOne
+    @JoinColumn
+    private User user;
+
+    @Column(length = 30)
     private String appName;
 
-    @Column(length = 30, nullable = false, unique = true)
+    @Column(length = 30, unique = true)
     private String clientId;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 30)
     private String secretKey;
 
     @Column(length = 30, nullable = false)
     private String partnerId;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 15)
     private String grantType;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 10)
     private String manageToken;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 10)
     private String operationLevel;
 
     @CollectionTable(name = "t_app_scope")
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(columnDefinition = "TEXT")
     private Set<String> scopes;
+
+    public void setUser(HttpSession session) {
+        this.user = SessionUtil.getUserInfo(session);
+    }
 }

@@ -45,6 +45,16 @@ public class SessionUtil {
     }
 
     /**
+     * 세션 회원 idx 조회
+     *
+     * @param session
+     * @return
+     */
+    public static Long getUserIdx(HttpSession session) {
+        User user = (User) session.getAttribute(session.getId());
+        return user.getIdx();
+    }
+    /**
      * 세션 초기화
      * @param session
      */
