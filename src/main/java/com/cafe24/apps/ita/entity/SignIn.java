@@ -13,11 +13,12 @@ public class SignIn {
     /**
      * 패스워드 비교
      *
-     * @param passWord
+     * @param user
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public boolean isEqualsPassWord(String passWord) throws NoSuchAlgorithmException {
-        return passWord.equals(EncryptUtil.encryptPassword(this.userPw));
+    public boolean isEqualsPassWord(User user) throws NoSuchAlgorithmException {
+        String encUserPw = EncryptUtil.encryptPassword(this.userPw);
+        return encUserPw.equals(user.getUserPw());
     }
 }

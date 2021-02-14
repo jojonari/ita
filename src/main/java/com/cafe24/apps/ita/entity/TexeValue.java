@@ -1,8 +1,7 @@
 package com.cafe24.apps.ita.entity;
 
-import lombok.*;
-
-import javax.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Data
 @AllArgsConstructor

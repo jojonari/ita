@@ -38,7 +38,7 @@ public class UserService {
      * @throws Exception
      */
     public boolean doLogin(SignIn signIn, User user) throws NoSuchAlgorithmException {
-        return signIn.isEqualsPassWord(user.getUserPw());
+        return signIn.isEqualsPassWord(user);
     }
 
     /**
@@ -49,8 +49,6 @@ public class UserService {
      * @throws Exception
      */
     public Optional<User> getUser(String userId) {
-        Optional<User> user = userRepository.findByUserId(userId);
-
-        return user;
+        return userRepository.findByUserId(userId);
     }
 }
