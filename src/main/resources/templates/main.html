@@ -74,7 +74,7 @@
                                     <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm" @click="createModalInit">APP 추가</b-button>
                                 </div>
 
-                                <b-table striped hover :items="items" :fields="fields"></b-table>
+                                <b-table striped hover :items="app.list.items" :fields="app.list.fields"></b-table>
                             </b-tab>
                             <b-tab>
                                 <template #title>

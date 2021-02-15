@@ -1,5 +1,6 @@
 package com.cafe24.apps.ita.entity;
 
+import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.util.SessionUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -52,5 +53,20 @@ public class App extends TimeEntity {
 
     public void setUser(HttpSession session) {
         this.user = SessionUtil.getUserInfo(session);
+    }
+
+    public AppDto convertDto() {
+        return AppDto.builder().
+                idx(this.idx)
+                .appName(this.appName)
+                .clientId(this.clientId)
+                .partnerId(this.partnerId)
+                .grantType(this.grantType)
+                .manageToken(this.manageToken)
+                .operationLevel(this.operationLevel)
+                .scopes(this.scopes)
+                .createdDate(this.createdDate.toString())
+                .modifiedDate(this.modifiedDate.toString())
+                .build();
     }
 }

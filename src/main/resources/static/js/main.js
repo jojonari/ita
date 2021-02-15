@@ -2,7 +2,16 @@ window.ita = new Vue({
     el: '#ita',
     data: {
         app: {
-            manage: {
+            list: {
+                fields: [
+                    {key: 'idx', label: 'IDX', sortable: true},
+                    {key: 'clientId', label: 'client id', sortable: true},
+                    {key: 'appName', label: '앱 이름', sortable: true},
+                    {key: 'modifiedDate', label: '수정일시', sortable: true}
+                ],
+                items: []
+            }
+            , manage: {
                 values: {},
                 defaultValues: {
                     appName: '',
@@ -55,6 +64,21 @@ window.ita = new Vue({
         }
     },
     methods: {
+        //App 리스트 조회
+        getApps: function () {
+            axios.get('/api/v1/apps', [])
+                .then(function (res) {
+                    if (res.data.code !== 200) {
+                        console.error(res);
+                        alert("res.data.message");
+                        return;
+                    }
+
+                    ita.app.list.values = res.data.data;
+                }, function (err) {
+                    console.error(err);
+                });
+        },
         //스코프 옵션 초기화
         getScopeOption: function () {
             axios.get('/api/v1/scopes/options', [])
@@ -92,6 +116,7 @@ window.ita = new Vue({
     created() {
         this.getScopeOption();
         this.createModalInit();
+        this.getApps();
     },
     mounted() {
     }
