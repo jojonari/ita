@@ -37,7 +37,7 @@
 
                     <b-navbar-nav class="ml-auto">
                         <b-nav-form>
-                            <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
+                            <b-form-input size="sm" class="mr-sm-2" placeholder="Search" v-model="searchForm.clientId"></b-form-input>
                             <b-button size="sm" class="my-2 my-sm-0" type="submit">
                                 <b-icon icon="search"></b-icon>
                                 Search
@@ -65,7 +65,7 @@
                 <div>
                     <b-card no-body>
                         <b-tabs fill active-nav-item-class="font-weight-bold text-uppercase text-danger" content-class="mt-3">
-                            <b-tab active>
+                            <b-tab active @click="getApps">
                                 <template #title>
                                     <b-icon icon="app"></b-icon>
                                     APP

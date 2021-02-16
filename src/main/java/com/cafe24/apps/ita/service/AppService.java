@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,12 +43,14 @@ public class AppService {
 
     /**
      * App 목록 조회
+     *
      * @param session
+     * @param clientId
      * @return
      */
-    public List<AppDto> getApps(HttpSession session) {
+    public List<AppDto> getApps(HttpSession session, Optional<String> clientId) {
         User user = SessionUtil.getUserInfo(session);
-        List<App> apps = appRepository.findAllByUser(user);
+        List<App> apps = appRepository.findAllByUserAndClientIdContainingOrderByIdxDesc(user, clientId.orElse(""));
 
         return apps.stream().map(App::convertDto).collect(Collectors.toList());
 

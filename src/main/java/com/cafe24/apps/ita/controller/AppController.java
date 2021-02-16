@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -27,12 +28,12 @@ public class AppController {
 
         app.setUser(session);
         App saveApp = appService.saveApp(app);
-        return Response.success(saveApp);
+        return Response.success(saveApp.convertDto());
     }
 
     @GetMapping("/apps")
-    public Response getApps(HttpSession session) {
-        List<AppDto> appDtos = appService.getApps(session);
+    public Response getApps(HttpSession session, Optional<String> clientId) {
+        List<AppDto> appDtos = appService.getApps(session, clientId);
 
         if (appDtos == null) {
             return Response.badRequest("App 리스트 조회에 실패했습니다.");

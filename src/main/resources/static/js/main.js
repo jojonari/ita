@@ -1,6 +1,9 @@
 window.ita = new Vue({
     el: '#ita',
     data: {
+        searchForm: {
+            clientId: ''
+        },
         app: {
             list: {
                 fields: [
@@ -66,7 +69,7 @@ window.ita = new Vue({
     methods: {
         //App 리스트 조회
         getApps: function () {
-            axios.get('/api/v1/apps', [])
+            axios.get('/api/v1/apps' + this.queryStr(ita.searchForm))
                 .then(function (res) {
                     if (res.data.code !== 200) {
                         console.error(res);
@@ -74,7 +77,7 @@ window.ita = new Vue({
                         return;
                     }
 
-                    ita.app.list.values = res.data.data;
+                    ita.app.list.items = res.data.data;
                 }, function (err) {
                     console.error(err);
                 });
@@ -99,6 +102,7 @@ window.ita = new Vue({
             axios.post('/api/v1/app', this.app.manage.values)
                 .then(function (res) {
                     if (res.data.code === 200) {
+                        ita.getApps();
                         return;
                     }
 
@@ -111,6 +115,12 @@ window.ita = new Vue({
         //앱 등록 모달 데이터 초기화
         createModalInit: function () {
             this.app.manage.values = JSON.parse(JSON.stringify(this.app.manage.defaultValues));
+        },
+        queryStr: function (params) {
+            if (params === undefined) {
+                return '';
+            }
+            return '?' + Object.entries(params).map(e => e.join('=')).join('&');
         }
     },
     created() {

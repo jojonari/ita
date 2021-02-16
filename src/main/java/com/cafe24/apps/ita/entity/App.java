@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 @Getter
@@ -65,8 +66,8 @@ public class App extends TimeEntity {
                 .manageToken(this.manageToken)
                 .operationLevel(this.operationLevel)
                 .scopes(this.scopes)
-                .createdDate(this.createdDate.toString())
-                .modifiedDate(this.modifiedDate.toString())
+                .createdDate(this.createdDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .modifiedDate(this.modifiedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
     }
 }
