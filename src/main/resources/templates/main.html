@@ -74,7 +74,33 @@
                                     <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm" @click="createModalInit">APP 추가</b-button>
                                 </div>
 
-                                <b-table striped hover :items="app.list.items" :fields="app.list.fields"></b-table>
+                                <b-table
+                                        striped
+                                        hover
+                                        show-empty
+                                        :items="app.list.items"
+                                        :fields="app.list.fields"
+                                >
+                                    <template #cell(actions)="row">
+                                        <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1">
+                                            수정
+                                        </b-button>
+                                        <b-button size="sm" @click="row.toggleDetails">
+                                            {{ row.detailsShowing ? '*' : '' }} 정보 조회
+                                        </b-button>
+                                    </template>
+
+                                    <template #row-details="row">
+                                        <b-card>
+                                            asdf
+                                        </b-card>
+                                        <b-card>
+                                            <ul>
+                                                <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
+                                            </ul>
+                                        </b-card>
+                                    </template>
+                                </b-table>
                             </b-tab>
                             <b-tab>
                                 <template #title>
@@ -100,6 +126,7 @@
                 </div>
             </b-col>
         </b-row>
+
         <!--footer S-->
         <b-navbar toggleable="lg" type="dark" variant="secondary" fiexd="bottom" sticky="true">
             <b-navbar-brand href="/main">
@@ -109,7 +136,7 @@
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav class="ml-auto" right>
                     <b-nav-form>
-                        <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
+                        <b-form-input size="sm" class="mr-sm-2" placeholder="Search" v-model="searchForm.clientId"></b-form-input>
                         <b-button size="sm" class="my-2 my-sm-0" type="submit">
                             <b-icon icon="search"></b-icon>
                             Search
@@ -124,7 +151,7 @@
         <!--footer E-->
 
         <!--modal : add app S-->
-        <b-modal id="modal-manage-app" @ok="saveApp" size="lg" title="App 등록">
+        <b-modal id="modal-manage-app" @ok="saveApp" size="lg" :title="app.manage.appInfoModal.title">
             <div>
                 <b-card bg-variant="light">
                     <b-form-group

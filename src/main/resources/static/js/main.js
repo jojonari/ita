@@ -10,7 +10,8 @@ window.ita = new Vue({
                     {key: 'idx', label: 'IDX', sortable: true},
                     {key: 'clientId', label: 'client id', sortable: true},
                     {key: 'appName', label: '앱 이름', sortable: true},
-                    {key: 'modifiedDate', label: '수정일시', sortable: true}
+                    {key: 'modifiedDate', label: '수정일시', sortable: true},
+                    {key: 'actions', label: 'Actions'}
                 ],
                 items: []
             }
@@ -37,13 +38,18 @@ window.ita = new Vue({
                     ],
                     scopes: []
                 }
+                ,
+                appInfoModal :{
+                    title : 'App 등록'
+                }
             }
         },
         fields: [
             {key: 'idx', label: 'IDX', sortable: true},
             {key: 'clientId', label: 'client id', sortable: true},
             {key: 'appName', label: '앱 이름', sortable: true},
-            {key: 'modifiedDate', label: '수정일시', sortable: true}
+            {key: 'modifiedDate', label: '수정일시', sortable: true},
+            {key: 'actions', label: 'Actions'}
         ],
         items: [
             {isActive: false, idx: 401, clientId: '1Dicke23rson', appName: '4Macdon23ald', modifiedDate: '1Ma3cdonald'},
@@ -67,6 +73,12 @@ window.ita = new Vue({
         }
     },
     methods: {
+        info(item, index, button) {
+            this.app.manage.appInfoModal.title= 'APP 수정';
+            this.$root.$emit('bv::show::modal', 'modal-manage-app', button);
+            this.app.manage.values = item;
+            this.app.manage.values.secretKey = '###############';
+        },
         //App 리스트 조회
         getApps: function () {
             axios.get('/api/v1/apps' + this.queryStr(ita.searchForm))
@@ -114,6 +126,7 @@ window.ita = new Vue({
         },
         //앱 등록 모달 데이터 초기화
         createModalInit: function () {
+            this.app.manage.appInfoModal.title= 'APP 등록';
             this.app.manage.values = JSON.parse(JSON.stringify(this.app.manage.defaultValues));
         },
         queryStr: function (params) {

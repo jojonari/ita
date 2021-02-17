@@ -20,6 +20,7 @@ public class mainController {
         if (SessionUtil.isSignIn(session)) {
             mv.addObject("user", SessionUtil.getUserInfo(session));
             mv.setViewName("/main");
+
             return mv;
         }
 
@@ -38,6 +39,7 @@ public class mainController {
         if (SessionUtil.isSignIn(session)) {
             mv.addObject("user", SessionUtil.getUserInfo(session));
             mv.setViewName("/main");
+
             return mv;
         }
 
