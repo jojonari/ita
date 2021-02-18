@@ -2,10 +2,7 @@ package com.cafe24.apps.ita.entity;
 
 import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.util.SessionUtil;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
@@ -13,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 @Getter
+@Setter
 @Entity
 @ToString
 @Table(name = "t_app")
@@ -52,10 +50,29 @@ public class App extends TimeEntity {
     @Column(columnDefinition = "TEXT")
     private Set<String> scopes;
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public void setUser(HttpSession session) {
         this.user = SessionUtil.getUserInfo(session);
     }
 
+    /**
+     * 수정시 secretKey 세팅
+     *
+     * @param secretKey
+     */
+    public void setModifySecretKey(String secretKey) {
+        if (this.secretKey == null || this.secretKey.contains("#")) {
+            this.secretKey = secretKey;
+        }
+    }
+
+    /**
+     * convert DTO
+     * @return
+     */
     public AppDto convertDto() {
         return AppDto.builder().
                 idx(this.idx)
@@ -66,7 +83,6 @@ public class App extends TimeEntity {
                 .manageToken(this.manageToken)
                 .operationLevel(this.operationLevel)
                 .scopes(this.scopes)
-                .createdDate(this.createdDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .modifiedDate(this.modifiedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
     }

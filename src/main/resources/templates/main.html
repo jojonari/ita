@@ -151,12 +151,12 @@
         <!--footer E-->
 
         <!--modal : add app S-->
-        <b-modal id="modal-manage-app" @ok="saveApp" size="lg" :title="app.manage.appInfoModal.title">
+        <b-modal id="modal-manage-app" size="lg" :title="app.manage.mode == 'register' ? 'App 등록' : 'App 수정'">
             <div>
                 <b-card bg-variant="light">
                     <b-form-group
                             label-cols-lg="3"
-                            label="App을 등록합니다."
+                            label="앱의 정보를 입력하세요."
                             label-size="sm"
                             label-class="font-weight-bold pt-0"
                             class="mb-0"
@@ -292,8 +292,19 @@
                     </div>
                 </b-card>
             </div>
+
+            <template #modal-footer="{ ok, hide }">
+                <b-button size="sm" variant="outline-primary" @click="registerApp" v-if="app.manage.mode == 'register'">
+                    등록
+                </b-button>
+                <b-button size="sm" variant="outline-primary" @click="modifyApp" v-if="app.manage.mode == 'modify'">
+                    수정
+                </b-button>
+                <b-button size="sm" variant="outline-secondary" @click="hide('forget')">
+                    취소
+                </b-button>
+            </template>
         </b-modal>
-        <!--modal : add app E-->
     </b-container>
 </div>
 

@@ -16,6 +16,7 @@ window.ita = new Vue({
                 items: []
             }
             , manage: {
+                mode: 'register',
                 values: {},
                 defaultValues: {
                     appName: '',
@@ -37,10 +38,6 @@ window.ita = new Vue({
                         {text: 'PROD', value: 'prod'}
                     ],
                     scopes: []
-                }
-                ,
-                appInfoModal :{
-                    title : 'App 등록'
                 }
             }
         },
@@ -74,10 +71,18 @@ window.ita = new Vue({
     },
     methods: {
         info(item, index, button) {
-            this.app.manage.appInfoModal.title= 'APP 수정';
+            this.app.manage.mode = 'modify';
             this.$root.$emit('bv::show::modal', 'modal-manage-app', button);
-            this.app.manage.values = item;
+
+            this.app.manage.values.idx = item.idx;
+            this.app.manage.values.appName = item.appName;
+            this.app.manage.values.clientId = item.clientId;
             this.app.manage.values.secretKey = '###############';
+            this.app.manage.values.partnerId = item.partnerId
+            this.app.manage.values.grantType = item.grantType;
+            this.app.manage.values.manageToken = item.manageToken;
+            this.app.manage.values.operationLevel = item.operationLevel;
+            this.app.manage.values.scopes = item.scopes;
         },
         //App 리스트 조회
         getApps: function () {
@@ -110,10 +115,12 @@ window.ita = new Vue({
                 });
         },
         //앱 등록
-        saveApp: function () {
+        registerApp: function () {
+            console.log(this.app.manage.values);
             axios.post('/api/v1/app', this.app.manage.values)
                 .then(function (res) {
                     if (res.data.code === 200) {
+                        ita.$bvModal.hide("modal-manage-app");
                         ita.getApps();
                         return;
                     }
@@ -123,10 +130,28 @@ window.ita = new Vue({
                 }, function (err) {
                     console.error(err);
                 });
+        },//앱 수정
+        modifyApp: function () {
+            let sUrl = '/api/v1/app/' + this.app.manage.values.idx;
+            axios.put(sUrl, this.app.manage.values)
+                .then(function (res) {
+                    if (res.data.code === 200) {
+                        ita.$bvModal.hide("modal-manage-app");
+                        //TODO : getapps대신 교체하고 싶은데;
+                        ita.app.list.items.push(res.data.data);
+                        ita.getApps();
+
+                        return;
+                    }
+
+                    alert("앱 수정에 실패했습니다.(" + res.data.message + ")");
+                }, function (err) {
+                    console.error(err);
+                });
         },
         //앱 등록 모달 데이터 초기화
         createModalInit: function () {
-            this.app.manage.appInfoModal.title= 'APP 등록';
+            this.app.manage.mode = 'register';
             this.app.manage.values = JSON.parse(JSON.stringify(this.app.manage.defaultValues));
         },
         queryStr: function (params) {

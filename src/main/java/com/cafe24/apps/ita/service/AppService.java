@@ -26,7 +26,7 @@ public class AppService {
      * @param app
      * @return
      */
-    public App saveApp(App app) {
+    public App registerApp(App app) {
         return appRepository.save(app);
     }
 
@@ -40,6 +40,16 @@ public class AppService {
         return appRepository.findByClientId(clientId);
     }
 
+    /**
+     * App 단건 조회
+     * @param session
+     * @param appIdx
+     * @return
+     */
+    public App getApp(HttpSession session, Long appIdx) {
+        User user = SessionUtil.getUserInfo(session);
+        return appRepository.findByIdxAndUser(appIdx, user);
+    }
 
     /**
      * App 목록 조회
@@ -54,5 +64,14 @@ public class AppService {
 
         return apps.stream().map(App::convertDto).collect(Collectors.toList());
 
+    }
+
+    /**
+     * 앱 수정
+     * @param app
+     * @return
+     */
+    public App modifyApp(App app) {
+        return appRepository.saveAndFlush(app);
     }
 }

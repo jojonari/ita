@@ -19,18 +19,6 @@ public class AppController {
         this.appService = appService;
     }
 
-    @PostMapping("/app")
-    public Response saveApp(@RequestBody App app, HttpSession session) {
-        App result = appService.getApp(app.getClientId());
-        if (result != null) {
-            return Response.badRequest("이미 등록된 ClientId 입니다.");
-        }
-
-        app.setUser(session);
-        App saveApp = appService.saveApp(app);
-        return Response.success(saveApp.convertDto());
-    }
-
     @GetMapping("/apps")
     public Response getApps(HttpSession session, Optional<String> clientId) {
         List<AppDto> appDtos = appService.getApps(session, clientId);
@@ -40,5 +28,31 @@ public class AppController {
         }
 
         return Response.success(appDtos);
+    }
+
+    @PostMapping("/app")
+    public Response registerApp(@RequestBody App app, HttpSession session) {
+        App result = appService.getApp(app.getClientId());
+        if (result != null) {
+            return Response.badRequest("이미 등록된 ClientId 입니다.");
+        }
+
+        app.setUser(session);
+        App registerApp = appService.registerApp(app);
+        return Response.success(registerApp.convertDto());
+    }
+
+    @PutMapping("/app/{appIdx}")
+    public Response modifyApp(HttpSession session, @PathVariable Long appIdx, @RequestBody App app) {
+        App result = appService.getApp(session, appIdx);
+        if (result == null) {
+            return Response.badRequest("등록된 Client가 없습니다.");
+        }
+
+        app.setUser(session);
+        app.setModifySecretKey(result.getSecretKey());
+
+        App modifyApp = appService.modifyApp(app);
+        return Response.success(modifyApp.convertDto());
     }
 }

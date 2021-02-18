@@ -13,5 +13,8 @@ import java.util.List;
 public interface AppRepository extends JpaRepository<App, Long> {
     App findByClientId(String clientId);
 
+    App findByIdxAndUser(Long idx, User user);
+
     List<App> findAllByUserAndClientIdContainingOrderByIdxDesc(User user, String clientId);
+
 }
