@@ -88,6 +88,9 @@
                                         <b-button size="sm" @click="row.toggleDetails">
                                             {{ row.detailsShowing ? '*' : '' }} 정보 조회
                                         </b-button>
+                                        <b-button size="sm" @click="deleteApp( row.index )" variant="outline-danger">
+                                            삭제
+                                        </b-button>
                                     </template>
 
                                     <template #row-details="row">

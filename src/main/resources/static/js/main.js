@@ -116,12 +116,12 @@ window.ita = new Vue({
         },
         //앱 등록
         registerApp: function () {
-            console.log(this.app.manage.values);
             axios.post('/api/v1/app', this.app.manage.values)
                 .then(function (res) {
                     if (res.data.code === 200) {
                         ita.$bvModal.hide("modal-manage-app");
-                        ita.getApps();
+                        ita.app.list.items.push(res.data.data);
+
                         return;
                     }
 
@@ -137,14 +137,31 @@ window.ita = new Vue({
                 .then(function (res) {
                     if (res.data.code === 200) {
                         ita.$bvModal.hide("modal-manage-app");
-                        //TODO : getapps대신 교체하고 싶은데;
                         ita.app.list.items.push(res.data.data);
-                        ita.getApps();
 
                         return;
                     }
 
                     alert("앱 수정에 실패했습니다.(" + res.data.message + ")");
+                }, function (err) {
+                    console.error(err);
+                });
+        },//앱 삭제
+        deleteApp: function (idx) {
+            if (confirm(this.app.list.items[idx].appName + '를 삭제하시겠습니까?') === false) {
+                return;
+            }
+
+            let sUrl = '/api/v1/app/' + this.app.list.items[idx].idx;
+            axios.delete(sUrl)
+                .then(function (res) {
+                    if (res.data.code === 200) {
+                        ita.app.list.items.splice(idx, 1);
+
+                        return;
+                    }
+
+                    alert("앱 삭제에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
                 });

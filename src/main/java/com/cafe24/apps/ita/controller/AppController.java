@@ -55,4 +55,14 @@ public class AppController {
         App modifyApp = appService.modifyApp(app);
         return Response.success(modifyApp.convertDto());
     }
+    @DeleteMapping("/app/{appIdx}")
+    public Response deleteApp(HttpSession session, @PathVariable Long appIdx) {
+        App app = appService.getApp(session, appIdx);
+        if (app == null) {
+            return Response.badRequest("등록된 Client가 없습니다.");
+        }
+
+        boolean result = appService.deleteApp(appIdx);
+        return Response.success(result);
+    }
 }

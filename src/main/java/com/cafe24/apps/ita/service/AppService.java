@@ -42,6 +42,7 @@ public class AppService {
 
     /**
      * App 단건 조회
+     *
      * @param session
      * @param appIdx
      * @return
@@ -68,10 +69,18 @@ public class AppService {
 
     /**
      * 앱 수정
+     *
      * @param app
      * @return
      */
     public App modifyApp(App app) {
         return appRepository.saveAndFlush(app);
+    }
+
+    public boolean deleteApp(Long appIdx) {
+        appRepository.deleteById(appIdx);
+        Optional<App> app = Optional.of(appRepository.getOne(appIdx));
+
+        return app.isEmpty();
     }
 }
