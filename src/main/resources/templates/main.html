@@ -95,7 +95,14 @@
 
                                     <template #row-details="row">
                                         <b-card>
-                                            asdf
+                                            # 개발자센터 입력정보
+                                            <ul>
+                                                <li>app url : /auth/{{ row.item.idx }}</li>
+                                                <li>redirect url : /auth/{{ row.item.idx }}/code</li>
+                                                <li>redirect url : /auth/{{ row.item.idx }}/token</li>
+                                                <li>webhook url : /webhook/{{ row.item.idx }}</li>
+                                            </ul>
+                                            * 개발자센터에 위의 URI를 등록하세요.
                                         </b-card>
                                         <b-card>
                                             <ul>
