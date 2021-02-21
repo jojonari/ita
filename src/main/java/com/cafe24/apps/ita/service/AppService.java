@@ -77,10 +77,11 @@ public class AppService {
         return appRepository.saveAndFlush(app);
     }
 
-    public boolean deleteApp(Long appIdx) {
+    /**
+     * 앱 삭제
+     * @param appIdx
+     */
+    public void deleteApp(Long appIdx) {
         appRepository.deleteById(appIdx);
-        Optional<App> app = Optional.of(appRepository.getOne(appIdx));
-
-        return app.isEmpty();
     }
 }

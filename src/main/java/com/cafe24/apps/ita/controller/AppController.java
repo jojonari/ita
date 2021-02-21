@@ -62,7 +62,7 @@ public class AppController {
             return Response.badRequest("등록된 Client가 없습니다.");
         }
 
-        boolean result = appService.deleteApp(appIdx);
-        return Response.success(result);
+        appService.deleteApp(appIdx);
+        return Response.success(null);
     }
 }
