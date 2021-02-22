@@ -49,9 +49,27 @@ window.ita = new Vue({
             {key: 'actions', label: 'Actions'}
         ],
         items: [
-            {isActive: false, idx: 401, clientId: '1Dicke23rson', appName: '4Macdon23ald', modifiedDate: '1Ma3cdonald'},
-            {isActive: false, idx: 402, clientId: '2Dick2erson', appName: '3Macdon23ald', modifiedDate: '2Mac23donald'},
-            {isActive: false, idx: 403, clientId: '3Dicke32rson', appName: '2Macdona2ld', modifiedDate: '3Ma32cdonald'},
+            {
+                isActive: false,
+                idx: 401,
+                clientId: '1Dicke23rson',
+                appName: '4Macdon23ald',
+                modifiedDate: '1Ma3cdonald'
+            },
+            {
+                isActive: false,
+                idx: 402,
+                clientId: '2Dick2erson',
+                appName: '3Macdon23ald',
+                modifiedDate: '2Mac23donald'
+            },
+            {
+                isActive: false,
+                idx: 403,
+                clientId: '3Dicke32rson',
+                appName: '2Macdona2ld',
+                modifiedDate: '3Ma32cdonald'
+            },
             {isActive: true, idx: 404, clientId: '4Dickers1on', appName: '1Macdona2ld', modifiedDate: '4Macd3onald'}
         ]
     },
@@ -86,7 +104,7 @@ window.ita = new Vue({
         },
         //App 리스트 조회
         getApps: function () {
-            axios.get('/api/v1/apps' + this.queryStr(ita.searchForm))
+            axios.get(CONTEXT_PATH + '/api/v1/apps' + this.queryStr(ita.searchForm))
                 .then(function (res) {
                     if (res.data.code !== 200) {
                         console.error(res);
@@ -101,7 +119,7 @@ window.ita = new Vue({
         },
         //스코프 옵션 초기화
         getScopeOption: function () {
-            axios.get('/api/v1/scopes/options', [])
+            axios.get(CONTEXT_PATH + '/api/v1/scopes/options', [])
                 .then(function (res) {
                     if (res.data.code !== 200) {
                         console.error(res);
@@ -116,7 +134,7 @@ window.ita = new Vue({
         },
         //앱 등록
         registerApp: function () {
-            axios.post('/api/v1/app', this.app.manage.values)
+            axios.post(CONTEXT_PATH + '/api/v1/app', this.app.manage.values)
                 .then(function (res) {
                     if (res.data.code === 200) {
                         ita.$bvModal.hide("modal-manage-app");
@@ -132,7 +150,7 @@ window.ita = new Vue({
                 });
         },//앱 수정
         modifyApp: function () {
-            let sUrl = '/api/v1/app/' + this.app.manage.values.idx;
+            let sUrl = CONTEXT_PATH + '/api/v1/app/' + this.app.manage.values.idx;
             axios.put(sUrl, this.app.manage.values)
                 .then(function (res) {
                     if (res.data.code === 200) {
@@ -152,7 +170,7 @@ window.ita = new Vue({
                 return;
             }
 
-            let sUrl = '/api/v1/app/' + this.app.list.items[idx].idx;
+            let sUrl = CONTEXT_PATH + '/api/v1/app/' + this.app.list.items[idx].idx;
             axios.delete(sUrl)
                 .then(function (res) {
                     if (res.data.code === 200) {
