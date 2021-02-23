@@ -10,7 +10,6 @@ import javax.validation.constraints.Positive;
 @NoArgsConstructor
 public class MallDto {
 
-    private Long idx;
     private String is_multi_shop;
     private String lang;
     @NotEmpty(message = "mall_id는 필수 값입니다.")

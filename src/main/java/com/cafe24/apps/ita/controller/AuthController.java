@@ -18,6 +18,7 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
+
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
@@ -35,6 +36,15 @@ public class AuthController {
      */
     @GetMapping("/{appIdx}")
     public String auth(@PathVariable Long appIdx, @Valid MallDto mallDto, HttpSession session, Model model, HttpServletRequest request) throws Exception {
+        //timestamp 검증
+        if (!authService.checkTimestamp(mallDto)) {
+            model.addAttribute("error_msg", "timestamp 검증에 실패했습니다.");
+            model.addAttribute("error_data", mallDto.toString());
+
+            return "error";
+        }
+
+        //hmac 검증
         if (!authService.checkHmac(appIdx, request.getQueryString())) {
             model.addAttribute("error_msg", "hmac 검증에 실패했습니다.");
             model.addAttribute("error_data", mallDto.toString());
