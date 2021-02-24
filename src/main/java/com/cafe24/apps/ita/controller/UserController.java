@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
@@ -97,7 +98,7 @@ public class UserController {
      * @throws Exception
      */
     @PostMapping(value = "/sign-in")
-    public ModelAndView doLogin(HttpSession session, SignIn signIn, ModelAndView mv) throws Exception {
+    public ModelAndView doLogin(HttpSession session, @Valid SignIn signIn, ModelAndView mv) throws Exception {
         Optional<User> optionalUser = userService.getUser(signIn.getUserId());
         if (optionalUser.isEmpty()) {
             mv.setViewName("/user/sign-in");
@@ -113,10 +114,16 @@ public class UserController {
             return mv;
         }
 
-        log.info(signIn.getUserId() + " 회원이 로그인 하였습니다.");
         SessionUtil.setUserInfo(session, user);
+        log.info(signIn.getUserId() + " 회원이 로그인 하였습니다.");
+
+        if (signIn.getCallbackUrl() != null && !signIn.getCallbackUrl().isEmpty()) {
+            mv.setViewName("redirect:" + signIn.getCallbackUrl());
+            return mv;
+        }
 
         mv.setViewName("redirect:/main");
+
         return mv;
     }
 }

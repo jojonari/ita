@@ -79,6 +79,7 @@ public class AppService {
 
     /**
      * 앱 삭제
+     *
      * @param appIdx
      */
     public void deleteApp(Long appIdx) {

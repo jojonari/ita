@@ -4,11 +4,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -41,7 +38,7 @@ public class Scope extends TimeEntity {
         this.codeName = codeName;
     }
 
-    public TexeValue  ToTextValue(){
+    public TexeValue ToTextValue() {
         return new TexeValue(getText(), getValue());
     }
 

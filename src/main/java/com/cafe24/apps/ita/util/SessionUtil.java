@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 public class SessionUtil {
     /**
      * 로그인 여부 확인
+     * 로그인 : true
      *
      * @param session
      * @return
@@ -17,11 +18,7 @@ public class SessionUtil {
         }
 
         User user = (User) session.getAttribute(session.getId());
-        if (user.getUserId().isEmpty()) {
-            return false;
-        }
-
-        return true;
+        return !user.getUserId().isEmpty();
     }
 
     /**
@@ -41,7 +38,7 @@ public class SessionUtil {
      * @param session
      */
     public static User getUserInfo(HttpSession session) {
-        return  (User) session.getAttribute(session.getId());
+        return (User) session.getAttribute(session.getId());
     }
 
     /**
@@ -54,8 +51,10 @@ public class SessionUtil {
         User user = (User) session.getAttribute(session.getId());
         return user.getIdx();
     }
+
     /**
      * 세션 초기화
+     *
      * @param session
      */
     public static void deleteUserInfo(HttpSession session) {

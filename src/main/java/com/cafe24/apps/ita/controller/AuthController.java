@@ -1,7 +1,10 @@
 package com.cafe24.apps.ita.controller;
 
 import com.cafe24.apps.ita.dto.MallDto;
+import com.cafe24.apps.ita.entity.App;
+import com.cafe24.apps.ita.service.AppService;
 import com.cafe24.apps.ita.service.AuthService;
+import com.cafe24.apps.ita.util.SessionUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +21,11 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
+    private final AppService appService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, AppService appService) {
         this.authService = authService;
+        this.appService = appService;
     }
 
     /**
@@ -36,26 +41,34 @@ public class AuthController {
      */
     @GetMapping("/{appIdx}")
     public String auth(@PathVariable Long appIdx, @Valid MallDto mallDto, HttpSession session, Model model, HttpServletRequest request) throws Exception {
-        //timestamp 검증
+        if (!SessionUtil.isSignIn(session)) {
+            String callbackUrl = request.getRequestURI() + "?" + request.getQueryString();
+            model.addAttribute("callbackUrl", callbackUrl);
+
+            return "/user/sign-in";
+        }
+
         if (!authService.checkTimestamp(mallDto)) {
-            model.addAttribute("error_msg", "timestamp 검증에 실패했습니다.");
-            model.addAttribute("error_data", mallDto.toString());
-
-            return "error";
+            return setError(model, "timestamp 검증에 실패했습니다.", mallDto);
         }
 
-        //hmac 검증
         if (!authService.checkHmac(appIdx, request.getQueryString())) {
-            model.addAttribute("error_msg", "hmac 검증에 실패했습니다.");
-            model.addAttribute("error_data", mallDto.toString());
-
-            return "error";
+            return setError(model, "hmac 검증에 실패했습니다.", mallDto);
         }
 
-        //세션에 저장
-        session.setAttribute("mallInfo", mallDto);
+        App app = appService.getApp(session, appIdx);
+        if (app == null) {
+            return setError(model, "등록된 Client가 없습니다.", mallDto);
+        }
 
-        return null;
+        boolean isExpire = authService.isExpireRefreshToken(app, mallDto);
+        if (isExpire) {
+            //세션에 저장
+            session.setAttribute("mallInfo", mallDto);
+            return authService.getCodeRedirectUrl(app, mallDto, request);
+        }
+
+        return "redirect:/main";
     }
 
     /**
@@ -78,5 +91,20 @@ public class AuthController {
     @GetMapping("/{appIdx}/token")
     public ModelAndView token(@PathVariable Long appIdx) {
         return null;
+    }
+
+    /**
+     * 오류 처리
+     *
+     * @param data
+     * @param model
+     * @param errorMessage
+     * @return
+     */
+    private String setError(Model model, String errorMessage, Object data) {
+        model.addAttribute("error_msg", errorMessage);
+        model.addAttribute("error_data", data.toString());
+
+        return "error";
     }
 }

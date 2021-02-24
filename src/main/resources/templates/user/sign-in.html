@@ -6,6 +6,7 @@
 </head>
 <body>
     <form th:action="@{/sign-in}" method="post">
+        <input th:type="hidden" th:name="callbackUrl" th:value="${callbackUrl}">
         ID : <input type="text" name="userId"></br>
         PW : <input type="password" name="userPw"></br>
         <b-icon icon="person-fill"></b-icon><input type="submit" th:value="SIGN-IN">

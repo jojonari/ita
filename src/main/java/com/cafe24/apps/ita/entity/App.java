@@ -45,7 +45,7 @@ public class App extends TimeEntity {
     @Column(length = 10)
     private String operationLevel;
 
-    @CollectionTable(name = "t_app_scope")
+    @CollectionTable(name = "m_app_scopes")
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(columnDefinition = "TEXT")
     private Set<String> scopes;
@@ -71,6 +71,7 @@ public class App extends TimeEntity {
 
     /**
      * convert DTO
+     *
      * @return
      */
     public AppDto convertDto() {
