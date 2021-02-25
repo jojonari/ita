@@ -1,8 +1,10 @@
 package com.cafe24.apps.ita.util;
 
+import com.cafe24.apps.ita.dto.MallDto;
 import com.cafe24.apps.ita.entity.User;
 
 import javax.servlet.http.HttpSession;
+import java.util.Optional;
 
 public class SessionUtil {
     /**
@@ -59,5 +61,17 @@ public class SessionUtil {
      */
     public static void deleteUserInfo(HttpSession session) {
         session.invalidate();
+    }
+
+    /**
+     * mall info 조회
+     * @param session
+     * @return
+     */
+    public static MallDto getMallInfo(HttpSession session) throws Exception {
+        Optional<MallDto> mallInfo = Optional.ofNullable((MallDto) session.getAttribute("mallInfo"));
+        mallInfo.orElseThrow(() -> new Exception("mall 정보 없음"));
+
+        return mallInfo.get();
     }
 }

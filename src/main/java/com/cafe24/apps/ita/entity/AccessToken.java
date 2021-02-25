@@ -1,13 +1,16 @@
 package com.cafe24.apps.ita.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "t_access_token", uniqueConstraints = @UniqueConstraint(columnNames = {"clientId", "mallId"}))
 public class AccessToken extends TimeEntity {
@@ -48,6 +51,19 @@ public class AccessToken extends TimeEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinTable(name = "m_app_token", joinColumns = @JoinColumn(name = "app_idx"), inverseJoinColumns = @JoinColumn(name = "token_idx"))
     private App app;
+
+    @Builder
+    public AccessToken(String accessToken, LocalDateTime expiresAt, String refreshToken, LocalDateTime refreshTokenExpiresAt, String mallId, String clientId, String userId, LocalDateTime issuedAt, Set<String> scopes) {
+        this.accessToken = accessToken;
+        this.expiresAt = expiresAt;
+        this.refreshToken = refreshToken;
+        this.refreshTokenExpiresAt = refreshTokenExpiresAt;
+        this.mallId = mallId;
+        this.clientId = clientId;
+        this.userId = userId;
+        this.issuedAt = issuedAt;
+        this.scopes = scopes;
+    }
 
     public void setApp(App app) {
         this.app = app;

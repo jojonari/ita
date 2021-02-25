@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Set;
 
 @Getter
@@ -56,6 +57,14 @@ public class App extends TimeEntity {
 
     public void setUser(HttpSession session) {
         this.user = SessionUtil.getUserInfo(session);
+    }
+
+
+    /**
+     * Authorization 조회
+     */
+    public String getAuthorization() {
+        return String.format("Basic %s", new String(Base64.getEncoder().encode((this.getClientId() + ":" + this.getSecretKey()).getBytes())));
     }
 
     /**

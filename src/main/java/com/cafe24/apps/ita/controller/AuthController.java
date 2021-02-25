@@ -1,6 +1,8 @@
 package com.cafe24.apps.ita.controller;
 
+import com.cafe24.apps.ita.dto.CodeDto;
 import com.cafe24.apps.ita.dto.MallDto;
+import com.cafe24.apps.ita.entity.AccessToken;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.service.AppService;
 import com.cafe24.apps.ita.service.AuthService;
@@ -78,7 +80,13 @@ public class AuthController {
      * @return
      */
     @GetMapping("/{appIdx}/code")
-    public ModelAndView code(@PathVariable Long appIdx) {
+    public String code(@PathVariable Long appIdx, CodeDto codeDto, Model model, HttpSession session, HttpServletRequest request) throws Exception {
+        if (codeDto.getCode() == null || codeDto.getState() == null) {
+            return setError(model, "API 인증 오류", codeDto);
+        }
+
+        AccessToken accessToken = authService.getAccessToken(appIdx, codeDto, session, request);
+        System.out.println(accessToken.toString());
         return null;
     }
 

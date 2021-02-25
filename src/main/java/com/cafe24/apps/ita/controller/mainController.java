@@ -16,7 +16,7 @@ public class mainController {
      * @return
      */
     @GetMapping("/")
-    public ModelAndView index(HttpSession session, ModelAndView mv) {
+    public ModelAndView index(HttpSession session, ModelAndView mv) throws Exception {
         if (SessionUtil.isSignIn(session)) {
             mv.addObject("user", SessionUtil.getUserInfo(session));
             mv.setViewName("/main");
@@ -35,7 +35,7 @@ public class mainController {
      * @return
      */
     @GetMapping("/main")
-    public ModelAndView main(HttpSession session, ModelAndView mv) {
+    public ModelAndView main(HttpSession session, ModelAndView mv) throws Exception {
         if (SessionUtil.isSignIn(session)) {
             mv.addObject("user", SessionUtil.getUserInfo(session));
             mv.setViewName("/main");
