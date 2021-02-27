@@ -43,7 +43,7 @@ public class AppController {
     }
 
     @PutMapping("/app/{appIdx}")
-    public Response modifyApp(HttpSession session, @PathVariable Long appIdx, @RequestBody App app) {
+    public Response modifyApp(HttpSession session, @PathVariable Long appIdx, @RequestBody App app) throws Exception {
         App result = appService.getApp(session, appIdx);
         if (result == null) {
             return Response.badRequest("등록된 Client가 없습니다.");

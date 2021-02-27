@@ -1,8 +1,10 @@
 package com.cafe24.apps.ita.controller;
 
 import com.cafe24.apps.ita.util.SessionUtil;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
@@ -35,7 +37,11 @@ public class mainController {
      * @return
      */
     @GetMapping("/main")
-    public ModelAndView main(HttpSession session, ModelAndView mv) throws Exception {
+    public ModelAndView main(HttpSession session, ModelAndView mv, @RequestParam @Nullable String clientId) {
+        if (clientId != null && !clientId.isBlank()) {
+            mv.addObject("cleintId", clientId);
+        }
+
         if (SessionUtil.isSignIn(session)) {
             mv.addObject("user", SessionUtil.getUserInfo(session));
             mv.setViewName("/main");

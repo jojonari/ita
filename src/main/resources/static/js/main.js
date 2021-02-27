@@ -197,6 +197,11 @@ window.ita = new Vue({
         }
     },
     created() {
+        var searchValue = document.getElementsByClassName('inp-search-client-id');
+        if (searchValue != null) {
+            this.searchForm.clientId = searchValue[0].dataset.client_id;
+        }
+
         this.getScopeOption();
         this.createModalInit();
         this.getApps();

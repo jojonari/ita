@@ -18,7 +18,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -109,34 +108,25 @@ public class AuthService {
                 "?response_type=" + "code" +
                 "&client_id=" + app.getClientId() +
                 "&state=" + request.getRequestedSessionId() +
-                "&redirect_uri=" + requestUrl + "/code" +
+                "&redirect_uri=" + requestUrl + "/redirect" +
                 "&scope=" + String.join(",", app.getScopes());
     }
 
     /**
      * Access token
      *
-     * @param appIdx
+     * @param app
      * @param codeDto
-     * @param session
      * @param request
      * @return
      */
-    public AccessToken getAccessToken(Long appIdx, CodeDto codeDto, HttpSession session, HttpServletRequest request) throws Exception {
-        if (!session.getId().equals(codeDto.getState())) {
-            throw new Exception("state 변조 경고");
-        }
-
-        Optional<App> appOptional = appRepository.findById(appIdx);
-        appOptional.orElseThrow(() -> new Exception("app 정보 없음"));
-        App app = appOptional.get();
-
-        MallDto mallInfo = SessionUtil.getMallInfo(session);
+    public AccessToken getAccessToken(App app, CodeDto codeDto, HttpServletRequest request) throws Exception {
+        MallDto mallInfo = SessionUtil.getMallInfo(request.getSession());
 
         HttpHeaders header = new HttpHeaders();
         header.add(HttpHeaders.AUTHORIZATION, app.getAuthorization());
         header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-        String callbackUrl = "https://" + request.getServerName() + request.getContextPath() + "/auth/" + app.getIdx() + "/token";
+        String callbackUrl = "https://" + request.getServerName() + request.getContextPath() + "/auth/" + app.getIdx() + "/redirect";
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("grant_type", "authorization_code");
@@ -147,9 +137,23 @@ public class AuthService {
 
         AccessTokenDto accessTokenDto = restTemplate.postForObject(url, new HttpEntity<>(requestBody, header), AccessTokenDto.class);
         if (accessTokenDto == null) {
-            throw new Exception("Access Token 조회에 실패했습니다.");
+            throw new Exception("Access Token 발급에 실패했습니다.");
         }
-        System.out.println(accessTokenDto.toString());
-        return accessTokenDto.toEntity();
+
+        AccessToken accessToken = accessTokenDto.toEntity();
+        accessToken.setApp(app);
+
+        return accessToken;
+    }
+
+    /**
+     * AccessToken 저장
+     *
+     * @param accessToken
+     * @return
+     */
+    public void saveAccessToken(AccessToken accessToken) {
+        accessTokenRepository.deleteByClientIdAndMallId(accessToken.getClientId(), accessToken.getMallId());
+        accessTokenRepository.save(accessToken);
     }
 }

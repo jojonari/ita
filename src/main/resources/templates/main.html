@@ -24,7 +24,7 @@
 </head>
 <body>
 <div id="ita">
-    <b-container>
+    <b-container fluid>
         <div>
             <b-navbar toggleable="lg" type="dark" variant="secondary" fixed="top" sticky="true">
                 <b-navbar-brand href="/main">
@@ -41,7 +41,7 @@
 
                     <b-navbar-nav class="ml-auto">
                         <b-nav-form>
-                            <b-form-input size="sm" class="mr-sm-2" placeholder="Search" v-model="searchForm.clientId"></b-form-input>
+                            <b-form-input size="sm" class="mr-sm-2 inp-search-client-id" placeholder="Search" v-model="searchForm.clientId" th:data-client_id="${cleintId}"></b-form-input>
                             <b-button size="sm" class="my-2 my-sm-0" type="submit">
                                 <b-icon icon="search"></b-icon>
                                 Search
@@ -54,7 +54,7 @@
                                     <b-icon icon="person-circle"></b-icon>
                                     <span th:text="${user.getUserName()+'['+user.getTeamName()+']'}"></span></b-button>
                             </template>
-                            <b-dropdown-item href="/sign-out">
+                            <b-dropdown-item th:href="@{/sign-out}">
                                 <b-icon icon="person"></b-icon>
                                 Sign Out
                             </b-dropdown-item>
@@ -102,8 +102,7 @@
                                             # 개발자센터 입력정보
                                             <ul>
                                                 <li>app url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}</li>
-                                                <li>redirect url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}/code</li>
-                                                <li>redirect url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}/token</li>
+                                                <li>redirect url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}/redirect</li>
                                                 <li>webhook url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/webhook/{{ row.item.idx }}</li>
                                             </ul>
                                             * 개발자센터에 위의 URI를 등록하세요.

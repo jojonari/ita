@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.NoSuchAlgorithmException;
@@ -98,11 +99,12 @@ public class UserController {
      * @throws Exception
      */
     @PostMapping(value = "/sign-in")
-    public ModelAndView doLogin(HttpSession session, @Valid SignIn signIn, ModelAndView mv) throws Exception {
+    public ModelAndView doLogin(HttpSession session, @Valid SignIn signIn, ModelAndView mv, HttpServletRequest request) throws Exception {
         Optional<User> optionalUser = userService.getUser(signIn.getUserId());
         if (optionalUser.isEmpty()) {
             mv.setViewName("/user/sign-in");
             mv.addObject("error_msg", "회원 정보가 없습니다.");
+
             return mv;
         }
 
@@ -111,18 +113,23 @@ public class UserController {
         if (!isLogin) {
             mv.setViewName("/user/sign-in");
             mv.addObject("error_msg", "패스워드를 틀렸습니다.");
+
             return mv;
         }
 
         SessionUtil.setUserInfo(session, user);
         log.info(signIn.getUserId() + " 회원이 로그인 하였습니다.");
 
+        String url = "https://" + request.getServerName();
         if (signIn.getCallbackUrl() != null && !signIn.getCallbackUrl().isEmpty()) {
-            mv.setViewName("redirect:" + signIn.getCallbackUrl());
+            url += signIn.getCallbackUrl();
+            mv.setViewName("redirect:" + url);
+
             return mv;
         }
 
-        mv.setViewName("redirect:/main");
+        url += request.getContextPath() + "/main";
+        mv.setViewName("redirect:" + url);
 
         return mv;
     }

@@ -12,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -70,7 +69,8 @@ public class AuthController {
             return authService.getCodeRedirectUrl(app, mallDto, request);
         }
 
-        return "redirect:/main";
+        String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + app.getClientId();
+        return "redirect:" + url;
     }
 
     /**
@@ -79,26 +79,26 @@ public class AuthController {
      * @param appIdx
      * @return
      */
-    @GetMapping("/{appIdx}/code")
-    public String code(@PathVariable Long appIdx, CodeDto codeDto, Model model, HttpSession session, HttpServletRequest request) throws Exception {
+    @GetMapping("/{appIdx}/redirect")
+    public String redirect(@PathVariable Long appIdx, CodeDto codeDto, Model model, HttpServletRequest request) throws Exception {
         if (codeDto.getCode() == null || codeDto.getState() == null) {
             return setError(model, "API 인증 오류", codeDto);
         }
 
-        AccessToken accessToken = authService.getAccessToken(appIdx, codeDto, session, request);
-        System.out.println(accessToken.toString());
-        return null;
-    }
+        if (!request.getSession().getId().equals(codeDto.getState())) {
+            return setError(model, "state 변조", codeDto);
+        }
 
-    /**
-     * token redirect url
-     *
-     * @param appIdx
-     * @return
-     */
-    @GetMapping("/{appIdx}/token")
-    public ModelAndView token(@PathVariable Long appIdx) {
-        return null;
+        App app = appService.getApp(request.getSession(), appIdx);
+        if (app == null) {
+            return setError(model, "등록된 Client가 없습니다.", codeDto);
+        }
+
+        AccessToken accessToken = authService.getAccessToken(app, codeDto, request);
+        authService.saveAccessToken(accessToken);
+
+        String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + accessToken.getClientId();
+        return "redirect:" + url;
     }
 
     /**

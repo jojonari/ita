@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class CodeDto {
+    private Long appIdx;
     private String code;
     private String state;
     private String error;
