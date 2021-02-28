@@ -37,7 +37,9 @@ public class ControllerAdviser {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String throwable(final Throwable throwable, final Model model) {
         log.error("throwable application", throwable);
+
         String errorMessage = (throwable != null ? throwable.getMessage() : "Unknown error(throwable)");
+
         model.addAttribute("error_msg", errorMessage);
 
         return "error";
@@ -47,7 +49,9 @@ public class ControllerAdviser {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String exception(final Exception exception, final Model model) {
         log.error("Exception application", exception);
+
         String errorMessage = (exception != null ? exception.getMessage() : "Unknown error(exception)");
+
         model.addAttribute("error_msg", errorMessage);
 
         return "error";

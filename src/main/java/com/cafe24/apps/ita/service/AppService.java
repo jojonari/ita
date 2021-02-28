@@ -43,6 +43,17 @@ public class AppService {
     /**
      * App 단건 조회
      *
+     * @param appIdx
+     * @return
+     */
+    public App getApp(long appIdx) throws Exception {
+        Optional<App> appOptional = appRepository.findById(appIdx);
+        return appOptional.orElseThrow(() -> new Exception("App 정보 없음"));
+    }
+
+    /**
+     * App 단건 조회
+     *
      * @param session
      * @param appIdx
      * @return

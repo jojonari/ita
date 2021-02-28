@@ -11,7 +11,9 @@
     회원 이름 : <input type="text" name="userName" th:value="${user == null ? '' : user.getUserName()}"><br>
     팀 이름 : <input type="text" name="teamName" th:value="${user == null ? '' : user.getTeamName()}"><br>
     <input type="submit" th:value="SIGN-UP">
-    <a th:href="@{/sign-in}"><b-icon icon="person-fill"></b-icon><input type="button" th:value="SIGN-IN"></a>
+    <a th:href="@{/sign-in}">
+        <b-icon icon="person-fill"></b-icon>
+        <input type="button" th:value="SIGN-IN"></a>
 
 </form>
 <div th:text="${error_msg}"></div>

@@ -44,7 +44,7 @@ public class UserController {
      * @throws NoSuchAlgorithmException
      */
     @PostMapping(value = "/sign-up")
-    public ModelAndView signUp(HttpSession session, User user, ModelAndView mv) throws NoSuchAlgorithmException {
+    public ModelAndView signUp(User user, ModelAndView mv, HttpServletRequest request) throws NoSuchAlgorithmException {
         Optional<User> userInfo = userService.getUser(user.getUserId());
         if (userInfo.isPresent()) {
             user.deleteUserPw();
@@ -55,22 +55,25 @@ public class UserController {
         }
 
         User regisertUser = userService.regisertUser(user);
-        SessionUtil.setUserInfo(session, regisertUser);
+        SessionUtil.setUserInfo(request.getSession(), regisertUser);
 
-        mv.setViewName("redirect:/main");
+        String url = "https://" + request.getServerName() + request.getContextPath() + "/main";
+        mv.setViewName("redirect:" + url);
+
         return mv;
     }
 
     /**
      * 회원 로그인 화면
      *
-     * @param session
+     * @param request
      * @return
      */
     @GetMapping("/sign-in")
-    public ModelAndView signIn(HttpSession session, ModelAndView mv) {
-        if (SessionUtil.isSignIn(session)) {
-            mv.setViewName("redirect:/main");
+    public ModelAndView signIn(HttpServletRequest request, ModelAndView mv) {
+        if (SessionUtil.isSignIn(request.getSession())) {
+            String url = "https://" + request.getServerName() + request.getContextPath() + "/main";
+            mv.setViewName("redirect:" + url);
         }
 
         mv.setViewName("/user/sign-in");

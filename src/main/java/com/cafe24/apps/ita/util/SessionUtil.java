@@ -65,6 +65,7 @@ public class SessionUtil {
 
     /**
      * mall info 조회
+     *
      * @param session
      * @return
      */
