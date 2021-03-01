@@ -103,7 +103,7 @@
                                             <ul>
                                                 <li>app url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}</li>
                                                 <li>redirect url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}/redirect</li>
-                                                <li>webhook url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/webhook/{{ row.item.idx }}</li>
+                                                <li>webhook url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/api/v1/webhooks/{{ row.item.idx }}</li>
                                             </ul>
                                             * 개발자센터에 위의 URI를 등록하세요.
                                         </b-card>
@@ -121,18 +121,45 @@
                                     API
                                 </template>
                                 <p class="p-3">
-                                    <b-table striped hover :items="items" :fields="fields"></b-table>
+<!--                                    <b-table striped hover :items="items" :fields="fields"></b-table>-->
                                 </p>
                             </b-tab>
-                            <b-tab>
+                            <b-tab @click="getWebhooks">
                                 <template #title>
                                     <b-icon icon="box-arrow-in-down-right"></b-icon>
                                     WEBHOOK
                                     <b-badge pill variant="info">10</b-badge>
                                 </template>
-                                <p class="p-3">
-                                    <b-table striped hover :items="items" :fields="fields"></b-table>
-                                </p>
+                                <b-table
+                                        striped
+                                        hover
+                                        show-empty
+                                        :items="webhook.list.items"
+                                        :fields="webhook.list.fields"
+                                >
+                                    <template #cell(resource)="row">
+                                        <b-form-textarea
+                                                v-model="row.value"
+                                                placeholder="Enter something..."
+                                                rows="3"
+                                                max-rows="3"
+                                        ></b-form-textarea>
+                                    </template>
+
+                                    <template #cell(actions)="row">
+                                        <b-button size="sm" @click="row.toggleDetails">
+                                            {{ row.detailsShowing ? '*' : '' }} 정보 조회
+                                        </b-button>
+                                    </template>
+
+                                    <template #row-details="row">
+                                        <b-card>
+                                            <ul>
+                                                <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
+                                            </ul>
+                                        </b-card>
+                                    </template>
+                                </b-table>
                             </b-tab>
                         </b-tabs>
                     </b-card>

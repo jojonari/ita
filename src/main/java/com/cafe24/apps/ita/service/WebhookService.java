@@ -1,5 +1,7 @@
 package com.cafe24.apps.ita.service;
 
+import com.cafe24.apps.ita.dto.AppDto;
+import com.cafe24.apps.ita.dto.WebhookDto;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.Webhook;
 import com.cafe24.apps.ita.repository.AccessTokenRepository;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WebhookService {
@@ -62,5 +65,16 @@ public class WebhookService {
             HashMap<String, String> resource = (HashMap<String, String>) request.get("resource");
             accessTokenRepository.deleteByClientIdAndMallId(resource.get("client_id"), resource.get("mall_id"));
         }
+    }
+
+    /**
+     * webhooks 조회
+     * @param clientIds
+     * @return
+     */
+    public List<WebhookDto> getWebhooks(List<String> clientIds ) {
+        List<Webhook> webhooks = webhookRepository.findAllByClientIdIn(clientIds);
+
+        return webhooks.stream().map(Webhook::convertDto).collect(Collectors.toList());
     }
 }

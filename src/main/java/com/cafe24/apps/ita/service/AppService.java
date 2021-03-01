@@ -96,4 +96,16 @@ public class AppService {
     public void deleteApp(Long appIdx) {
         appRepository.deleteById(appIdx);
     }
+
+    /**
+     * app client list 조회
+     * @param session
+     * @param clientId
+     * @return
+     */
+    public List<String> getAppClientIds(HttpSession session, Optional<String> clientId) {
+        List<AppDto> appDtos = this.getApps(session, clientId);
+
+        return appDtos.stream().map(AppDto::getClientId).collect(Collectors.toList());
+    }
 }

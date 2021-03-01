@@ -43,7 +43,7 @@ public class AppController {
     }
 
     @PutMapping("/app/{appIdx}")
-    public ResponseDto modifyApp(HttpSession session, @PathVariable Long appIdx, @RequestBody App app) throws Exception {
+    public ResponseDto modifyApp(@PathVariable Long appIdx, @RequestBody App app, HttpSession session) {
         App result = appService.getApp(session, appIdx);
         if (result == null) {
             return ResponseDto.badRequest("등록된 Client가 없습니다.");
@@ -57,7 +57,7 @@ public class AppController {
     }
 
     @DeleteMapping("/app/{appIdx}")
-    public ResponseDto deleteApp(HttpSession session, @PathVariable Long appIdx) {
+    public ResponseDto deleteApp(@PathVariable Long appIdx, HttpSession session) {
         App app = appService.getApp(session, appIdx);
         if (app == null) {
             return ResponseDto.badRequest("등록된 Client가 없습니다.");

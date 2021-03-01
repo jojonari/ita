@@ -41,37 +41,19 @@ window.ita = new Vue({
                 }
             }
         },
-        fields: [
-            {key: 'idx', label: 'IDX', sortable: true},
-            {key: 'clientId', label: 'client id', sortable: true},
-            {key: 'appName', label: '앱 이름', sortable: true},
-            {key: 'modifiedDate', label: '수정일시', sortable: true},
-            {key: 'actions', label: 'Actions'}
-        ],
-        items: [
-            {
-                isActive: false,
-                idx: 401,
-                clientId: '1Dicke23rson',
-                appName: '4Macdon23ald',
-                modifiedDate: '1Ma3cdonald'
-            },
-            {
-                isActive: false,
-                idx: 402,
-                clientId: '2Dick2erson',
-                appName: '3Macdon23ald',
-                modifiedDate: '2Mac23donald'
-            },
-            {
-                isActive: false,
-                idx: 403,
-                clientId: '3Dicke32rson',
-                appName: '2Macdona2ld',
-                modifiedDate: '3Ma32cdonald'
-            },
-            {isActive: true, idx: 404, clientId: '4Dickers1on', appName: '1Macdona2ld', modifiedDate: '4Macd3onald'}
-        ]
+        webhook: {
+            list: {
+                fields: [
+                    {key: 'idx', label: 'IDX', sortable: true},
+                    {key: 'xTraceId', label: 'x-trace-id', sortable: true},
+                    {key: 'eventNo', label: '이벤트', sortable: true},
+                    {key: 'resource', label: '수신 데이터', sortable: true},
+                    {key: 'createdDate', label: '수신 일시', sortable: true},
+                    {key: 'actions', label: 'Actions'}
+                ],
+                items: []
+            }
+        }
     },
     computed: {
         stateAppName() {
@@ -113,6 +95,20 @@ window.ita = new Vue({
                     }
 
                     ita.app.list.items = res.data.data;
+                }, function (err) {
+                    console.error(err);
+                });
+        }, //webhook 리스트 조회
+        getWebhooks: function () {
+            axios.get(CONTEXT_PATH + '/api/v1/webhooks' + this.queryStr(ita.searchForm))
+                .then(function (res) {
+                    if (res.data.code !== 200) {
+                        console.error(res);
+                        alert("res.data.message");
+                        return;
+                    }
+
+                    ita.webhook.list.items = res.data.data;
                 }, function (err) {
                     console.error(err);
                 });
@@ -205,6 +201,7 @@ window.ita = new Vue({
         this.getScopeOption();
         this.createModalInit();
         this.getApps();
+        this.getWebhooks();
     },
     mounted() {
     }
