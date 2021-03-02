@@ -1,20 +1,17 @@
 package com.cafe24.apps.ita.controller;
 
-import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.dto.ResponseDto;
 import com.cafe24.apps.ita.dto.WebhookDto;
+import com.cafe24.apps.ita.dto.WebhookReciveDto;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.Webhook;
 import com.cafe24.apps.ita.service.AppService;
 import com.cafe24.apps.ita.service.WebhookService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/webhooks")
@@ -29,12 +26,10 @@ public class WebhookController {
     }
 
     @PostMapping("/{appIdx}")
-    public ResponseDto saveWebhook(@PathVariable Long appIdx, @RequestHeader(value = "x-trace-id") String xTraceId, @RequestBody HashMap<Object, Object> request) throws Exception {
+    public ResponseDto saveWebhook(@PathVariable Long appIdx, @RequestHeader(value = "x-trace-id") String xTraceId,  @RequestBody WebhookReciveDto webhookReciveDto) throws Exception {
         App app = appService.getApp(appIdx);
-
-        webhookService.saveWebhook(app, xTraceId, request);
-
-        webhookService.execDeleteAppEvent(request);
+        webhookService.saveWebhook(webhookReciveDto.toEntity(app, xTraceId));
+        webhookService.execDeleteAppEvent(webhookReciveDto);
 
         return ResponseDto.success(xTraceId);
     }
@@ -46,5 +41,16 @@ public class WebhookController {
         List<WebhookDto> webhooks = webhookService.getWebhooks(clientIds);
 
         return ResponseDto.success(webhooks);
+    }
+
+    @DeleteMapping("/{webhookIdx}")
+    public ResponseDto deleteWebhook(@PathVariable Long webhookIdx) {
+        Webhook webhook = webhookService.getWebhook(webhookIdx);
+        if (webhook == null) {
+            return ResponseDto.badRequest("등록된 webhook이 없습니다.");
+        }
+
+        webhookService.deleteApp(webhookIdx);
+        return ResponseDto.success(null);
     }
 }

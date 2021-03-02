@@ -8,10 +8,10 @@ window.ita = new Vue({
             list: {
                 fields: [
                     {key: 'idx', label: 'IDX', sortable: true},
-                    {key: 'clientId', label: 'client id', sortable: true},
+                    {key: 'clientId', label: 'client-id', sortable: true},
                     {key: 'appName', label: '앱 이름', sortable: true},
                     {key: 'modifiedDate', label: '수정일시', sortable: true},
-                    {key: 'actions', label: 'Actions'}
+                    {key: 'actions', label: '관리'}
                 ],
                 items: []
             }
@@ -45,11 +45,12 @@ window.ita = new Vue({
             list: {
                 fields: [
                     {key: 'idx', label: 'IDX', sortable: true},
+                    {key: 'clientId', label: 'client-id', sortable: true},
                     {key: 'xTraceId', label: 'x-trace-id', sortable: true},
                     {key: 'eventNo', label: '이벤트', sortable: true},
                     {key: 'resource', label: '수신 데이터', sortable: true},
                     {key: 'createdDate', label: '수신 일시', sortable: true},
-                    {key: 'actions', label: 'Actions'}
+                    {key: 'actions', label: '관리'}
                 ],
                 items: []
             }
@@ -67,6 +68,12 @@ window.ita = new Vue({
         },
         scopesStr() {
             return this.app.manage.values.scopes.join(',');
+        },
+        webhooksCount() {
+            return this.webhook.list.items.length;
+        },
+        appsCount() {
+            return this.app.list.items.length;
         }
     },
     methods: {
@@ -176,6 +183,25 @@ window.ita = new Vue({
                     }
 
                     alert("앱 삭제에 실패했습니다.(" + res.data.message + ")");
+                }, function (err) {
+                    console.error(err);
+                });
+        },//웹훅 삭제
+        deleteWebhook: function (idx) {
+            if (confirm(this.webhook.list.items[idx].xTraceId + '를 삭제하시겠습니까?') === false) {
+                return;
+            }
+
+            let sUrl = CONTEXT_PATH + '/api/v1/webhooks/' + this.webhook.list.items[idx].idx;
+            axios.delete(sUrl)
+                .then(function (res) {
+                    if (res.data.code === 200) {
+                        ita.webhook.list.items.splice(idx, 1);
+
+                        return;
+                    }
+
+                    alert("웹훅 삭제에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
                 });

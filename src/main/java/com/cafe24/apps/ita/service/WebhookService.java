@@ -1,12 +1,13 @@
 package com.cafe24.apps.ita.service;
 
-import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.dto.WebhookDto;
+import com.cafe24.apps.ita.dto.WebhookReciveDto;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.Webhook;
 import com.cafe24.apps.ita.repository.AccessTokenRepository;
 import com.cafe24.apps.ita.repository.WebhookRepository;
 import com.cafe24.apps.ita.util.JsonUtil;
+import com.google.gson.internal.LinkedTreeMap;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -33,22 +34,9 @@ public class WebhookService {
 
     /**
      * webhook 단건 저장
-     *
-     * @param app
-     * @param xTraceId
-     * @param request
+     *  @param webhook
      */
-    public void saveWebhook(App app, String xTraceId, HashMap<Object, Object> request) {
-        Double eventNo = (Double) request.get("event_no");
-
-        Webhook webhook = Webhook.builder()
-                .app(app)
-                .xTraceId(xTraceId)
-                .eventNo(eventNo.intValue())
-                .clientId(app.getClientId())
-                .resource(JsonUtil.toJSON(request.get("resource")))
-                .build();
-
+    public void saveWebhook(Webhook webhook) {
         webhookRepository.save(webhook);
     }
 
@@ -58,23 +46,42 @@ public class WebhookService {
      *
      * @param request
      */
-    public void execDeleteAppEvent(HashMap<Object, Object> request) {
+    public void execDeleteAppEvent(WebhookReciveDto request) {
         //앱 채널의 삭제, 만료이벤트일경우 토큰 삭제
-        Double eventNo = (Double) request.get("event_no");
-        if (this.APP_DELETE_EVENTS.contains(eventNo.intValue())) {
-            HashMap<String, String> resource = (HashMap<String, String>) request.get("resource");
-            accessTokenRepository.deleteByClientIdAndMallId(resource.get("client_id"), resource.get("mall_id"));
+        if (this.APP_DELETE_EVENTS.contains(request.getEvent_no())) {
+            LinkedTreeMap<String, Object> resource = request.getResource();
+            accessTokenRepository.deleteByClientIdAndMallId(resource.get("client_id").toString(), resource.get("mall_id").toString());
         }
     }
 
     /**
      * webhooks 조회
+     *
      * @param clientIds
      * @return
      */
-    public List<WebhookDto> getWebhooks(List<String> clientIds ) {
+    public List<WebhookDto> getWebhooks(List<String> clientIds) {
         List<Webhook> webhooks = webhookRepository.findAllByClientIdIn(clientIds);
 
         return webhooks.stream().map(Webhook::convertDto).collect(Collectors.toList());
+    }
+
+    /**
+     * 웹훅 조회
+     *
+     * @param webhookIdx
+     * @return
+     */
+    public Webhook getWebhook(Long webhookIdx) {
+        return webhookRepository.getOne(webhookIdx);
+    }
+
+    /**
+     * 웹훅 단건 삭제
+     *
+     * @param webhookIdx
+     */
+    public void deleteApp(Long webhookIdx) {
+        webhookRepository.deleteById(webhookIdx);
     }
 }

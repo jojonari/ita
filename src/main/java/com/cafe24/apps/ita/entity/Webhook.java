@@ -2,15 +2,13 @@ package com.cafe24.apps.ita.entity;
 
 import com.cafe24.apps.ita.dto.WebhookDto;
 import com.cafe24.apps.ita.util.JsonUtil;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.format.DateTimeFormatter;
 
 @Entity
+@Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "t_webhook")
@@ -28,7 +26,7 @@ public class Webhook extends TimeEntity {
     private String clientId;
 
     @Column(length = 30, nullable = false)
-    private double eventNo;
+    private int eventNo;
 
     @Column(length = 64, nullable = false)
     private String xTraceId;
@@ -37,7 +35,7 @@ public class Webhook extends TimeEntity {
     private String resource;
 
     @Builder
-    public Webhook(Long idx, App app, String clientId, double eventNo, String xTraceId, String resource) {
+    public Webhook(Long idx, App app, String clientId, int eventNo, String xTraceId, String resource) {
         this.idx = idx;
         this.app = app;
         this.clientId = clientId;
