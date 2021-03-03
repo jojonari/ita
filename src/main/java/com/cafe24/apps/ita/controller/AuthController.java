@@ -59,11 +59,11 @@ public class AuthController {
 
         App app = appService.getApp(session, appIdx);
         if (app == null) {
-            return setError(model, "등록된 Client가 없습니다.", mallDto);
+            return setError(model, "등록된 client가 없습니다.", mallDto);
         }
 
         boolean isExpire = authService.isExpireRefreshToken(app, mallDto);
-        if (isExpire) {
+        if (isExpire || app.isRefresh()) {
             //세션에 저장
             session.setAttribute("mallInfo", mallDto);
             return authService.getCodeRedirectUrl(app, mallDto, request);
@@ -91,7 +91,7 @@ public class AuthController {
 
         App app = appService.getApp(request.getSession(), appIdx);
         if (app == null) {
-            return setError(model, "등록된 Client가 없습니다.", codeDto);
+            return setError(model, "등록된 client가 없습니다.", codeDto);
         }
 
         AccessToken accessToken = authService.getAccessToken(app, codeDto, request);

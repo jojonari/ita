@@ -22,7 +22,7 @@ public class Webhook extends TimeEntity {
     @JoinTable(name = "m_app_webhook", joinColumns = @JoinColumn(name = "app_idx"), inverseJoinColumns = @JoinColumn(name = "webhook_idx"))
     private App app;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 22, nullable = false)
     private String clientId;
 
     @Column(length = 30, nullable = false)

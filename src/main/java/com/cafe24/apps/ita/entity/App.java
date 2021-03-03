@@ -2,7 +2,10 @@ package com.cafe24.apps.ita.entity;
 
 import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.util.SessionUtil;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.servlet.http.HttpSession;
@@ -10,10 +13,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Set;
 
-@Getter
-@Setter
 @Entity
-@ToString
+@Getter
+@ToString(exclude = "secretKey")
 @Table(name = "t_app")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class App extends TimeEntity {
@@ -28,13 +30,13 @@ public class App extends TimeEntity {
     @Column(length = 30)
     private String appName;
 
-    @Column(length = 30, unique = true)
+    @Column(length = 22, unique = true)
     private String clientId;
 
-    @Column(length = 30)
+    @Column(length = 22)
     private String secretKey;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 16, nullable = false)
     private String partnerId;
 
     @Column(length = 15)
@@ -59,12 +61,11 @@ public class App extends TimeEntity {
         this.user = SessionUtil.getUserInfo(session);
     }
 
-
     /**
      * Authorization 조회
      */
     public String getAuthorization() {
-        return String.format("Basic %s", new String(Base64.getEncoder().encode((this.getClientId() + ":" + this.getSecretKey()).getBytes())));
+        return String.format("Basic %s", new String(Base64.getEncoder().encode((this.clientId + ":" + this.secretKey).getBytes())));
     }
 
     /**
@@ -76,6 +77,15 @@ public class App extends TimeEntity {
         if (this.secretKey == null || this.secretKey.contains("#")) {
             this.secretKey = secretKey;
         }
+    }
+
+    /**
+     * 토큰 갱신 여부
+     *
+     * @return
+     */
+    public boolean isRefresh() {
+        return this.manageToken.equals("refresh");
     }
 
     /**
@@ -93,7 +103,6 @@ public class App extends TimeEntity {
                 .manageToken(this.manageToken)
                 .operationLevel(this.operationLevel)
                 .scopes(this.scopes)
-                .createdDate(this.createdDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .modifiedDate(this.modifiedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();
     }

@@ -46,7 +46,7 @@ public class AppController {
     public ResponseDto modifyApp(@PathVariable Long appIdx, @RequestBody App app, HttpSession session) {
         App result = appService.getApp(session, appIdx);
         if (result == null) {
-            return ResponseDto.badRequest("등록된 Client가 없습니다.");
+            return ResponseDto.badRequest("등록된 client가 없습니다.");
         }
 
         app.setUser(session);
@@ -60,7 +60,7 @@ public class AppController {
     public ResponseDto deleteApp(@PathVariable Long appIdx, HttpSession session) {
         App app = appService.getApp(session, appIdx);
         if (app == null) {
-            return ResponseDto.badRequest("등록된 Client가 없습니다.");
+            return ResponseDto.badRequest("등록된 client가 없습니다.");
         }
 
         appService.deleteApp(appIdx);

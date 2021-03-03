@@ -26,7 +26,7 @@ public class WebhookController {
     }
 
     @PostMapping("/{appIdx}")
-    public ResponseDto saveWebhook(@PathVariable Long appIdx, @RequestHeader(value = "x-trace-id") String xTraceId,  @RequestBody WebhookReciveDto webhookReciveDto) throws Exception {
+    public ResponseDto saveWebhook(@PathVariable Long appIdx, @RequestHeader(value = "x-trace-id") String xTraceId, @RequestBody WebhookReciveDto webhookReciveDto) throws Exception {
         App app = appService.getApp(appIdx);
         webhookService.saveWebhook(webhookReciveDto.toEntity(app, xTraceId));
         webhookService.execDeleteAppEvent(webhookReciveDto);

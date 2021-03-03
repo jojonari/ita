@@ -99,6 +99,7 @@ public class AppService {
 
     /**
      * app client list 조회
+     *
      * @param session
      * @param clientId
      * @return

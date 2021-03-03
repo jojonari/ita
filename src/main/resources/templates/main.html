@@ -87,7 +87,7 @@
                                         :fields="app.list.fields"
                                 >
                                     <template #cell(actions)="row">
-                                        <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1">
+                                        <b-button size="sm" @click="setAppValue(row.item, row.index, $event.target)" class="mr-1">
                                             수정
                                         </b-button>
                                         <b-button size="sm" @click="row.toggleDetails">
@@ -201,13 +201,17 @@
                                 label-align-sm="right"
                         >
                             <b-form-input id="manage-app-name"
-                                          maxlength="30"
+                                          minlength="3"
+                                          maxlength="20"
                                           v-model="app.manage.values.appName"
                                           :state="stateAppName"
                                           trim
                                           required
                             >
                             </b-form-input>
+                            <b-form-invalid-feedback :state="stateAppName">
+                                App Name must be 3-20 characters long.
+                            </b-form-invalid-feedback>
                         </b-form-group>
 
                         <b-form-group
@@ -217,10 +221,15 @@
                                 label-align-sm="right"
                         >
                             <b-form-input id="manage-app-client-id"
-                                          maxlength="30"
+                                          maxlength="22"
+                                          minlength="22"
                                           v-model="app.manage.values.clientId"
                                           :state="stateClientId"
-                                          trim required></b-form-input>
+                                          trim
+                                          required></b-form-input>
+                            <b-form-invalid-feedback :state="stateClientId">
+                                Client Id must be 22 characters long.
+                            </b-form-invalid-feedback>
                         </b-form-group>
 
                         <b-form-group
@@ -230,13 +239,17 @@
                                 label-align-sm="right"
                         >
                             <b-form-input id="manage-app-secret-key"
-                                          maxlength="64"
+                                          maxlength="22"
+                                          minlength="22"
                                           v-model="app.manage.values.secretKey"
                                           :state="stateSecretKey"
                                           trim
                                           required
                             >
                             </b-form-input>
+                            <b-form-invalid-feedback :state="stateSecretKey">
+                                Secret Key must be 22 characters long.
+                            </b-form-invalid-feedback>
                         </b-form-group>
 
                         <b-form-group
@@ -246,7 +259,7 @@
                                 label-align-sm="right"
                         >
                             <b-form-input id="manage-app-partner-id"
-                                          maxlength="30"
+                                          maxlength="16"
                                           v-model="app.manage.values.partnerId"
                                           trim
                             >
@@ -306,10 +319,14 @@
                             <b-row>
                                 <b-form-input
                                         v-model="scopesStr"
+                                        :state="stateScope"
                                         trim
                                         disabled
                                 >
                                 </b-form-input>
+                                <b-form-invalid-feedback :state="stateScope">
+                                    Please select at least one scope.
+                                </b-form-invalid-feedback>
                             </b-row>
                             <b-row>
                                 <b-col>
@@ -326,11 +343,14 @@
                 </b-card>
             </div>
 
-            <template #modal-footer="{ ok, hide }">
-                <b-button size="sm" variant="outline-primary" @click="registerApp" v-if="app.manage.mode == 'register'">
+            <template #modal-footer="{ hide }">
+                <b-form-invalid-feedback :state="stateAppName && stateClientId && stateSecretKey && stateScope" align="right">
+                    앱 정보를 정확히 입력하세요.
+                </b-form-invalid-feedback>
+                <b-button size="sm" variant="outline-primary" @click="registerApp" :disabled="!(stateAppName && stateClientId && stateSecretKey && stateScope)" v-show="isRegisterApp">
                     등록
                 </b-button>
-                <b-button size="sm" variant="outline-primary" @click="modifyApp" v-if="app.manage.mode == 'modify'">
+                <b-button size="sm" variant="outline-primary" @click="modifyApp" :disabled="!(stateAppName && stateClientId && stateSecretKey && stateScope)" v-show="!isRegisterApp">
                     수정
                 </b-button>
                 <b-button size="sm" variant="outline-secondary" @click="hide('forget')">

@@ -17,6 +17,7 @@ window.ita = new Vue({
             }
             , manage: {
                 mode: 'register',
+                modifyIdx: 0,
                 values: {},
                 defaultValues: {
                     appName: '',
@@ -58,13 +59,17 @@ window.ita = new Vue({
     },
     computed: {
         stateAppName() {
-            return this.app.manage.values.appName.length > 3
+            let length = this.app.manage.values.appName.length;
+            return length >= 3 && length <= 20;
         },
         stateClientId() {
-            return this.app.manage.values.clientId.length > 20
+            return this.app.manage.values.clientId.length === 22
         },
         stateSecretKey() {
-            return this.app.manage.values.secretKey.length > 20
+            return this.app.manage.values.secretKey.length === 22
+        },
+        stateScope() {
+            return this.app.manage.values.scopes.length > 0;
         },
         scopesStr() {
             return this.app.manage.values.scopes.join(',');
@@ -74,17 +79,21 @@ window.ita = new Vue({
         },
         appsCount() {
             return this.app.list.items.length;
+        },
+        isRegisterApp() {
+            return this.app.manage.mode === 'register';
         }
     },
     methods: {
-        info(item, index, button) {
+        setAppValue(item, index, button) {
             this.app.manage.mode = 'modify';
+            this.app.manage.modifyIdx = index;
             this.$root.$emit('bv::show::modal', 'modal-manage-app', button);
 
             this.app.manage.values.idx = item.idx;
             this.app.manage.values.appName = item.appName;
             this.app.manage.values.clientId = item.clientId;
-            this.app.manage.values.secretKey = '###############';
+            this.app.manage.values.secretKey = '######################';
             this.app.manage.values.partnerId = item.partnerId
             this.app.manage.values.grantType = item.grantType;
             this.app.manage.values.manageToken = item.manageToken;
@@ -158,7 +167,7 @@ window.ita = new Vue({
                 .then(function (res) {
                     if (res.data.code === 200) {
                         ita.$bvModal.hide("modal-manage-app");
-                        ita.app.list.items.push(res.data.data);
+                        ita.app.list.items.splice(ita.app.manage.modifyIdx, 1, res.data.data);
 
                         return;
                     }

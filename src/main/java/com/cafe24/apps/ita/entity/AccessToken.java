@@ -32,7 +32,7 @@ public class AccessToken extends TimeEntity {
     @Column(length = 16, nullable = false)
     private String mallId;
 
-    @Column(length = 30, nullable = false)
+    @Column(length = 22, nullable = false)
     private String clientId;
 
     @Column(length = 16, nullable = false)

@@ -2,16 +2,13 @@ package com.cafe24.apps.ita.service;
 
 import com.cafe24.apps.ita.dto.WebhookDto;
 import com.cafe24.apps.ita.dto.WebhookReciveDto;
-import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.Webhook;
 import com.cafe24.apps.ita.repository.AccessTokenRepository;
 import com.cafe24.apps.ita.repository.WebhookRepository;
-import com.cafe24.apps.ita.util.JsonUtil;
 import com.google.gson.internal.LinkedTreeMap;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +31,8 @@ public class WebhookService {
 
     /**
      * webhook 단건 저장
-     *  @param webhook
+     *
+     * @param webhook
      */
     public void saveWebhook(Webhook webhook) {
         webhookRepository.save(webhook);
