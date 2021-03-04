@@ -47,7 +47,7 @@ public class AccessToken extends TimeEntity {
     private Set<String> scopes;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinTable(name = "m_app_token", joinColumns = @JoinColumn(name = "app_idx"), inverseJoinColumns = @JoinColumn(name = "token_idx"))
+    @JoinTable(name = "m_app_token", joinColumns = @JoinColumn(name = "token_idx"), inverseJoinColumns = @JoinColumn(name = "app_idx"))
     private App app;
 
     @Builder

@@ -42,7 +42,7 @@
                     <b-navbar-nav class="ml-auto">
                         <b-nav-form>
                             <b-form-input size="sm" class="mr-sm-2 inp-search-client-id" placeholder="Search" v-model="searchForm.clientId" th:data-client_id="${cleintId}"></b-form-input>
-                            <b-button size="sm" class="my-2 my-sm-0" type="submit">
+                            <b-button size="sm" class="my-2 my-sm-0" type="button" @click="searchAll">
                                 <b-icon icon="search"></b-icon>
                                 Search
                             </b-button>
@@ -100,15 +100,26 @@
 
                                     <template #row-details="row">
                                         <b-card>
-                                            # 개발자센터 입력정보
-                                            <ul>
-                                                <li>app url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}</li>
-                                                <li>redirect url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}/redirect</li>
-                                                <li>webhook url : {{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/api/v1/webhooks/{{ row.item.idx }}</li>
-                                            </ul>
-                                            * 개발자센터에 위의 URI를 등록하세요.
-                                        </b-card>
-                                        <b-card>
+                                            <b-icon icon="app"></b-icon> <b>개발자센터 입력정보</b>
+                                            <b-list-group style="max-width: 700px;">
+                                                <b-list-group-item class="d-flex align-items-center">
+                                                    <b style="min-width: 100px;">app url</b>
+                                                    <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}</span>
+                                                    <b-button size="sm" variant="outline-secondary" @click="copyUrl">copy</b-button>
+                                                </b-list-group-item>
+                                                <b-list-group-item class="d-flex align-items-center">
+                                                    <b style="min-width: 100px;">redirect url</b>
+                                                    <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}/redirect</span>
+                                                    <b-button size="sm" variant="outline-secondary" @click="copyUrl">copy</b-button>
+                                                </b-list-group-item>
+                                                <b-list-group-item class="d-flex align-items-center">
+                                                    <b style="min-width: 100px;">webhook url</b>
+                                                    <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/api/v1/webhooks/{{ row.item.idx }}</span>
+                                                    <b-button size="sm" variant="outline-secondary" @click="copyUrl">copy</b-button>
+                                                </b-list-group-item>
+                                            </b-list-group>
+                                            <hr>
+                                            <b-icon icon="app"></b-icon> <b>App 정보</b>
                                             <ul>
                                                 <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
                                             </ul>
@@ -131,6 +142,9 @@
                                     WEBHOOK
                                     <b-badge pill variant="info">{{webhooksCount}}</b-badge>
                                 </template>
+                                <div th:align="right">
+                                    <b-button variant="outline-danger" size="sm" @click="deleteWebhookAll">전체 삭제</b-button>
+                                </div>
                                 <b-table
                                         striped
                                         hover
@@ -360,7 +374,7 @@
         </b-modal>
     </b-container>
 </div>
-
+<input type="text" id="common-input-copy" style="display: none;">
 
 <script th:src="@{/js/main.js}"/>
 <script>

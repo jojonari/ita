@@ -1,5 +1,6 @@
 package com.cafe24.apps.ita.controller;
 
+import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.dto.ResponseDto;
 import com.cafe24.apps.ita.dto.WebhookDto;
 import com.cafe24.apps.ita.dto.WebhookReciveDto;
@@ -39,7 +40,6 @@ public class WebhookController {
         List<String> clientIds = appService.getAppClientIds(session, clientId);
 
         List<WebhookDto> webhooks = webhookService.getWebhooks(clientIds);
-
         return ResponseDto.success(webhooks);
     }
 
@@ -47,10 +47,18 @@ public class WebhookController {
     public ResponseDto deleteWebhook(@PathVariable Long webhookIdx) {
         Webhook webhook = webhookService.getWebhook(webhookIdx);
         if (webhook == null) {
-            return ResponseDto.badRequest("등록된 webhook이 없습니다.");
+            return ResponseDto.badRequest("수신된 webhook이 없습니다.");
         }
 
-        webhookService.deleteApp(webhookIdx);
+        webhookService.deleteWebhook(webhookIdx);
+        return ResponseDto.success(null);
+    }
+
+    @DeleteMapping
+    public ResponseDto deleteWebhook(HttpSession session) {
+        List<String> clientIds = appService.getAppClientIds(session, Optional.empty());
+
+        webhookService.deleteWebhooks(clientIds);
         return ResponseDto.success(null);
     }
 }

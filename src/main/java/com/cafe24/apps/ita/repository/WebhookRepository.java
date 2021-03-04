@@ -12,4 +12,6 @@ import java.util.List;
 public interface WebhookRepository extends JpaRepository<Webhook, Long> {
 
     List<Webhook> findAllByClientIdIn(List<String> clientId);
+
+    void deleteByClientIdIn(List<String> clientIds);
 }

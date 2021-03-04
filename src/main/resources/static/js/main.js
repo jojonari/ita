@@ -49,7 +49,7 @@ window.ita = new Vue({
                     {key: 'clientId', label: 'client-id', sortable: true},
                     {key: 'xTraceId', label: 'x-trace-id', sortable: true},
                     {key: 'eventNo', label: '이벤트', sortable: true},
-                    {key: 'resource', label: '수신 데이터', sortable: true},
+                    {key: 'resource', label: '수신 데이터', sortable: false},
                     {key: 'createdDate', label: '수신 일시', sortable: true},
                     {key: 'actions', label: '관리'}
                 ],
@@ -215,6 +215,26 @@ window.ita = new Vue({
                     console.error(err);
                 });
         },
+        //웹훅 전체 삭제
+        deleteWebhookAll: function (idx) {
+            if (confirm('수신한 전체 웹훅을 삭제하시겠습니까?') === false) {
+                return;
+            }
+
+            let sUrl = CONTEXT_PATH + '/api/v1/webhooks';
+            axios.delete(sUrl)
+                .then(function (res) {
+                    if (res.data.code === 200) {
+                        ita.webhook.list.items = [];
+
+                        return;
+                    }
+
+                    alert("웹훅 삭제에 실패했습니다.(" + res.data.message + ")");
+                }, function (err) {
+                    console.error(err);
+                });
+        },
         //앱 등록 모달 데이터 초기화
         createModalInit: function () {
             this.app.manage.mode = 'register';
@@ -225,6 +245,20 @@ window.ita = new Vue({
                 return '';
             }
             return '?' + Object.entries(params).map(e => e.join('=')).join('&');
+        },
+        searchAll: function () {
+            this.getApps();
+            this.getWebhooks();
+        },
+        copyUrl: function (event) {
+            var copyText = document.getElementById('common-input-copy');
+            // copyText.value = event.target.parentElement.firstElementChild.textContent;
+            copyText.value = event.target.parentElement.getElementsByClassName('common-url')[0].textContent;
+            copyText.style.display = '';
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            copyText.style.display = 'none';
         }
     },
     created() {
