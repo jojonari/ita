@@ -76,7 +76,7 @@
                                     <b-badge pill variant="info">{{appsCount}}</b-badge>
                                 </template>
                                 <div th:align="right">
-                                    <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm" @click="createModalInit">APP 추가</b-button>
+                                    <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm" @click="createAppModalInit">APP 추가</b-button>
                                 </div>
 
                                 <b-table
@@ -100,29 +100,34 @@
 
                                     <template #row-details="row">
                                         <b-card>
-                                            <b-icon icon="app"></b-icon> <b>개발자센터 입력정보</b>
-                                            <b-list-group style="max-width: 700px;">
-                                                <b-list-group-item class="d-flex align-items-center">
-                                                    <b style="min-width: 100px;">app url</b>
-                                                    <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}</span>
-                                                    <b-button size="sm" variant="outline-secondary" @click="copyUrl">copy</b-button>
-                                                </b-list-group-item>
-                                                <b-list-group-item class="d-flex align-items-center">
-                                                    <b style="min-width: 100px;">redirect url</b>
-                                                    <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}/redirect</span>
-                                                    <b-button size="sm" variant="outline-secondary" @click="copyUrl">copy</b-button>
-                                                </b-list-group-item>
-                                                <b-list-group-item class="d-flex align-items-center">
-                                                    <b style="min-width: 100px;">webhook url</b>
-                                                    <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/api/v1/webhooks/{{ row.item.idx }}</span>
-                                                    <b-button size="sm" variant="outline-secondary" @click="copyUrl">copy</b-button>
-                                                </b-list-group-item>
-                                            </b-list-group>
-                                            <hr>
-                                            <b-icon icon="app"></b-icon> <b>App 정보</b>
-                                            <ul>
-                                                <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
-                                            </ul>
+                                            <b-row>
+                                                <b-col>
+                                                    <b-icon icon="app"></b-icon> <b>App 정보</b>
+                                                    <ul>
+                                                        <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
+                                                    </ul>
+                                                </b-col>
+                                                <b-col>
+                                                    <b-icon icon="app"></b-icon> <b>개발자센터 입력정보</b>
+                                                    <b-list-group style="max-width: 700px;">
+                                                        <b-list-group-item class="d-flex align-items-center">
+                                                            <b style="min-width: 100px;">app url</b>
+                                                            <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}</span>
+                                                            <b-button size="sm" variant="outline-secondary" @click="copyUrl">copy</b-button>
+                                                        </b-list-group-item>
+                                                        <b-list-group-item class="d-flex align-items-center">
+                                                            <b style="min-width: 100px;">redirect url</b>
+                                                            <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}/redirect</span>
+                                                            <b-button size="sm" variant="outline-secondary" @click="copyUrl">copy</b-button>
+                                                        </b-list-group-item>
+                                                        <b-list-group-item class="d-flex align-items-center">
+                                                            <b style="min-width: 100px;">webhook url</b>
+                                                            <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/api/v1/webhooks/{{ row.item.idx }}</span>
+                                                            <b-button size="sm" variant="outline-secondary" @click="copyUrl">copy</b-button>
+                                                        </b-list-group-item>
+                                                    </b-list-group>
+                                                </b-col>
+                                            </b-row>
                                         </b-card>
                                     </template>
                                 </b-table>
@@ -132,9 +137,35 @@
                                     <b-icon icon="box-arrow-up-left"></b-icon>
                                     API
                                 </template>
-                                <p class="p-3">
-<!--                                    <b-table striped hover :items="items" :fields="fields"></b-table>-->
-                                </p>
+                                <div th:align="right">
+                                    <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm" @click="createAppModalInit">V2X 호출</b-button>
+                                </div>
+
+                                <b-table
+                                        striped
+                                        hover
+                                        show-empty
+                                        :items="app.list.items"
+                                        :fields="app.list.fields"
+                                >
+                                    <template #cell(actions)="row">
+                                        <b-button size="sm" @click="setAppValue(row.item, row.index, $event.target)" class="mr-1">
+                                            수정
+                                        </b-button>
+                                        <b-button size="sm" @click="row.toggleDetails">
+                                            {{ row.detailsShowing ? '*' : '' }} 정보 조회
+                                        </b-button>
+                                        <b-button size="sm" @click="deleteApp( row.index )" variant="outline-danger">
+                                            삭제
+                                        </b-button>
+                                    </template>
+
+                                    <template #row-details="row">
+                                        <b-card>
+
+                                        </b-card>
+                                    </template>
+                                </b-table>
                             </b-tab>
                             <b-tab>
                                 <template #title>

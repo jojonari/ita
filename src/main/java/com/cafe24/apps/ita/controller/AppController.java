@@ -1,6 +1,7 @@
 package com.cafe24.apps.ita.controller;
 
 import com.cafe24.apps.ita.dto.AppDto;
+import com.cafe24.apps.ita.dto.PrivateAppDto;
 import com.cafe24.apps.ita.dto.ResponseDto;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.service.AppService;
@@ -31,28 +32,28 @@ public class AppController {
     }
 
     @PostMapping("/app")
-    public ResponseDto registerApp(@RequestBody App app, HttpSession session) {
+    public ResponseDto registerApp(@RequestBody PrivateAppDto app, HttpSession session) {
         App result = appService.getApp(app.getClientId());
         if (result != null) {
             return ResponseDto.badRequest("이미 등록된 ClientId 입니다.");
         }
 
         app.setUser(session);
-        App registerApp = appService.registerApp(app);
+        App registerApp = appService.registerApp(app.toEntity());
         return ResponseDto.success(registerApp.convertDto());
     }
 
     @PutMapping("/app/{appIdx}")
-    public ResponseDto modifyApp(@PathVariable Long appIdx, @RequestBody App app, HttpSession session) {
+    public ResponseDto modifyApp(@PathVariable Long appIdx, @RequestBody PrivateAppDto privateAppDto, HttpSession session) {
         App result = appService.getApp(session, appIdx);
         if (result == null) {
             return ResponseDto.badRequest("등록된 client가 없습니다.");
         }
 
-        app.setUser(session);
-        app.setModifySecretKey(result.getSecretKey());
+        privateAppDto.setUser(session);
+        privateAppDto.setModifySecretKey(result.convertPrivateDto().getSecretKey());
 
-        App modifyApp = appService.modifyApp(app);
+        App modifyApp = appService.modifyApp(privateAppDto.toEntity());
         return ResponseDto.success(modifyApp.convertDto());
     }
 

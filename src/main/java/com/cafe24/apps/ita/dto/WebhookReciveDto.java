@@ -24,7 +24,7 @@ public class WebhookReciveDto {
                 .app(app)
                 .xTraceId(xTraceId)
                 .eventNo(this.event_no)
-                .clientId(app.getClientId())
+                .clientId(app.convertDto().getClientId())
                 .resource(JsonUtil.toJSON(this.resource))
                 .build();
     }

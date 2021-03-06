@@ -1,5 +1,8 @@
 package com.cafe24.apps.ita.entity;
 
+import com.cafe24.apps.ita.dto.PrivateAppDto;
+import com.cafe24.apps.ita.dto.PrivateUserDto;
+import com.cafe24.apps.ita.dto.UserDto;
 import com.cafe24.apps.ita.util.EncryptUtil;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -8,7 +11,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.security.NoSuchAlgorithmException;
 
-@Getter
 @Entity
 @ToString(exclude = "userPw")
 @Table(name = "t_user")
@@ -47,6 +49,34 @@ public class User extends TimeEntity {
     }
 
     /**
+     * convert DTO
+     *
+     * @return
+     */
+    public PrivateUserDto convertPrivateDto() {
+        return PrivateUserDto.builder().
+                idx(this.idx)
+                .userId(this.userId)
+                .userPw(this.userPw)
+                .userName(this.userName)
+                .teamName(this.teamName)
+                .build();
+    }
+    /**
+     * convert DTO
+     *
+     * @return
+     */
+    public UserDto convertDto() {
+        return UserDto.builder().
+                idx(this.idx)
+                .userId(this.userId)
+                .userName(this.userName)
+                .teamName(this.teamName)
+                .build();
+    }
+
+    /**
      * 패스워드 암호화
      *
      * @throws NoSuchAlgorithmException
@@ -55,7 +85,11 @@ public class User extends TimeEntity {
         this.userPw = EncryptUtil.encryptPassword(this.userPw);
     }
 
-    public void deleteUserPw() {
-        this.userPw = "######";
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public boolean isEqualsPassWord(String encUserPw) {
+        return this.userPw.equals(encUserPw);
     }
 }

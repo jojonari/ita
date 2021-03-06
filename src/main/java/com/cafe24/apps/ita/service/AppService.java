@@ -59,7 +59,7 @@ public class AppService {
      * @return
      */
     public App getApp(HttpSession session, Long appIdx) {
-        User user = SessionUtil.getUserInfo(session);
+        User user = SessionUtil.getUserInfo(session).toEntity();
         return appRepository.findByIdxAndUser(appIdx, user);
     }
 
@@ -71,7 +71,7 @@ public class AppService {
      * @return
      */
     public List<AppDto> getApps(HttpSession session, Optional<String> clientId) {
-        User user = SessionUtil.getUserInfo(session);
+        User user = SessionUtil.getUserInfo(session).toEntity();
         List<App> apps = appRepository.findAllByUserAndClientIdContainingOrderByIdxDesc(user, clientId.orElse(""));
 
         return apps.stream().map(App::convertDto).collect(Collectors.toList());

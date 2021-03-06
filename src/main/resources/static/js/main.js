@@ -236,7 +236,7 @@ window.ita = new Vue({
                 });
         },
         //앱 등록 모달 데이터 초기화
-        createModalInit: function () {
+        createAppModalInit: function () {
             this.app.manage.mode = 'register';
             this.app.manage.values = JSON.parse(JSON.stringify(this.app.manage.defaultValues));
         },
@@ -268,7 +268,7 @@ window.ita = new Vue({
         }
 
         this.getScopeOption();
-        this.createModalInit();
+        this.createAppModalInit();
         this.getApps();
         this.getWebhooks();
     },

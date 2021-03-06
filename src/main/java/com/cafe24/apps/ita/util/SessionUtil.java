@@ -1,6 +1,7 @@
 package com.cafe24.apps.ita.util;
 
 import com.cafe24.apps.ita.dto.MallDto;
+import com.cafe24.apps.ita.dto.UserDto;
 import com.cafe24.apps.ita.entity.User;
 
 import javax.servlet.http.HttpSession;
@@ -19,8 +20,8 @@ public class SessionUtil {
             return false;
         }
 
-        User user = (User) session.getAttribute(session.getId());
-        return !user.getUserId().isEmpty();
+        UserDto userDto = (UserDto) session.getAttribute(session.getId());
+        return userDto != null && !userDto.getUserId().isEmpty();
     }
 
     /**
@@ -30,8 +31,7 @@ public class SessionUtil {
      * @param user
      */
     public static void setUserInfo(HttpSession session, User user) {
-        user.deleteUserPw();
-        session.setAttribute(session.getId(), user);
+        session.setAttribute(session.getId(), user.convertDto());
     }
 
     /**
@@ -39,19 +39,8 @@ public class SessionUtil {
      *
      * @param session
      */
-    public static User getUserInfo(HttpSession session) {
-        return (User) session.getAttribute(session.getId());
-    }
-
-    /**
-     * 세션 회원 idx 조회
-     *
-     * @param session
-     * @return
-     */
-    public static Long getUserIdx(HttpSession session) {
-        User user = (User) session.getAttribute(session.getId());
-        return user.getIdx();
+    public static UserDto getUserInfo(HttpSession session) {
+        return (UserDto) session.getAttribute(session.getId());
     }
 
     /**

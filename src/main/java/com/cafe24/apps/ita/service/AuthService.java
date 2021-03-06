@@ -1,6 +1,7 @@
 package com.cafe24.apps.ita.service;
 
 import com.cafe24.apps.ita.dto.AccessTokenDto;
+import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.dto.CodeDto;
 import com.cafe24.apps.ita.dto.MallDto;
 import com.cafe24.apps.ita.entity.AccessToken;
@@ -67,7 +68,7 @@ public class AuthService {
 
         String[] queryArr = queryString.split("&hmac=");
         String requestHmac = URLDecoder.decode(queryArr[1], StandardCharsets.UTF_8);
-        String hmac = EncryptUtil.makeHmac(queryArr[0], app.get().getSecretKey());
+        String hmac = EncryptUtil.makeHmac(queryArr[0], app.get().convertPrivateDto().getSecretKey());
 
         return requestHmac.equals(hmac);
     }
@@ -94,22 +95,22 @@ public class AuthService {
     /**
      * 코드 발급 url
      *
-     * @param app
+     * @param appDto
      * @param mallDto
      * @param request
      * @return
      */
-    public String getCodeRedirectUrl(App app, MallDto mallDto, HttpServletRequest request) {
+    public String getCodeRedirectUrl(AppDto appDto, MallDto mallDto, HttpServletRequest request) {
         String requestUrl = request.getRequestURL().toString().replace("http://", "https://");
 
         return "redirect:" +
                 "https://" + mallDto.getMall_id() + ".cafe24api.com" +
                 "/api/v2/oauth/authorize" +
                 "?response_type=" + "code" +
-                "&client_id=" + app.getClientId() +
+                "&client_id=" + appDto.getClientId() +
                 "&state=" + request.getRequestedSessionId() +
                 "&redirect_uri=" + requestUrl + "/redirect" +
-                "&scope=" + String.join(",", app.getScopes());
+                "&scope=" + String.join(",", appDto.getScopes());
     }
 
     /**
@@ -126,7 +127,7 @@ public class AuthService {
         HttpHeaders header = new HttpHeaders();
         header.add(HttpHeaders.AUTHORIZATION, app.getAuthorization());
         header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-        String callbackUrl = "https://" + request.getServerName() + request.getContextPath() + "/auth/" + app.getIdx() + "/redirect";
+        String callbackUrl = "https://" + request.getServerName() + request.getContextPath() + "/auth/" + app.convertDto().getIdx() + "/redirect";
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("grant_type", "authorization_code");
@@ -153,7 +154,9 @@ public class AuthService {
      * @return
      */
     public void saveAccessToken(AccessToken accessToken) {
-        accessTokenRepository.deleteByClientIdAndMallId(accessToken.getClientId(), accessToken.getMallId());
+        AccessTokenDto accessTokenDto = accessToken.convertDto();
+
+        accessTokenRepository.deleteByClientIdAndMallId(accessTokenDto.getClient_id(), accessTokenDto.getMall_id());
         accessTokenRepository.save(accessToken);
     }
 }

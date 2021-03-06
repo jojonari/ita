@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.time.format.DateTimeFormatter;
 
 @Entity
-@Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "t_webhook")

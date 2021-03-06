@@ -1,6 +1,8 @@
 package com.cafe24.apps.ita.controller;
 
-import com.cafe24.apps.ita.entity.SignIn;
+import com.cafe24.apps.ita.dto.PrivateUserDto;
+import com.cafe24.apps.ita.dto.SignIn;
+import com.cafe24.apps.ita.dto.UserDto;
 import com.cafe24.apps.ita.entity.User;
 import com.cafe24.apps.ita.service.UserService;
 import com.cafe24.apps.ita.util.SessionUtil;
@@ -38,23 +40,22 @@ public class UserController {
     /**
      * 회원가입
      *
-     * @param session
-     * @param user
+     * @param request
+     * @param userDto
      * @return
      * @throws NoSuchAlgorithmException
      */
     @PostMapping(value = "/sign-up")
-    public ModelAndView signUp(User user, ModelAndView mv, HttpServletRequest request) throws NoSuchAlgorithmException {
-        Optional<User> userInfo = userService.getUser(user.getUserId());
+    public ModelAndView signUp(PrivateUserDto userDto, ModelAndView mv, HttpServletRequest request) throws NoSuchAlgorithmException {
+        Optional<User> userInfo = userService.getUser(userDto.getUserId());
         if (userInfo.isPresent()) {
-            user.deleteUserPw();
-            mv.addObject("user", user);
+            mv.addObject("user", userInfo.get().convertDto());
             mv.setViewName("/user/sign-up");
             mv.addObject("error_msg", "이미 사용중인 ID 입니다.");
             return mv;
         }
 
-        User regisertUser = userService.regisertUser(user);
+        User regisertUser = userService.regisertUser(userDto.toEntity());
         SessionUtil.setUserInfo(request.getSession(), regisertUser);
 
         String url = "https://" + request.getServerName() + request.getContextPath() + "/main";

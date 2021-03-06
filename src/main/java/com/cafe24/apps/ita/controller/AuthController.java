@@ -1,5 +1,6 @@
 package com.cafe24.apps.ita.controller;
 
+import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.dto.CodeDto;
 import com.cafe24.apps.ita.dto.MallDto;
 import com.cafe24.apps.ita.entity.AccessToken;
@@ -61,15 +62,15 @@ public class AuthController {
         if (app == null) {
             return setError(model, "등록된 client가 없습니다.", mallDto);
         }
-
+        AppDto appDto = app.convertDto();
         boolean isExpire = authService.isExpireRefreshToken(app, mallDto);
         if (isExpire || app.isRefresh()) {
             //세션에 저장
             session.setAttribute("mallInfo", mallDto);
-            return authService.getCodeRedirectUrl(app, mallDto, request);
+            return authService.getCodeRedirectUrl(appDto, mallDto, request);
         }
 
-        String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + app.getClientId();
+        String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + appDto.getClientId();
         return "redirect:" + url;
     }
 
@@ -93,11 +94,10 @@ public class AuthController {
         if (app == null) {
             return setError(model, "등록된 client가 없습니다.", codeDto);
         }
-
         AccessToken accessToken = authService.getAccessToken(app, codeDto, request);
         authService.saveAccessToken(accessToken);
 
-        String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + accessToken.getClientId();
+        String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + accessToken.convertDto().getClient_id();
         return "redirect:" + url;
     }
 

@@ -1,5 +1,6 @@
 package com.cafe24.apps.ita.entity;
 
+import com.cafe24.apps.ita.dto.TexeValue;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

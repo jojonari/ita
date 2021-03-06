@@ -1,6 +1,7 @@
 package com.cafe24.apps.ita.dto;
 
 import com.cafe24.apps.ita.entity.AccessToken;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 
 
 @Data
+@Builder
 @ToString
 public class AccessTokenDto {
 
@@ -40,4 +42,5 @@ public class AccessTokenDto {
                 .issuedAt(LocalDateTime.parse(this.issued_at))
                 .build();
     }
+
 }

@@ -1,6 +1,6 @@
 package com.cafe24.apps.ita.service;
 
-import com.cafe24.apps.ita.entity.SignIn;
+import com.cafe24.apps.ita.dto.SignIn;
 import com.cafe24.apps.ita.entity.User;
 import com.cafe24.apps.ita.repository.UserRepository;
 import org.springframework.stereotype.Service;

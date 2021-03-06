@@ -1,12 +1,14 @@
 package com.cafe24.apps.ita.entity;
 
+import com.cafe24.apps.ita.dto.AccessTokenDto;
+import com.cafe24.apps.ita.dto.AppDto;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
-@Getter
 @Entity
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -61,6 +63,25 @@ public class AccessToken extends TimeEntity {
         this.userId = userId;
         this.issuedAt = issuedAt;
         this.scopes = scopes;
+    }
+
+    /**
+     * convert DTO
+     *
+     * @return
+     */
+    public AccessTokenDto convertDto() {
+        return AccessTokenDto.builder().
+                access_token(this.accessToken)
+                .issued_at(this.issuedAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .expires_at(this.expiresAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .refresh_token(this.refreshToken)
+                .refresh_token_expires_at(this.refreshTokenExpiresAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .mall_id(this.mallId)
+                .client_id(this.clientId)
+                .user_id(this.userId)
+                .scopes(this.scopes)
+                .build();
     }
 
     public void setApp(App app) {

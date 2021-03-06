@@ -1,5 +1,6 @@
-package com.cafe24.apps.ita.entity;
+package com.cafe24.apps.ita.dto;
 
+import com.cafe24.apps.ita.entity.User;
 import com.cafe24.apps.ita.util.EncryptUtil;
 import lombok.Data;
 
@@ -23,6 +24,6 @@ public class SignIn {
      */
     public boolean isEqualsPassWord(User user) throws NoSuchAlgorithmException {
         String encUserPw = EncryptUtil.encryptPassword(this.userPw);
-        return encUserPw.equals(user.getUserPw());
+        return user.isEqualsPassWord(encUserPw);
     }
 }

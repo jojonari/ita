@@ -1,7 +1,7 @@
 package com.cafe24.apps.ita.controller;
 
 import com.cafe24.apps.ita.dto.ResponseDto;
-import com.cafe24.apps.ita.entity.TexeValue;
+import com.cafe24.apps.ita.dto.TexeValue;
 import com.cafe24.apps.ita.service.ScopeService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
