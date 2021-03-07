@@ -138,7 +138,7 @@
                                     API
                                 </template>
                                 <div th:align="right">
-                                    <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm" @click="createAppModalInit">V2X 호출</b-button>
+                                    <b-button v-b-modal.modal-manage-api pill variant="outline-secondary" size="sm" @click="callApiModalInit">V2X 호출</b-button>
                                 </div>
 
                                 <b-table
@@ -228,7 +228,7 @@
         </b-navbar>
         <!--footer E-->
 
-        <!--modal : add app S-->
+        <!--modal : manage app S-->
         <b-modal id="modal-manage-app" size="lg" :title="app.manage.mode == 'register' ? 'App 등록' : 'App 수정'">
             <div>
                 <b-card bg-variant="light">
@@ -403,6 +403,65 @@
                 </b-button>
             </template>
         </b-modal>
+        <!--modal : manage app E-->
+
+        <!--modal : manage app S-->
+        <b-modal id="modal-manage-api" size="lg" title="API 호출">
+            <div>
+                <b-card bg-variant="light">
+
+                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Mall Id" label-for="input-sm">
+                        <b-form-select v-model="api.manage.values.mallId" :options="api.manage.options.mallIds" size="sm" >
+                            <template #first>
+                                <b-form-select-option :value="''" disabled>-- Please select an option --</b-form-select-option>
+                            </template>
+                        </b-form-select>
+                    </b-form-group>
+                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="HTTP Method" label-for="input-sm">
+                        <b-form-radio-group
+                                v-model="api.manage.values.methods"
+                                :options="api.manage.options.methods"
+                        ></b-form-radio-group>
+                    </b-form-group>
+
+                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Version" label-for="input-sm">
+                        <b-form-input v-model="api.manage.values.version" size="sm"></b-form-input>
+                    </b-form-group>
+                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="URL" label-for="input-sm">
+                        <b-form-input v-model="api.manage.values.url" size="sm"></b-form-input>
+                    </b-form-group>
+                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Request-Body" label-for="input-sm">
+                        <b-form-textarea
+                                v-model="api.manage.values.requestBody"
+                                size="sm"
+                                rows="5"
+                                placeholder="Request Body"
+                        ></b-form-textarea>
+                    </b-form-group>
+
+                    <b-button block variant="dark">Call Api</b-button>
+                </b-card>
+
+                <b-card bg-variant="light" v-show="'' !== api.manage.values.responseBody">
+                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Response-Body" label-for="input-sm">
+                        <b-form-textarea
+                                v-model="api.manage.values.responseBody"
+                                size="sm"
+                                rows="5"
+                                placeholder="Response Body"
+                        ></b-form-textarea>
+                    </b-form-group>
+                </b-card>
+            </div>
+            <template #modal-footer="{ hide }">
+                <b-button size="sm" @click="hide('forget')">
+                    Close
+                </b-button>
+            </template>
+            </template>
+        </b-modal>
+        <!--modal : manage app E-->
+
     </b-container>
 </div>
 <input type="text" id="common-input-copy" style="display: none;">

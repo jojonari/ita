@@ -42,6 +42,44 @@ window.ita = new Vue({
                 }
             }
         },
+        api: {
+            list: {
+                fields: [
+                    {key: 'idx', label: 'IDX', sortable: true},
+                    {key: 'clientId', label: 'client-id', sortable: true},
+                    {key: 'appName', label: '앱 이름', sortable: true},
+                    {key: 'modifiedDate', label: '수정일시', sortable: true},
+                    {key: 'actions', label: '관리'}
+                ],
+                items: []
+            }
+            , manage: {
+                modifyIdx: 0,
+                values: {},
+                defaultValues: {
+                    mallId: '',
+                    methods: 'get',
+                    version: '',
+                    url: '',
+                    requestBody: '',
+                    responseBody: ''
+                },
+                options: {
+                    methods: [
+                        {text: 'Get', value: 'get'},
+                        {text: 'Post', value: 'post'},
+                        {text: 'Put', value: 'put'},
+                        {text: 'Delete', value: 'delete'}
+                    ],
+                    mallIds: [
+                        {text: 'Get', value: 'get'},
+                        {text: 'Post', value: 'post'},
+                        {text: 'Put', value: 'put'},
+                        {text: 'Delete', value: 'delete', disabled: true}
+                    ]
+                }
+            }
+        },
         webhook: {
             list: {
                 fields: [
@@ -239,6 +277,9 @@ window.ita = new Vue({
         createAppModalInit: function () {
             this.app.manage.mode = 'register';
             this.app.manage.values = JSON.parse(JSON.stringify(this.app.manage.defaultValues));
+        }, //api 호출 모달 데이터 초기화
+        callApiModalInit: function () {
+            this.api.manage.values = JSON.parse(JSON.stringify(this.api.manage.defaultValues));
         },
         queryStr: function (params) {
             if (params === undefined) {
