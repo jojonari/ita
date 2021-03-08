@@ -95,7 +95,7 @@ public class AccessToken extends TimeEntity {
      * @return
      */
     public Boolean isAccessTokenExpire() {
-        return LocalDateTime.now().isBefore(expiresAt);
+        return LocalDateTime.now().isAfter(expiresAt);
     }
 
     /**
@@ -105,6 +105,6 @@ public class AccessToken extends TimeEntity {
      * @return
      */
     public Boolean isRefreshTokenExpire() {
-        return LocalDateTime.now().isBefore(refreshTokenExpiresAt);
+        return LocalDateTime.now().isAfter(refreshTokenExpiresAt);
     }
 }

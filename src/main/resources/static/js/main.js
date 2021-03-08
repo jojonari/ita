@@ -73,7 +73,7 @@ window.ita = new Vue({
                         {text: 'Delete', value: 'delete'}
                     ],
                     mallIds: [
-                        {text: 'Get', value: 'get'},
+                        {text: 'jhbaek02', value: 'jhbaek02'},
                         {text: 'Post', value: 'post'},
                         {text: 'Put', value: 'put'},
                         {text: 'Delete', value: 'delete', disabled: true}

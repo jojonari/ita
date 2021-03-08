@@ -423,6 +423,9 @@
                                 :options="api.manage.options.methods"
                         ></b-form-radio-group>
                     </b-form-group>
+                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Client-Id" label-for="input-sm">
+                        <b-form-input v-model="api.manage.values.clientId" size="sm"></b-form-input>
+                    </b-form-group>
 
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Version" label-for="input-sm">
                         <b-form-input v-model="api.manage.values.version" size="sm"></b-form-input>

@@ -179,7 +179,7 @@ public class AuthService {
             throw new Exception("refresh_token이 만료되어 API를 호출 할 수 없습니다.");
         }
 
-
-        return accessToken;
+        System.out.println("리프레시토큰을 사용해야합니다");
+        return null;
     }
 }
