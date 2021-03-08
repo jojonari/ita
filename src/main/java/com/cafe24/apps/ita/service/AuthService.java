@@ -159,4 +159,27 @@ public class AuthService {
         accessTokenRepository.deleteByClientIdAndMallId(accessTokenDto.getClient_id(), accessTokenDto.getMall_id());
         accessTokenRepository.save(accessToken);
     }
+
+    /**
+     * AccessToken 조회
+     *
+     * @param app
+     * @param mallId
+     * @return
+     */
+    public AccessToken getAccessToken(App app, String mallId) throws Exception {
+        Optional<AccessToken> accessTokenOptional = accessTokenRepository.findByAppAndMallId(app, mallId);
+
+        AccessToken accessToken = accessTokenOptional.orElseThrow(() -> new Exception("access token이 없습니다."));
+        if (!accessToken.isAccessTokenExpire()) {
+            return accessToken;
+        }
+
+        if (accessToken.isRefreshTokenExpire()){
+            throw new Exception("refresh_token이 만료되어 API를 호출 할 수 없습니다.");
+        }
+
+
+        return accessToken;
+    }
 }

@@ -439,7 +439,7 @@
                         ></b-form-textarea>
                     </b-form-group>
 
-                    <b-button block variant="dark">Call Api</b-button>
+                    <b-button block variant="dark" @click="callApi">Call Api</b-button>
                 </b-card>
 
                 <b-card bg-variant="light" v-show="'' !== api.manage.values.responseBody">

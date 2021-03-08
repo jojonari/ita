@@ -17,4 +17,5 @@ public interface AppRepository extends JpaRepository<App, Long> {
 
     List<App> findAllByUserAndClientIdContainingOrderByIdxDesc(User user, String clientId);
 
+    App findByUserAndClientId(User user, String clientId);
 }

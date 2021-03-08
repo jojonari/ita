@@ -58,6 +58,7 @@ window.ita = new Vue({
                 values: {},
                 defaultValues: {
                     mallId: '',
+                    clientId: '',
                     methods: 'get',
                     version: '',
                     url: '',
@@ -269,6 +270,22 @@ window.ita = new Vue({
                     }
 
                     alert("웹훅 삭제에 실패했습니다.(" + res.data.message + ")");
+                }, function (err) {
+                    console.error(err);
+                });
+        },
+        //API 호출
+        callApi: function () {
+            axios.post(CONTEXT_PATH + '/api/v1/api', this.api.manage.values)
+                .then(function (res) {
+                    if (res.data.code === 200) {
+                        ita.api.list.items.push(res.data.data);
+
+                        return;
+                    }
+
+                    console.error(res);
+                    alert("API 호출에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
                 });

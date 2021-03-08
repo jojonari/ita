@@ -64,6 +64,18 @@ public class AppService {
     }
 
     /**
+     * App 단건 조회
+     *
+     * @param session
+     * @param clientId
+     * @return
+     */
+    public App getApp(HttpSession session, String clientId) {
+        User user = SessionUtil.getUserInfo(session).toEntity();
+        return appRepository.findByUserAndClientId(user, clientId);
+    }
+
+    /**
      * App 목록 조회
      *
      * @param session
