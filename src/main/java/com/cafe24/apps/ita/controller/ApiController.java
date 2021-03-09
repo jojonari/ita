@@ -1,5 +1,6 @@
 package com.cafe24.apps.ita.controller;
 
+import com.cafe24.apps.ita.dto.AccessTokenDto;
 import com.cafe24.apps.ita.dto.ApiDto;
 import com.cafe24.apps.ita.dto.ResponseDto;
 import com.cafe24.apps.ita.entity.AccessToken;
@@ -30,9 +31,8 @@ public class ApiController {
     @PostMapping("/api")
     public ResponseDto callApi(@RequestBody ApiDto apiDto, HttpSession session) throws Exception {
         App app = appService.getApp(session, apiDto.getClientId());
-        AccessToken accessToken = authService.getAccessToken(app, apiDto.getMallId());
-        System.out.println(accessToken);
-        apiService.callApi(apiDto);
+        AccessTokenDto accessTokenDto = authService.getAccessToken(app, apiDto.getMallId());
+        apiService.callApi(apiDto, accessTokenDto);
         return ResponseDto.success(apiDto);
     }
 }

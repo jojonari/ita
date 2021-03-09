@@ -87,11 +87,11 @@
                                         :fields="app.list.fields"
                                 >
                                     <template #cell(actions)="row">
-                                        <b-button size="sm" @click="setAppValue(row.item, row.index, $event.target)" class="mr-1">
-                                            수정
-                                        </b-button>
                                         <b-button size="sm" @click="row.toggleDetails">
                                             {{ row.detailsShowing ? '*' : '' }} 정보 조회
+                                        </b-button>
+                                        <b-button size="sm" @click="setAppValue(row.item, row.index, $event.target)" class="mr-1">
+                                            수정
                                         </b-button>
                                         <b-button size="sm" @click="deleteApp( row.index )" variant="outline-danger">
                                             삭제
@@ -409,7 +409,13 @@
         <b-modal id="modal-manage-api" size="lg" title="API 호출">
             <div>
                 <b-card bg-variant="light">
-
+                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Client Id" label-for="input-sm">
+                        <b-form-select v-model="api.manage.values.clientId" :options="api.manage.options.clientIds" size="sm" >
+                            <template #first>
+                                <b-form-select-option :value="''" disabled>-- Please select an option --</b-form-select-option>
+                            </template>
+                        </b-form-select>
+                    </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Mall Id" label-for="input-sm">
                         <b-form-select v-model="api.manage.values.mallId" :options="api.manage.options.mallIds" size="sm" >
                             <template #first>
@@ -419,12 +425,9 @@
                     </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="HTTP Method" label-for="input-sm">
                         <b-form-radio-group
-                                v-model="api.manage.values.methods"
+                                v-model="api.manage.values.method"
                                 :options="api.manage.options.methods"
                         ></b-form-radio-group>
-                    </b-form-group>
-                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Client-Id" label-for="input-sm">
-                        <b-form-input v-model="api.manage.values.clientId" size="sm"></b-form-input>
                     </b-form-group>
 
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Version" label-for="input-sm">

@@ -167,19 +167,46 @@ public class AuthService {
      * @param mallId
      * @return
      */
-    public AccessToken getAccessToken(App app, String mallId) throws Exception {
+    public AccessTokenDto getAccessToken(App app, String mallId) throws Exception {
         Optional<AccessToken> accessTokenOptional = accessTokenRepository.findByAppAndMallId(app, mallId);
 
         AccessToken accessToken = accessTokenOptional.orElseThrow(() -> new Exception("access token이 없습니다."));
         if (!accessToken.isAccessTokenExpire()) {
-            return accessToken;
+            return accessToken.convertDto();
         }
 
-        if (accessToken.isRefreshTokenExpire()){
-            throw new Exception("refresh_token이 만료되어 API를 호출 할 수 없습니다.");
+        if (accessToken.isRefreshTokenExpire()) {
+            throw new Exception("refresh token이 만료되어 API를 호출 할 수 없습니다.");
         }
 
-        System.out.println("리프레시토큰을 사용해야합니다");
-        return null;
+        return this.getAccessTokenWithRefreshToken(app, accessToken.convertDto());
+    }
+
+    /**
+     * 리프레시토큰을 사용하여 토큰 조회
+     *  @param app
+     * @param accessToken
+     */
+    private AccessTokenDto getAccessTokenWithRefreshToken(App app, AccessTokenDto accessToken) throws Exception {
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.AUTHORIZATION, app.getAuthorization());
+        header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("grant_type", "refresh_token");
+        requestBody.add("refresh_token", accessToken.getRefresh_token());
+
+        String url = API_OAUTH_TOKEN.replace("{{mall_id}}", accessToken.getMall_id());
+
+        AccessTokenDto accessTokenDto = restTemplate.postForObject(url, new HttpEntity<>(requestBody, header), AccessTokenDto.class);
+        if (accessTokenDto == null) {
+            throw new Exception("Access Token 발급에 실패했습니다.");
+        }
+
+        AccessToken accessTokenRefresh = accessTokenDto.toEntity();
+        accessTokenRefresh.setApp(app);
+        this.saveAccessToken(accessTokenRefresh);
+
+        return accessTokenDto;
     }
 }

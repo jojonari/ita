@@ -59,7 +59,7 @@ window.ita = new Vue({
                 defaultValues: {
                     mallId: '',
                     clientId: '',
-                    methods: 'get',
+                    method: 'get',
                     version: '',
                     url: '',
                     requestBody: '',
@@ -74,6 +74,12 @@ window.ita = new Vue({
                     ],
                     mallIds: [
                         {text: 'jhbaek02', value: 'jhbaek02'},
+                        {text: 'Post', value: 'post'},
+                        {text: 'Put', value: 'put'},
+                        {text: 'Delete', value: 'delete', disabled: true}
+                    ],
+                    clientIds: [
+                        {text: 'SYCZyiYVH5ppkJLiVdiniB', value: 'SYCZyiYVH5ppkJLiVdiniB'},
                         {text: 'Post', value: 'post'},
                         {text: 'Put', value: 'put'},
                         {text: 'Delete', value: 'delete', disabled: true}
