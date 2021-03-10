@@ -1,17 +1,12 @@
 package com.cafe24.apps.ita.dto;
 
 import com.cafe24.apps.ita.entity.App;
-import com.cafe24.apps.ita.entity.TimeEntity;
 import com.cafe24.apps.ita.entity.User;
-import com.cafe24.apps.ita.entity.Webhook;
-import com.cafe24.apps.ita.util.JsonUtil;
 import com.cafe24.apps.ita.util.SessionUtil;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
-import javax.persistence.*;
 import javax.servlet.http.HttpSession;
-import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.Set;
 
 

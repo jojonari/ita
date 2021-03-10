@@ -1,6 +1,5 @@
 package com.cafe24.apps.ita.service;
 
-import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.dto.WebhookDto;
 import com.cafe24.apps.ita.dto.WebhookReciveDto;
 import com.cafe24.apps.ita.entity.Webhook;
@@ -89,7 +88,7 @@ public class WebhookService {
      *
      * @param clientIds
      */
-    public void deleteWebhooks( List<String> clientIds) {
+    public void deleteWebhooks(List<String> clientIds) {
         webhookRepository.deleteByClientIdIn(clientIds);
     }
 }

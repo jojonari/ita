@@ -1,7 +1,7 @@
 package com.cafe24.apps.ita.service;
 
-import com.cafe24.apps.ita.entity.Scope;
 import com.cafe24.apps.ita.dto.TexeValue;
+import com.cafe24.apps.ita.entity.Scope;
 import com.cafe24.apps.ita.repository.ScopeRepository;
 import org.springframework.stereotype.Service;
 

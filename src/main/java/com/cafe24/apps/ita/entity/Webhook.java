@@ -2,7 +2,10 @@ package com.cafe24.apps.ita.entity;
 
 import com.cafe24.apps.ita.dto.WebhookDto;
 import com.cafe24.apps.ita.util.JsonUtil;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.format.DateTimeFormatter;
@@ -47,7 +50,7 @@ public class Webhook extends TimeEntity {
     /**
      * convert DTO
      *
-     * @return
+     * @return WebhookDto
      */
     public WebhookDto convertDto() {
         return WebhookDto.builder().
@@ -55,7 +58,7 @@ public class Webhook extends TimeEntity {
                 .clientId(this.clientId)
                 .eventNo(this.eventNo)
                 .xTraceId(this.xTraceId)
-                .resource(JsonUtil.convetPrettyJson(this.resource))
+                .resource(JsonUtil.convertPrettyJson(this.resource))
                 .createdDate(this.createdDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .modifiedDate(this.modifiedDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .build();

@@ -1,6 +1,5 @@
 package com.cafe24.apps.ita.controller;
 
-import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.dto.ResponseDto;
 import com.cafe24.apps.ita.dto.WebhookDto;
 import com.cafe24.apps.ita.dto.WebhookReciveDto;

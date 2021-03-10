@@ -184,7 +184,8 @@ public class AuthService {
 
     /**
      * 리프레시토큰을 사용하여 토큰 조회
-     *  @param app
+     *
+     * @param app
      * @param accessToken
      */
     private AccessTokenDto getAccessTokenWithRefreshToken(App app, AccessTokenDto accessToken) throws Exception {

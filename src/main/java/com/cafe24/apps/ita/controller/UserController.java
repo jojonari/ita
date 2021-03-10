@@ -2,7 +2,6 @@ package com.cafe24.apps.ita.controller;
 
 import com.cafe24.apps.ita.dto.PrivateUserDto;
 import com.cafe24.apps.ita.dto.SignIn;
-import com.cafe24.apps.ita.dto.UserDto;
 import com.cafe24.apps.ita.entity.User;
 import com.cafe24.apps.ita.service.UserService;
 import com.cafe24.apps.ita.util.SessionUtil;

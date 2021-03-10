@@ -11,7 +11,7 @@ public final class JsonUtil {
     /**
      * Gson
      */
-    private static Gson GSON = new GsonBuilder()
+    private static final Gson GSON = new GsonBuilder()
             .setLongSerializationPolicy(LongSerializationPolicy.STRING)
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
@@ -19,7 +19,7 @@ public final class JsonUtil {
     /**
      * prettyGSON
      */
-    private static Gson prettyGSON = new GsonBuilder()
+    private static final Gson prettyGSON = new GsonBuilder()
             .setLongSerializationPolicy(LongSerializationPolicy.STRING)
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .setPrettyPrinting()
@@ -42,7 +42,7 @@ public final class JsonUtil {
      * @param strJson
      * @return
      */
-    public static String convetPrettyJson(String strJson) {
+    public static String convertPrettyJson(String strJson) {
         JsonElement jsonElement = JsonParser.parseString(strJson);
         return prettyGSON.toJson(jsonElement);
     }

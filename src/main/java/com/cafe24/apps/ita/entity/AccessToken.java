@@ -1,8 +1,10 @@
 package com.cafe24.apps.ita.entity;
 
 import com.cafe24.apps.ita.dto.AccessTokenDto;
-import com.cafe24.apps.ita.dto.AppDto;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -68,7 +70,7 @@ public class AccessToken extends TimeEntity {
     /**
      * convert DTO
      *
-     * @return
+     * @return AccessTokenDto
      */
     public AccessTokenDto convertDto() {
         return AccessTokenDto.builder().
@@ -92,7 +94,7 @@ public class AccessToken extends TimeEntity {
      * Access token 만료 조회
      * 만료 : true
      *
-     * @return
+     * @return Boolean
      */
     public Boolean isAccessTokenExpire() {
         return LocalDateTime.now().isAfter(expiresAt);
@@ -102,7 +104,7 @@ public class AccessToken extends TimeEntity {
      * Refresh token 만료 조회
      * 만료 : true
      *
-     * @return
+     * @return Boolean
      */
     public Boolean isRefreshTokenExpire() {
         return LocalDateTime.now().isAfter(refreshTokenExpiresAt);

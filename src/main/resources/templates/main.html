@@ -145,13 +145,10 @@
                                         striped
                                         hover
                                         show-empty
-                                        :items="app.list.items"
-                                        :fields="app.list.fields"
+                                        :items="api.list.items"
+                                        :fields="api.list.fields"
                                 >
                                     <template #cell(actions)="row">
-                                        <b-button size="sm" @click="setAppValue(row.item, row.index, $event.target)" class="mr-1">
-                                            수정
-                                        </b-button>
                                         <b-button size="sm" @click="row.toggleDetails">
                                             {{ row.detailsShowing ? '*' : '' }} 정보 조회
                                         </b-button>
@@ -434,7 +431,7 @@
                         <b-form-input v-model="api.manage.values.version" size="sm"></b-form-input>
                     </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="URL" label-for="input-sm">
-                        <b-form-input v-model="api.manage.values.url" size="sm"></b-form-input>
+                        <b-form-input v-model="api.manage.values.apiUrl" size="sm"></b-form-input>
                     </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Request-Body" label-for="input-sm">
                         <b-form-textarea
@@ -448,13 +445,13 @@
                     <b-button block variant="dark" @click="callApi">Call Api</b-button>
                 </b-card>
 
-                <b-card bg-variant="light" v-show="'' !== api.manage.values.responseBody">
-                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Response-Body" label-for="input-sm">
+                <b-card bg-variant="light" v-show="'' !== api.manage.values.response">
+                    <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Response" label-for="input-sm">
                         <b-form-textarea
-                                v-model="api.manage.values.responseBody"
+                                v-model="api.manage.values.response"
                                 size="sm"
                                 rows="5"
-                                placeholder="Response Body"
+                                placeholder="ResponseS"
                         ></b-form-textarea>
                     </b-form-group>
                 </b-card>

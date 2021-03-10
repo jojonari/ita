@@ -47,8 +47,10 @@ window.ita = new Vue({
                 fields: [
                     {key: 'idx', label: 'IDX', sortable: true},
                     {key: 'clientId', label: 'client-id', sortable: true},
-                    {key: 'appName', label: '앱 이름', sortable: true},
-                    {key: 'modifiedDate', label: '수정일시', sortable: true},
+                    {key: 'mallId', label: 'mall-id', sortable: true},
+                    {key: 'method', label: 'method', sortable: true},
+                    {key: 'version', label: 'version', sortable: true},
+                    {key: 'createdDate', label: '호출일시', sortable: true},
                     {key: 'actions', label: '관리'}
                 ],
                 items: []
@@ -59,18 +61,18 @@ window.ita = new Vue({
                 defaultValues: {
                     mallId: '',
                     clientId: '',
-                    method: 'get',
+                    method: 'GET',
                     version: '',
-                    url: '',
+                    apiUrl: '',
                     requestBody: '',
-                    responseBody: ''
+                    response: ''
                 },
                 options: {
                     methods: [
-                        {text: 'Get', value: 'get'},
-                        {text: 'Post', value: 'post'},
-                        {text: 'Put', value: 'put'},
-                        {text: 'Delete', value: 'delete'}
+                        {text: 'Get', value: 'GET'},
+                        {text: 'Post', value: 'POST'},
+                        {text: 'Put', value: 'PUT'},
+                        {text: 'Delete', value: 'DELETE'}
                     ],
                     mallIds: [
                         {text: 'jhbaek02', value: 'jhbaek02'},
@@ -156,6 +158,20 @@ window.ita = new Vue({
                     }
 
                     ita.app.list.items = res.data.data;
+                }, function (err) {
+                    console.error(err);
+                });
+        }, //api 리스트 조회
+        getApis: function () {
+            axios.get(CONTEXT_PATH + '/api/v1/apis' + this.queryStr(ita.searchForm))
+                .then(function (res) {
+                    if (res.data.code !== 200) {
+                        console.error(res);
+                        alert("res.data.message");
+                        return;
+                    }
+
+                    ita.api.list.items = res.data.data;
                 }, function (err) {
                     console.error(err);
                 });
@@ -286,6 +302,7 @@ window.ita = new Vue({
                 .then(function (res) {
                     if (res.data.code === 200) {
                         ita.api.list.items.push(res.data.data);
+                        ita.api.manage.values = res.data.data;
 
                         return;
                     }
@@ -316,7 +333,6 @@ window.ita = new Vue({
         },
         copyUrl: function (event) {
             var copyText = document.getElementById('common-input-copy');
-            // copyText.value = event.target.parentElement.firstElementChild.textContent;
             copyText.value = event.target.parentElement.getElementsByClassName('common-url')[0].textContent;
             copyText.style.display = '';
             copyText.select();
@@ -334,6 +350,7 @@ window.ita = new Vue({
         this.getScopeOption();
         this.createAppModalInit();
         this.getApps();
+        this.getApis();
         this.getWebhooks();
     },
     mounted() {

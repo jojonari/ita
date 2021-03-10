@@ -1,10 +1,12 @@
 package com.cafe24.apps.ita.entity;
 
-import com.cafe24.apps.ita.dto.PrivateAppDto;
 import com.cafe24.apps.ita.dto.PrivateUserDto;
 import com.cafe24.apps.ita.dto.UserDto;
 import com.cafe24.apps.ita.util.EncryptUtil;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -51,7 +53,7 @@ public class User extends TimeEntity {
     /**
      * convert DTO
      *
-     * @return
+     * @return PrivateUserDto
      */
     public PrivateUserDto convertPrivateDto() {
         return PrivateUserDto.builder().
@@ -62,10 +64,11 @@ public class User extends TimeEntity {
                 .teamName(this.teamName)
                 .build();
     }
+
     /**
      * convert DTO
      *
-     * @return
+     * @return UserDto
      */
     public UserDto convertDto() {
         return UserDto.builder().
