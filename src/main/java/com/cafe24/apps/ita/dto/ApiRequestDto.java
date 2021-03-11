@@ -11,7 +11,7 @@ public class ApiRequestDto {
     private String clientId;
     private String method;
     private String version;
-    private String apiUrl;
+    private String path;
     private String requestBody;
     private String response;
     private String createdDate;

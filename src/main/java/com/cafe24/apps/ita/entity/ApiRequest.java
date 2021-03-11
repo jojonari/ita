@@ -37,7 +37,7 @@ public class ApiRequest extends TimeEntity {
     private String version;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String apiUrl;
+    private String path;
 
     @Column(columnDefinition = "TEXT")
     private String requestBody;
@@ -46,13 +46,13 @@ public class ApiRequest extends TimeEntity {
     private String response;
 
     @Builder
-    public ApiRequest(Long idx, String clientId, String mallId, String method, String version, String apiUrl, String requestBody, String response) {
+    public ApiRequest(Long idx, String clientId, String mallId, String method, String version, String path, String requestBody, String response) {
         this.idx = idx;
         this.clientId = clientId;
         this.mallId = mallId;
         this.method = method;
         this.version = version;
-        this.apiUrl = apiUrl;
+        this.path = path;
         this.requestBody = requestBody;
         this.response = response;
     }
@@ -62,7 +62,7 @@ public class ApiRequest extends TimeEntity {
         this.mallId = api.getMallId();
         this.method = api.getMethod();
         this.version = api.getVersion();
-        this.apiUrl = api.getApiUrl();
+        this.path = api.getPath();
         this.requestBody = api.getRequestBody();
         this.response = JsonUtil.toJSON(response);
     }
@@ -79,7 +79,7 @@ public class ApiRequest extends TimeEntity {
                 .mallId(this.mallId)
                 .method(this.method)
                 .version(this.version)
-                .apiUrl(this.apiUrl)
+                .path(this.path)
                 .requestBody(this.requestBody)
                 .response(JsonUtil.convertPrettyJson(this.response))
                 .createdDate(this.createdDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))

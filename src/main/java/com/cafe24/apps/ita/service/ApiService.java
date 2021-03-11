@@ -41,7 +41,8 @@ public class ApiService {
         ResponseEntity<HashMap> response = null;
 
         try {
-            response = restTemplate.exchange(apiRequestDto.getApiUrl(), Objects.requireNonNull(HttpMethod.resolve(apiRequestDto.getMethod())), entity, HashMap.class);
+            String apiUrl = String.format("https://%s.cafe24api.com%s", apiRequestDto.getMallId(), apiRequestDto.getPath());
+            response = restTemplate.exchange(apiUrl, Objects.requireNonNull(HttpMethod.resolve(apiRequestDto.getMethod())), entity, HashMap.class);
         } catch (RestClientException e) {
             e.printStackTrace();
         }
@@ -66,5 +67,33 @@ public class ApiService {
     public List<ApiRequestDto> getApis(List<String> clientIds) {
         List<ApiRequest> apiRequests = apiRepository.findAllByClientIdIn(clientIds);
         return apiRequests.stream().map(ApiRequest::convertDto).collect(Collectors.toList());
+    }
+
+    /**
+     * api 단건 조회
+     *
+     * @param apiIdx
+     * @return
+     */
+    public ApiRequest getApi(Long apiIdx) {
+        return apiRepository.getOne(apiIdx);
+    }
+
+    /**
+     * api 단건 삭제
+     *
+     * @param apiRequest
+     */
+    public void deleteApi(ApiRequest apiRequest) {
+        apiRepository.delete(apiRequest);
+    }
+
+    /**
+     * api 전체 삭제
+     *
+     * @param clientIds
+     */
+    public void deleteApis(List<String> clientIds) {
+        apiRepository.deleteByClientIdIn(clientIds);
     }
 }

@@ -47,4 +47,23 @@ public class ApiController {
         List<ApiRequestDto> apiRequestDtos = apiService.getApis(clientIds);
         return ResponseDto.success(apiRequestDtos);
     }
+
+    @DeleteMapping("/api/{apiIdx}")
+    public ResponseDto deleteWebhook(@PathVariable Long apiIdx) {
+        ApiRequest apiRequest = apiService.getApi(apiIdx);
+        if (apiRequest == null) {
+            return ResponseDto.badRequest("api 요청이 없습니다.");
+        }
+
+        apiService.deleteApi(apiRequest);
+        return ResponseDto.success(null);
+    }
+
+    @DeleteMapping("/apis")
+    public ResponseDto deleteWebhook(HttpSession session) {
+        List<String> clientIds = appService.getAppClientIds(session, Optional.empty());
+
+        apiService.deleteApis(clientIds);
+        return ResponseDto.success(null);
+    }
 }

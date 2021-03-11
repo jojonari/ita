@@ -102,13 +102,15 @@
                                         <b-card>
                                             <b-row>
                                                 <b-col>
-                                                    <b-icon icon="app"></b-icon> <b>App 정보</b>
+                                                    <b-icon icon="app"></b-icon>
+                                                    <b>App 정보</b>
                                                     <ul>
                                                         <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
                                                     </ul>
                                                 </b-col>
                                                 <b-col>
-                                                    <b-icon icon="app"></b-icon> <b>개발자센터 입력정보</b>
+                                                    <b-icon icon="app"></b-icon>
+                                                    <b>개발자센터 입력정보</b>
                                                     <b-list-group style="max-width: 700px;">
                                                         <b-list-group-item class="d-flex align-items-center">
                                                             <b style="min-width: 100px;">app url</b>
@@ -139,6 +141,7 @@
                                 </template>
                                 <div th:align="right">
                                     <b-button v-b-modal.modal-manage-api pill variant="outline-secondary" size="sm" @click="callApiModalInit">V2X 호출</b-button>
+                                    <b-button pill variant="outline-danger" size="sm" @click="deleteApiAll">전체 삭제</b-button>
                                 </div>
 
                                 <b-table
@@ -152,7 +155,7 @@
                                         <b-button size="sm" @click="row.toggleDetails">
                                             {{ row.detailsShowing ? '*' : '' }} 정보 조회
                                         </b-button>
-                                        <b-button size="sm" @click="deleteApp( row.index )" variant="outline-danger">
+                                        <b-button size="sm" @click="deleteApi( row.index )" variant="outline-danger">
                                             삭제
                                         </b-button>
                                     </template>
@@ -171,7 +174,7 @@
                                     <b-badge pill variant="info">{{webhooksCount}}</b-badge>
                                 </template>
                                 <div th:align="right">
-                                    <b-button variant="outline-danger" size="sm" @click="deleteWebhookAll">전체 삭제</b-button>
+                                    <b-button pill variant="outline-danger" size="sm" @click="deleteWebhookAll">전체 삭제</b-button>
                                 </div>
                                 <b-table
                                         striped
@@ -246,12 +249,12 @@
                                           minlength="3"
                                           maxlength="20"
                                           v-model="app.manage.values.appName"
-                                          :state="stateAppName"
+                                          :state="stateApp_AppName"
                                           trim
                                           required
                             >
                             </b-form-input>
-                            <b-form-invalid-feedback :state="stateAppName">
+                            <b-form-invalid-feedback :state="stateApp_AppName">
                                 App Name must be 3-20 characters long.
                             </b-form-invalid-feedback>
                         </b-form-group>
@@ -266,10 +269,10 @@
                                           maxlength="22"
                                           minlength="22"
                                           v-model="app.manage.values.clientId"
-                                          :state="stateClientId"
+                                          :state="stateApp_ClientId"
                                           trim
                                           required></b-form-input>
-                            <b-form-invalid-feedback :state="stateClientId">
+                            <b-form-invalid-feedback :state="stateApp_ClientId">
                                 Client Id must be 22 characters long.
                             </b-form-invalid-feedback>
                         </b-form-group>
@@ -284,12 +287,12 @@
                                           maxlength="22"
                                           minlength="22"
                                           v-model="app.manage.values.secretKey"
-                                          :state="stateSecretKey"
+                                          :state="stateApp_SecretKey"
                                           trim
                                           required
                             >
                             </b-form-input>
-                            <b-form-invalid-feedback :state="stateSecretKey">
+                            <b-form-invalid-feedback :state="stateApp_SecretKey">
                                 Secret Key must be 22 characters long.
                             </b-form-invalid-feedback>
                         </b-form-group>
@@ -361,12 +364,12 @@
                             <b-row>
                                 <b-form-input
                                         v-model="scopesStr"
-                                        :state="stateScope"
+                                        :state="stateApp_Scope"
                                         trim
                                         disabled
                                 >
                                 </b-form-input>
-                                <b-form-invalid-feedback :state="stateScope">
+                                <b-form-invalid-feedback :state="stateApp_Scope">
                                     Please select at least one scope.
                                 </b-form-invalid-feedback>
                             </b-row>
@@ -386,13 +389,13 @@
             </div>
 
             <template #modal-footer="{ hide }">
-                <b-form-invalid-feedback :state="stateAppName && stateClientId && stateSecretKey && stateScope" align="right">
+                <b-form-invalid-feedback :state="stateApp_AppName && stateApp_ClientId && stateApp_SecretKey && stateApp_Scope" align="right">
                     앱 정보를 정확히 입력하세요.
                 </b-form-invalid-feedback>
-                <b-button size="sm" variant="outline-primary" @click="registerApp" :disabled="!(stateAppName && stateClientId && stateSecretKey && stateScope)" v-show="isRegisterApp">
+                <b-button size="sm" variant="outline-primary" @click="registerApp" :disabled="!(stateApp_AppName && stateApp_ClientId && stateApp_SecretKey && stateApp_Scope)" v-show="isRegisterApp">
                     등록
                 </b-button>
-                <b-button size="sm" variant="outline-primary" @click="modifyApp" :disabled="!(stateAppName && stateClientId && stateSecretKey && stateScope)" v-show="!isRegisterApp">
+                <b-button size="sm" variant="outline-primary" @click="modifyApp" :disabled="!(stateApp_AppName && stateApp_ClientId && stateApp_SecretKey && stateApp_Scope)" v-show="!isRegisterApp">
                     수정
                 </b-button>
                 <b-button size="sm" variant="outline-secondary" @click="hide('forget')">
@@ -407,18 +410,24 @@
             <div>
                 <b-card bg-variant="light">
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Client Id" label-for="input-sm">
-                        <b-form-select v-model="api.manage.values.clientId" :options="api.manage.options.clientIds" size="sm" >
+                        <b-form-select v-model="api.manage.values.clientId" :options="api.manage.options.clientIds" size="sm">
                             <template #first>
-                                <b-form-select-option :value="''" disabled>-- Please select an option --</b-form-select-option>
+                                <b-form-select-option :value="''" disabled :state="stateApi_ClientId">-- Please select an option --</b-form-select-option>
                             </template>
                         </b-form-select>
+                        <b-form-invalid-feedback :state="stateApi_ClientId">
+                            Please select.
+                        </b-form-invalid-feedback>
                     </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Mall Id" label-for="input-sm">
-                        <b-form-select v-model="api.manage.values.mallId" :options="api.manage.options.mallIds" size="sm" >
+                        <b-form-select v-model="api.manage.values.mallId" :options="api.manage.options.mallIds" size="sm" :state="stateApi_MallId">
                             <template #first>
                                 <b-form-select-option :value="''" disabled>-- Please select an option --</b-form-select-option>
                             </template>
                         </b-form-select>
+                        <b-form-invalid-feedback :state="stateApi_MallId">
+                            Please select.
+                        </b-form-invalid-feedback>
                     </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="HTTP Method" label-for="input-sm">
                         <b-form-radio-group
@@ -428,10 +437,16 @@
                     </b-form-group>
 
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Version" label-for="input-sm">
-                        <b-form-input v-model="api.manage.values.version" size="sm"></b-form-input>
+                        <b-form-input v-model="api.manage.values.version" size="sm" :state="stateApi_Version"></b-form-input>
+                        <b-form-invalid-feedback :state="stateApi_Version">
+                            Please select.
+                        </b-form-invalid-feedback>
                     </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="URL" label-for="input-sm">
-                        <b-form-input v-model="api.manage.values.apiUrl" size="sm"></b-form-input>
+                        <b-form-input v-model="api.manage.values.path" size="sm" :state="stateApi_Path" @change="substrPath"></b-form-input>
+                        <b-form-invalid-feedback :state="stateApi_Path">
+                            Please select.
+                        </b-form-invalid-feedback>
                     </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm" label="Request-Body" label-for="input-sm">
                         <b-form-textarea
@@ -441,8 +456,7 @@
                                 placeholder="Request Body"
                         ></b-form-textarea>
                     </b-form-group>
-
-                    <b-button block variant="dark" @click="callApi">Call Api</b-button>
+                    <b-button block variant="dark" @click="callApi" :disabled="!(stateApi_ClientId && stateApi_MallId && stateApi_Path && stateApi_Version)">Call Api</b-button>
                 </b-card>
 
                 <b-card bg-variant="light" v-show="'' !== api.manage.values.response">

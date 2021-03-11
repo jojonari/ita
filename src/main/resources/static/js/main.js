@@ -63,7 +63,7 @@ window.ita = new Vue({
                     clientId: '',
                     method: 'GET',
                     version: '',
-                    apiUrl: '',
+                    path: '',
                     requestBody: '',
                     response: ''
                 },
@@ -105,17 +105,17 @@ window.ita = new Vue({
         }
     },
     computed: {
-        stateAppName() {
+        stateApp_AppName() {
             let length = this.app.manage.values.appName.length;
             return length >= 3 && length <= 20;
         },
-        stateClientId() {
+        stateApp_ClientId() {
             return this.app.manage.values.clientId.length === 22
         },
-        stateSecretKey() {
+        stateApp_SecretKey() {
             return this.app.manage.values.secretKey.length === 22
         },
-        stateScope() {
+        stateApp_Scope() {
             return this.app.manage.values.scopes.length > 0;
         },
         scopesStr() {
@@ -129,6 +129,23 @@ window.ita = new Vue({
         },
         isRegisterApp() {
             return this.app.manage.mode === 'register';
+        },
+        stateApi_ClientId() {
+            return this.api.manage.values.clientId !== '';
+        },
+        stateApi_MallId() {
+            return this.api.manage.values.mallId !== '';
+        },
+        stateApi_Path() {
+            let path = this.api.manage.values.path || '';
+            return path.indexOf('/api/v2/') === 0;
+        },
+        stateApi_Version() {
+            if (this.api.manage.values.version === '') {
+                return true;
+            }
+
+            return this.regexVersion();
         }
     },
     methods: {
@@ -277,7 +294,7 @@ window.ita = new Vue({
                 });
         },
         //웹훅 전체 삭제
-        deleteWebhookAll: function (idx) {
+        deleteWebhookAll: function () {
             if (confirm('수신한 전체 웹훅을 삭제하시겠습니까?') === false) {
                 return;
             }
@@ -287,6 +304,45 @@ window.ita = new Vue({
                 .then(function (res) {
                     if (res.data.code === 200) {
                         ita.webhook.list.items = [];
+
+                        return;
+                    }
+
+                    alert("웹훅 삭제에 실패했습니다.(" + res.data.message + ")");
+                }, function (err) {
+                    console.error(err);
+                });
+        },
+        //api 전체 삭제
+        deleteApiAll: function () {
+            if (confirm('전체 Api 요청을 삭제하시겠습니까?') === false) {
+                return;
+            }
+
+            let sUrl = CONTEXT_PATH + '/api/v1/apis';
+            axios.delete(sUrl)
+                .then(function (res) {
+                    if (res.data.code === 200) {
+                        ita.api.list.items = [];
+
+                        return;
+                    }
+
+                    alert("전체 Api 요청을 삭제에 실패했습니다. (" + res.data.message + ")");
+                }, function (err) {
+                    console.error(err);
+                });
+        },//api 단건 삭제
+        deleteApi: function (idx) {
+            if (confirm(this.api.list.items[idx].idx + '를 삭제하시겠습니까?') === false) {
+                return;
+            }
+
+            let sUrl = CONTEXT_PATH + '/api/v1/api/' + this.api.list.items[idx].idx;
+            axios.delete(sUrl)
+                .then(function (res) {
+                    if (res.data.code === 200) {
+                        ita.api.list.items.splice(idx, 1);
 
                         return;
                     }
@@ -326,6 +382,15 @@ window.ita = new Vue({
                 return '';
             }
             return '?' + Object.entries(params).map(e => e.join('=')).join('&');
+        },
+        substrPath: function () {
+            let path = this.api.manage.values.path || '';
+            if (path.indexOf('/api/') > 0)
+                this.api.manage.values.path = path.substr(path.indexOf('/api/'), path.length)
+        },
+        regexVersion: function () {
+            var regExp = /^\d{4}-\d{2}-\d{2}$/;
+            return regExp.test(this.api.manage.values.version);
         },
         searchAll: function () {
             this.getApps();
