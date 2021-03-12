@@ -76,7 +76,7 @@
                                     <b-badge pill variant="info">{{appsCount}}</b-badge>
                                 </template>
                                 <div th:align="right">
-                                    <b-button v-b-modal.modal-manage-app pill variant="outline-secondary" size="sm" @click="createAppModalInit">APP 추가</b-button>
+                                    <b-button v-b-modal.modal-manage-app pill variant="secondary" size="sm" @click="createAppModalInit">APP 추가</b-button>
                                 </div>
 
                                 <b-table
@@ -85,15 +85,17 @@
                                         show-empty
                                         :items="app.list.items"
                                         :fields="app.list.fields"
+                                        :sort-by.sync="app.list.sort"
+                                        :sort-desc.sync="app.list.sortDesc"
                                 >
                                     <template #cell(actions)="row">
                                         <b-button size="sm" @click="row.toggleDetails">
                                             {{ row.detailsShowing ? '*' : '' }} 정보 조회
                                         </b-button>
-                                        <b-button size="sm" @click="setAppValue(row.item, row.index, $event.target)" class="mr-1">
+                                        <b-button size="sm" @click="setAppValue(row.item, row.index, $event.target)" class="mr-1" variant="warning">
                                             수정
                                         </b-button>
-                                        <b-button size="sm" @click="deleteApp( row.index )" variant="outline-danger">
+                                        <b-button size="sm" @click="deleteApp( row.index )" variant="danger">
                                             삭제
                                         </b-button>
                                     </template>
@@ -138,10 +140,11 @@
                                 <template #title>
                                     <b-icon icon="box-arrow-up-left"></b-icon>
                                     API
+                                    <b-badge pill variant="info">{{apisCount}}</b-badge>
                                 </template>
                                 <div th:align="right">
-                                    <b-button v-b-modal.modal-manage-api pill variant="outline-secondary" size="sm" @click="callApiModalInit">V2X 호출</b-button>
-                                    <b-button pill variant="outline-danger" size="sm" @click="deleteApiAll">전체 삭제</b-button>
+                                    <b-button v-b-modal.modal-manage-api pill variant="secondary" size="sm" @click="callApiModalInit">V2X 호출</b-button>
+                                    <b-button pill variant="danger" size="sm" @click="deleteApiAll">전체 삭제</b-button>
                                 </div>
 
                                 <b-table
@@ -150,20 +153,31 @@
                                         show-empty
                                         :items="api.list.items"
                                         :fields="api.list.fields"
+                                        :sort-by.sync="api.list.sort"
+                                        :sort-desc.sync="api.list.sortDesc"
                                 >
                                     <template #cell(actions)="row">
-                                        <b-button size="sm" @click="row.toggleDetails">
-                                            {{ row.detailsShowing ? '*' : '' }} 정보 조회
+                                        <b-button size="sm" @click="retryCallApi( row.item, $event.target )" variant="info">
+                                            재호출
                                         </b-button>
-                                        <b-button size="sm" @click="deleteApi( row.index )" variant="outline-danger">
+                                        <b-button size="sm" @click="deleteApi( row.index )" variant="danger">
                                             삭제
                                         </b-button>
                                     </template>
 
-                                    <template #row-details="row">
-                                        <b-card>
-
-                                        </b-card>
+                                    <template #cell(requestBody)="row">
+                                        <b-form-textarea
+                                                v-model="row.value"
+                                                rows="3"
+                                                max-rows="3"
+                                        ></b-form-textarea>
+                                    </template>
+                                    <template #cell(response)="row">
+                                        <b-form-textarea
+                                                v-model="row.value"
+                                                rows="3"
+                                                max-rows="3"
+                                        ></b-form-textarea>
                                     </template>
                                 </b-table>
                             </b-tab>
@@ -174,7 +188,7 @@
                                     <b-badge pill variant="info">{{webhooksCount}}</b-badge>
                                 </template>
                                 <div th:align="right">
-                                    <b-button pill variant="outline-danger" size="sm" @click="deleteWebhookAll">전체 삭제</b-button>
+                                    <b-button pill variant="danger" size="sm" @click="deleteWebhookAll">전체 삭제</b-button>
                                 </div>
                                 <b-table
                                         striped
@@ -182,18 +196,19 @@
                                         show-empty
                                         :items="webhook.list.items"
                                         :fields="webhook.list.fields"
+                                        :sort-by.sync="webhook.list.sort"
+                                        :sort-desc.sync="webhook.list.sortDesc"
                                 >
                                     <template #cell(resource)="row">
                                         <b-form-textarea
                                                 v-model="row.value"
-                                                placeholder="Enter something..."
                                                 rows="3"
                                                 max-rows="3"
                                         ></b-form-textarea>
                                     </template>
 
                                     <template #cell(actions)="row">
-                                        <b-button size="sm" @click="deleteWebhook( row.index )" variant="outline-danger">
+                                        <b-button size="sm" @click="deleteWebhook( row.index )" variant="danger">
                                             삭제
                                         </b-button>
                                     </template>
@@ -456,7 +471,11 @@
                                 placeholder="Request Body"
                         ></b-form-textarea>
                     </b-form-group>
-                    <b-button block variant="dark" @click="callApi" :disabled="!(stateApi_ClientId && stateApi_MallId && stateApi_Path && stateApi_Version)">Call Api</b-button>
+                    <b-button block variant="dark" @click="callApi" :disabled="(!(stateApi_ClientId && stateApi_MallId && stateApi_Path && stateApi_Version)) || api.manage.apiCalling">
+                        <b-spinner small type="grow" v-show="api.manage.apiCalling"></b-spinner>
+                        Call Api
+                        <b-spinner small type="grow" v-show="api.manage.apiCalling"></b-spinner>
+                    </b-button>
                 </b-card>
 
                 <b-card bg-variant="light" v-show="'' !== api.manage.values.response">
