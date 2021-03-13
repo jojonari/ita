@@ -3,6 +3,7 @@ package com.cafe24.apps.ita.controller;
 import com.cafe24.apps.ita.dto.AccessTokenDto;
 import com.cafe24.apps.ita.dto.ApiRequestDto;
 import com.cafe24.apps.ita.dto.ResponseDto;
+import com.cafe24.apps.ita.dto.TextValue;
 import com.cafe24.apps.ita.entity.ApiRequest;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.service.ApiService;
@@ -41,7 +42,7 @@ public class ApiController {
     }
 
     @GetMapping("/apis")
-    public ResponseDto getWebhooks(HttpSession session, Optional<String> clientId) {
+    public ResponseDto getApis(HttpSession session, Optional<String> clientId) {
         List<String> clientIds = appService.getAppClientIds(session, clientId);
 
         List<ApiRequestDto> apiRequestDtos = apiService.getApis(clientIds);
@@ -49,7 +50,7 @@ public class ApiController {
     }
 
     @DeleteMapping("/api/{apiIdx}")
-    public ResponseDto deleteWebhook(@PathVariable Long apiIdx) {
+    public ResponseDto deleteApi(@PathVariable Long apiIdx) {
         ApiRequest apiRequest = apiService.getApi(apiIdx);
         if (apiRequest == null) {
             return ResponseDto.badRequest("api 요청이 없습니다.");
@@ -60,10 +61,18 @@ public class ApiController {
     }
 
     @DeleteMapping("/apis")
-    public ResponseDto deleteWebhook(HttpSession session) {
+    public ResponseDto deleteApiAll(HttpSession session) {
         List<String> clientIds = appService.getAppClientIds(session, Optional.empty());
 
         apiService.deleteApis(clientIds);
         return ResponseDto.success(null);
+    }
+
+    @GetMapping("/api/{clientId}/mallIds")
+    public ResponseDto getApiMallIds(HttpSession session, @PathVariable String clientId) {
+        App app = appService.getApp(session, clientId);
+        List<TextValue> textValues = authService.getTextValuesSetMallId(app);
+        return ResponseDto.success(textValues);
+
     }
 }

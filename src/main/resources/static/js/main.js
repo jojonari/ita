@@ -81,12 +81,7 @@ window.ita = new Vue({
                         {text: 'Put', value: 'PUT'},
                         {text: 'Delete', value: 'DELETE'}
                     ],
-                    mallIds: [
-                        {text: 'jhbaek02', value: 'jhbaek02'},
-                        {text: 'Post', value: 'post'},
-                        {text: 'Put', value: 'put'},
-                        {text: 'Delete', value: 'delete', disabled: true}
-                    ],
+                    mallIds: [],
                     clientIds: []
                 }
             }
@@ -137,6 +132,7 @@ window.ita = new Vue({
             return this.app.manage.mode === 'register';
         },
         stateApi_ClientId() {
+            this.setMallIdsApiOption();
             return this.api.manage.values.clientId !== '';
         },
         stateApi_MallId() {
@@ -407,6 +403,26 @@ window.ita = new Vue({
 
             this.api.manage.options.clientIds = clientIds;
         },
+        setMallIdsApiOption: function () {
+            if (ita.api.manage.values.clientId === '') {
+                return;
+            }
+
+            let url = CONTEXT_PATH + '/api/v1/api/' + ita.api.manage.values.clientId + '/mallIds';
+            axios.get(url)
+                .then(function (res) {
+                    if (res.data.code === 200) {
+                        ita.api.manage.options.mallIds = res.data.data;
+
+                        return;
+                    }
+
+                    console.error(res);
+                    alert("api 호출이 가능한 몰아이디 조회에 실패했습니다.(" + res.data.message + ")");
+                }, function (err) {
+                    console.error(err);
+                });
+        },
         queryStr: function (params) {
             if (params === undefined) {
                 return '';
@@ -435,6 +451,9 @@ window.ita = new Vue({
             document.execCommand("copy");
             copyText.style.display = 'none';
         }
+    },
+    watch() {
+
     },
     created() {
         var searchValue = document.getElementsByClassName('inp-search-client-id');

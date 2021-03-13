@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +15,6 @@ public interface AccessTokenRepository extends JpaRepository<AccessToken, Long> 
     Optional<AccessToken> findByAppAndMallId(App app, String mallId);
 
     void deleteByClientIdAndMallId(String clientId, String mallId);
+
+    List<AccessToken> findAllByApp(App app);
 }

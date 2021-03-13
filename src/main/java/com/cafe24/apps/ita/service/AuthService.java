@@ -1,9 +1,6 @@
 package com.cafe24.apps.ita.service;
 
-import com.cafe24.apps.ita.dto.AccessTokenDto;
-import com.cafe24.apps.ita.dto.AppDto;
-import com.cafe24.apps.ita.dto.CodeDto;
-import com.cafe24.apps.ita.dto.MallDto;
+import com.cafe24.apps.ita.dto.*;
 import com.cafe24.apps.ita.entity.AccessToken;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.repository.AccessTokenRepository;
@@ -23,7 +20,9 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
@@ -209,5 +208,16 @@ public class AuthService {
         this.saveAccessToken(accessTokenRefresh);
 
         return accessTokenDto;
+    }
+
+    /**
+     * Api 호출용 mallIds의 TextValue 조회
+     * @param app
+     * @return
+     */
+    public List<TextValue> getTextValuesSetMallId(App app) {
+        List<AccessToken> accessTokens = accessTokenRepository.findAllByApp(app);
+        System.out.println(accessTokens);
+       return accessTokens.stream().map(AccessToken::convertTextValueSetMallId).collect(Collectors.toList());
     }
 }

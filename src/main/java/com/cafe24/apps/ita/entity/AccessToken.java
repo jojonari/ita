@@ -1,6 +1,7 @@
 package com.cafe24.apps.ita.entity;
 
 import com.cafe24.apps.ita.dto.AccessTokenDto;
+import com.cafe24.apps.ita.dto.TextValue;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -84,6 +85,18 @@ public class AccessToken extends TimeEntity {
                 .user_id(this.userId)
                 .scopes(this.scopes)
                 .build();
+    }
+
+    /**
+     * convertTextValueSetMallId
+     * @return TextValue
+     */
+    public TextValue convertTextValueSetMallId(){
+        if (this.isRefreshTokenExpire()){
+            return new TextValue(this.mallId, this.mallId, true);
+        }
+
+        return new TextValue(this.mallId, this.mallId);
     }
 
     public void setApp(App app) {

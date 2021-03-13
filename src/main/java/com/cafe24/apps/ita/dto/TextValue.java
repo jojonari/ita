@@ -8,7 +8,13 @@ import lombok.EqualsAndHashCode;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class TexeValue extends TimeEntity {
+public class TextValue extends TimeEntity {
     private String text;
     private String value;
+    private boolean disabled;
+
+    public TextValue(String text, String value) {
+        this.text = text;
+        this.value = value;
+    }
 }

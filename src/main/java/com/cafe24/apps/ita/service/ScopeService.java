@@ -1,6 +1,6 @@
 package com.cafe24.apps.ita.service;
 
-import com.cafe24.apps.ita.dto.TexeValue;
+import com.cafe24.apps.ita.dto.TextValue;
 import com.cafe24.apps.ita.entity.Scope;
 import com.cafe24.apps.ita.repository.ScopeRepository;
 import org.springframework.stereotype.Service;
@@ -22,13 +22,13 @@ public class ScopeService {
      *
      * @return
      */
-    public List<TexeValue> getScopesOptions() {
+    public List<TextValue> getScopesOptions() {
         List<Scope> scopes = scopeRepository.findAll();
-        List<TexeValue> texeValues = new ArrayList<>();
+        List<TextValue> textValues = new ArrayList<>();
         for (Scope scope : scopes) {
-            texeValues.add(scope.ToTextValue());
+            textValues.add(scope.ToTextValue());
         }
 
-        return texeValues;
+        return textValues;
     }
 }

@@ -1,6 +1,6 @@
 package com.cafe24.apps.ita.entity;
 
-import com.cafe24.apps.ita.dto.TexeValue;
+import com.cafe24.apps.ita.dto.TextValue;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,8 +39,8 @@ public class Scope extends TimeEntity {
         this.codeName = codeName;
     }
 
-    public TexeValue ToTextValue() {
-        return new TexeValue(getText(), getValue());
+    public TextValue ToTextValue() {
+        return new TextValue(getText(), getValue());
     }
 
     private String getText() {
