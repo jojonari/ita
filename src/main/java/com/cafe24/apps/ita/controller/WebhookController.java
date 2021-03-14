@@ -7,6 +7,9 @@ import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.Webhook;
 import com.cafe24.apps.ita.service.AppService;
 import com.cafe24.apps.ita.service.WebhookService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -35,10 +38,10 @@ public class WebhookController {
     }
 
     @GetMapping
-    public ResponseDto getWebhooks(HttpSession session, Optional<String> clientId) {
+    public ResponseDto getWebhooks(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC, size = 100) Pageable pageable) {
         List<String> clientIds = appService.getAppClientIds(session, clientId);
 
-        List<WebhookDto> webhooks = webhookService.getWebhooks(clientIds);
+        List<WebhookDto> webhooks = webhookService.getWebhooks(pageable, clientIds);
         return ResponseDto.success(webhooks);
     }
 

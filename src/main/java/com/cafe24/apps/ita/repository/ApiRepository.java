@@ -1,6 +1,7 @@
 package com.cafe24.apps.ita.repository;
 
 import com.cafe24.apps.ita.entity.ApiRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,8 +12,7 @@ import java.util.List;
 @Transactional
 public interface ApiRepository extends JpaRepository<ApiRequest, Long> {
 
-    List<ApiRequest> findAllByClientIdIn(List<String> clientId);
+    List<ApiRequest> findAllByClientIdIn(Pageable pageable, List<String> clientId);
 
     void deleteByClientIdIn(List<String> clientIds);
-
 }

@@ -1,6 +1,7 @@
 package com.cafe24.apps.ita.repository;
 
 import com.cafe24.apps.ita.entity.Webhook;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @Transactional
 public interface WebhookRepository extends JpaRepository<Webhook, Long> {
 
-    List<Webhook> findAllByClientIdIn(List<String> clientId);
+    List<Webhook> findAllByClientIdIn(Pageable pageable, List<String> clientId);
 
     void deleteByClientIdIn(List<String> clientIds);
 }

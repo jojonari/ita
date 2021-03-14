@@ -4,6 +4,7 @@ import com.cafe24.apps.ita.dto.AccessTokenDto;
 import com.cafe24.apps.ita.dto.ApiRequestDto;
 import com.cafe24.apps.ita.entity.ApiRequest;
 import com.cafe24.apps.ita.repository.ApiRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -61,11 +62,12 @@ public class ApiService {
     /**
      * api 리스트 조회
      *
+     * @param pageable
      * @param clientIds
      * @return
      */
-    public List<ApiRequestDto> getApis(List<String> clientIds) {
-        List<ApiRequest> apiRequests = apiRepository.findAllByClientIdIn(clientIds);
+    public List<ApiRequestDto> getApis(Pageable pageable, List<String> clientIds) {
+        List<ApiRequest> apiRequests = apiRepository.findAllByClientIdIn(pageable, clientIds);
         return apiRequests.stream().map(ApiRequest::convertDto).collect(Collectors.toList());
     }
 

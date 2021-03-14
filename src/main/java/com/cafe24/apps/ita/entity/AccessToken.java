@@ -89,10 +89,11 @@ public class AccessToken extends TimeEntity {
 
     /**
      * convertTextValueSetMallId
+     *
      * @return TextValue
      */
-    public TextValue convertTextValueSetMallId(){
-        if (this.isRefreshTokenExpire()){
+    public TextValue convertTextValueSetMallId() {
+        if (this.isRefreshTokenExpire()) {
             return new TextValue(this.mallId, this.mallId, true);
         }
 

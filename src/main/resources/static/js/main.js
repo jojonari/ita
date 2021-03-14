@@ -404,8 +404,9 @@ window.ita = new Vue({
             this.api.manage.options.clientIds = clientIds;
         },
         setMallIdsApiOption: function () {
-            if (ita.api.manage.values.clientId === '') {
-                return;
+            if (this.api.manage.values.clientId === '') {
+                this.api.manage.options.mallIds = [];
+                return false;
             }
 
             let url = CONTEXT_PATH + '/api/v1/api/' + ita.api.manage.values.clientId + '/mallIds';
@@ -461,12 +462,13 @@ window.ita = new Vue({
             this.searchForm.clientId = searchValue[0].dataset.client_id;
         }
 
-        this.getScopeOption();
-        this.createAppModalInit();
-        this.callApiModalInit();
         this.getApps();
         this.getApis();
         this.getWebhooks();
+
+        this.getScopeOption();
+        this.createAppModalInit();
+        this.callApiModalInit();
     },
     mounted() {
     }

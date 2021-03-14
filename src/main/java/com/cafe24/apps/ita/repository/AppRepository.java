@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -18,4 +19,7 @@ public interface AppRepository extends JpaRepository<App, Long> {
     List<App> findAllByUserAndClientIdContainingOrderByIdxDesc(User user, String clientId);
 
     App findByUserAndClientId(User user, String clientId);
+
+    List<App> findAllBy(User user, String clientId);
+
 }

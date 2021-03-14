@@ -6,6 +6,7 @@ import com.cafe24.apps.ita.entity.Webhook;
 import com.cafe24.apps.ita.repository.AccessTokenRepository;
 import com.cafe24.apps.ita.repository.WebhookRepository;
 import com.google.gson.internal.LinkedTreeMap;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -55,11 +56,12 @@ public class WebhookService {
     /**
      * webhooks 조회
      *
+     * @param pageable
      * @param clientIds
      * @return
      */
-    public List<WebhookDto> getWebhooks(List<String> clientIds) {
-        List<Webhook> webhooks = webhookRepository.findAllByClientIdIn(clientIds);
+    public List<WebhookDto> getWebhooks(Pageable pageable, List<String> clientIds) {
+        List<Webhook> webhooks = webhookRepository.findAllByClientIdIn(pageable, clientIds);
 
         return webhooks.stream().map(Webhook::convertDto).collect(Collectors.toList());
     }

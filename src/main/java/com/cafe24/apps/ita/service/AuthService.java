@@ -212,12 +212,13 @@ public class AuthService {
 
     /**
      * Api 호출용 mallIds의 TextValue 조회
+     *
      * @param app
      * @return
      */
     public List<TextValue> getTextValuesSetMallId(App app) {
         List<AccessToken> accessTokens = accessTokenRepository.findAllByApp(app);
-        System.out.println(accessTokens);
-       return accessTokens.stream().map(AccessToken::convertTextValueSetMallId).collect(Collectors.toList());
+
+        return accessTokens.stream().map(AccessToken::convertTextValueSetMallId).collect(Collectors.toList());
     }
 }
