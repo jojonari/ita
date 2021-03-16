@@ -179,7 +179,10 @@ window.ita = new Vue({
         },
         //App 리스트 조회
         getApps: function () {
-            axios.get(CONTEXT_PATH + '/api/v1/apps' + this.queryStr(ita.searchForm))
+            var query = ita.searchForm ? JSON.parse(JSON.stringify(ita.searchForm)) : {};
+            query.sort = this.app.list.sort + ','+ (this.app.list.sortDesc ? 'desc':'asc');
+
+            axios.get(CONTEXT_PATH + '/api/v1/apps' + this.queryStr(query))
                 .then(function (res) {
                     if (res.data.code !== 200) {
                         console.error(res);
@@ -191,9 +194,13 @@ window.ita = new Vue({
                 }, function (err) {
                     console.error(err);
                 });
-        }, //api 리스트 조회
+        },
+        //api 리스트 조회
         getApis: function () {
-            axios.get(CONTEXT_PATH + '/api/v1/apis' + this.queryStr(ita.searchForm))
+            var query = ita.searchForm ? JSON.parse(JSON.stringify(ita.searchForm)) : {};
+            query.sort = this.api.list.sort + ','+ (this.api.list.sortDesc ? 'desc':'asc');
+
+            axios.get(CONTEXT_PATH + '/api/v1/apis' + this.queryStr(query))
                 .then(function (res) {
                     if (res.data.code !== 200) {
                         console.error(res);
@@ -207,7 +214,10 @@ window.ita = new Vue({
                 });
         }, //webhook 리스트 조회
         getWebhooks: function () {
-            axios.get(CONTEXT_PATH + '/api/v1/webhooks' + this.queryStr(ita.searchForm))
+            var query = ita.searchForm ? JSON.parse(JSON.stringify(ita.searchForm)) : {};
+            query.sort = this.webhook.list.sort + ','+ (this.webhook.list.sortDesc ? 'desc':'asc');
+
+            axios.get(CONTEXT_PATH + '/api/v1/webhooks' + this.queryStr(query))
                 .then(function (res) {
                     if (res.data.code !== 200) {
                         console.error(res);
@@ -219,6 +229,21 @@ window.ita = new Vue({
                 }, function (err) {
                     console.error(err);
                 });
+        },
+        getAppsSort: function (ctx) {
+            this.app.list.sort = ctx.sortBy;
+            this.app.list.sortDesc = ctx.sortDesc;
+            this.getApps();
+        },
+        getApisSort: function (ctx) {
+            this.api.list.sort = ctx.sortBy;
+            this.api.list.sortDesc = ctx.sortDesc;
+            this.getApis();
+        },
+        getWebhooksSort: function (ctx) {
+            this.webhook.list.sort = ctx.sortBy;
+            this.webhook.list.sortDesc = ctx.sortDesc;
+            this.getWebhooks();
         },
         //스코프 옵션 초기화
         getScopeOption: function () {

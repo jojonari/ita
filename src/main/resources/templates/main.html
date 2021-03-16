@@ -87,6 +87,7 @@
                                         :fields="app.list.fields"
                                         :sort-by.sync="app.list.sort"
                                         :sort-desc.sync="app.list.sortDesc"
+                                        @sort-changed="getAppsSort"
                                 >
                                     <template #cell(actions)="row">
                                         <b-button size="sm" @click="row.toggleDetails">
@@ -155,6 +156,7 @@
                                         :fields="api.list.fields"
                                         :sort-by.sync="api.list.sort"
                                         :sort-desc.sync="api.list.sortDesc"
+                                        @sort-changed="getApisSort"
                                 >
                                     <template #cell(actions)="row">
                                         <b-button size="sm" @click="retryCallApi( row.item, $event.target )" variant="info">
@@ -198,6 +200,7 @@
                                         :fields="webhook.list.fields"
                                         :sort-by.sync="webhook.list.sort"
                                         :sort-desc.sync="webhook.list.sortDesc"
+                                        @sort-changed="getWebhooksSort"
                                 >
                                     <template #cell(resource)="row">
                                         <b-form-textarea

@@ -9,29 +9,21 @@
     <link type="text/css" rel="stylesheet" th:href="@{/vendor/css/bootstrap.min.css}"/>
 </head>
 <body>
-
 <div class="container">
-    <div class="jumbotron" style="margin-top: 50px;">
-        <h1 class="display-4">Hello, world!</h1>
-        <p class="lead">앱을 테스트하기 위한 통합 테스트 툴입니다. </p>
-        <hr class="my-4">
-        <p>이용가이드를 먼저 확인해주세요.</p>
-        <a class="btn btn-outline-secondary btn-lg" href="#" role="button">Learn more</a>
-    </div>
-
-    <h3>SIGN-IN</h3>
+    <br>
+    <h3 class="text-primary">SIGN-IN</h3>
     <div class="alert alert-danger" role="alert" th:text="${error_msg}" th:if="${error_msg}"></div>
     <form th:action="@{/sign-in}" method="post">
         <input th:type="hidden" th:name="callbackUrl" th:value="${callbackUrl}">
 
         <div class="form-group">
-            <label for="input-text-id">ID</label>
-            <input type="text" class="form-control" id="input-text-id" name="userId" aria-describedby="idHelp">
-            <small id="idHelp" class="form-text text-muted">We'll never share your ID with anyone else.</small>
+            <label for="input-text-id">User id</label>
+            <input type="text" class="form-control" id="input-text-id" name="userId" required>
         </div>
         <div class="form-group">
             <label for="input-password-pw">Password</label>
-            <input type="password" class="form-control" id="input-password-pw" name="userPw">
+            <input type="password" class="form-control" id="input-password-pw" name="userPw" aria-describedby="pwHelp" required>
+            <small id="pwHelp" class="form-text text-muted">We'll never share your Password with anyone else.</small>
         </div>
         <div class="clearfix">
             <button type="submit" class="btn btn-primary float-left">SIGN-IN</button>

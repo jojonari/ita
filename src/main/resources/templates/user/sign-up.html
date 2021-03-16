@@ -1,21 +1,41 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
     <title>ITA</title>
+    <link type="text/css" rel="stylesheet" th:href="@{/vendor/css/bootstrap.min.css}"/>
 </head>
 <body>
-<form th:action="@{/sign-up}" method="post">
-    회원 아이디 : <input type="text" name="userId" th:value="${user == null ? '' : user.getUserId()}"><br>
-    회원 비밀번호 : <input type="password" name="userPw"><br>
-    회원 이름 : <input type="text" name="userName" th:value="${user == null ? '' : user.getUserName()}"><br>
-    팀 이름 : <input type="text" name="teamName" th:value="${user == null ? '' : user.getTeamName()}"><br>
-    <input type="submit" th:value="SIGN-UP">
-    <a th:href="@{/sign-in}">
-        <b-icon icon="person-fill"></b-icon>
-        <input type="button" th:value="SIGN-IN"></a>
+<div class="container">
+    <br>
+    <h3 class="text-info">SIGN-UP</h3>
+    <div class="alert alert-danger" role="alert" th:text="${error_msg}" th:if="${error_msg}"></div>
+    <form th:action="@{/sign-up}" method="post">
+        <div class="form-group">
+            <label for="input-text-user-id">User id</label>
+            <input type="text" id="input-text-user-id" class="form-control" name="userId" th:value="${user == null ? '' : user.getUserId()}"  required>
+        </div>
+        <div class="form-group">
+            <label for="input-password-pw">Password</label>
+            <input type="password" class="form-control" id="input-password-pw" name="userPw" required>
+        </div>
+        <div class="form-group">
+            <label for="input-user-name">User name</label>
+            <input type="text" class="form-control" id="input-user-name" name="userName" required>
+        </div>
+        <div class="form-group">
+            <label for="input-user-team">Team name</label>
+            <input type="text" class="form-control" id="input-user-team" name="teamName" required>
+        </div>
+        <div class="clearfix">
+            <button type="submit" class="btn btn-info float-left">SIGN-Up</button>
+            <a class="btn btn-primary float-right" th:href="@{/sign-in}" role="button">SIGN-IN</a>
+        </div>
+    </form>
 
-</form>
-<div th:text="${error_msg}"></div>
+</div>
 </body>
 </html>
