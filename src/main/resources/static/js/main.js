@@ -8,6 +8,7 @@ window.ita = new Vue({
             list: {
                 sort: 'idx',
                 sortDesc: true,
+                page: 0,
                 fields: [
                     {key: 'idx', label: 'IDX', sortable: true},
                     {key: 'clientId', label: 'client-id', sortable: true},
@@ -48,6 +49,7 @@ window.ita = new Vue({
             list: {
                 sort: 'idx',
                 sortDesc: true,
+                page: 0,
                 fields: [
                     {key: 'idx', label: 'IDX', sortable: true},
                     {key: 'clientId', label: 'client-id', sortable: true},
@@ -90,6 +92,7 @@ window.ita = new Vue({
             list: {
                 sort: 'idx',
                 sortDesc: true,
+                page: 0,
                 fields: [
                     {key: 'idx', label: 'IDX', sortable: true},
                     {key: 'clientId', label: 'client-id', sortable: true},
@@ -173,59 +176,48 @@ window.ita = new Vue({
             this.api.manage.values.version = item.version
             this.api.manage.values.path = item.path;
             this.api.manage.values.requestBody = item.requestBody;
+            this.api.manage.values.response = '';
             this.setClientIdsApiOption();
 
             this.$root.$emit('bv::show::modal', 'modal-manage-api', button);
         },
         //App 리스트 조회
-        getApps: function () {
-            var query = ita.searchForm ? JSON.parse(JSON.stringify(ita.searchForm)) : {};
-            query.sort = this.app.list.sort + ','+ (this.app.list.sortDesc ? 'desc':'asc');
-
-            axios.get(CONTEXT_PATH + '/api/v1/apps' + this.queryStr(query))
-                .then(function (res) {
-                    if (res.data.code !== 200) {
-                        console.error(res);
-                        alert("res.data.message");
-                        return;
-                    }
-
-                    ita.app.list.items = res.data.data;
-                }, function (err) {
-                    console.error(err);
-                });
+        getApps: function (addPage) {
+            this.getListData(this.app.list, '/api/v1/apps', addPage);
         },
         //api 리스트 조회
-        getApis: function () {
-            var query = ita.searchForm ? JSON.parse(JSON.stringify(ita.searchForm)) : {};
-            query.sort = this.api.list.sort + ','+ (this.api.list.sortDesc ? 'desc':'asc');
-
-            axios.get(CONTEXT_PATH + '/api/v1/apis' + this.queryStr(query))
-                .then(function (res) {
-                    if (res.data.code !== 200) {
-                        console.error(res);
-                        alert("res.data.message");
-                        return;
-                    }
-
-                    ita.api.list.items = res.data.data;
-                }, function (err) {
-                    console.error(err);
-                });
+        getApis: function (addPage) {
+            this.getListData(this.api.list, '/api/v1/apis', addPage);
         }, //webhook 리스트 조회
-        getWebhooks: function () {
-            var query = ita.searchForm ? JSON.parse(JSON.stringify(ita.searchForm)) : {};
-            query.sort = this.webhook.list.sort + ','+ (this.webhook.list.sortDesc ? 'desc':'asc');
+        getWebhooks: function (addPage) {
+            this.getListData(this.webhook.list, '/api/v1/webhooks', addPage);
+        },
+        //통합조회
+        getListData: function (list, path, addPage) {
+            var query = this.searchForm ? JSON.parse(JSON.stringify(this.searchForm)) : {};
+            query.sort = list.sort + ',' + (list.sortDesc ? 'desc' : 'asc');
+            query.page = list.page + (addPage || 0);
 
-            axios.get(CONTEXT_PATH + '/api/v1/webhooks' + this.queryStr(query))
+            if (query.page < 0) {
+                alert('첫 페이지 입니다.');
+                return;
+            }
+
+            axios.get(CONTEXT_PATH + path + this.queryStr(query))
                 .then(function (res) {
                     if (res.data.code !== 200) {
                         console.error(res);
-                        alert("res.data.message");
+                        alert(res.data.message);
                         return;
                     }
 
-                    ita.webhook.list.items = res.data.data;
+                    if (res.data.pageable.page > 0 && res.data.data.length === 0) {
+                        alert('마지막 페이지 입니다.');
+                        return;
+                    }
+
+                    list.items = res.data.data;
+                    list.page = res.data.pageable.page;
                 }, function (err) {
                     console.error(err);
                 });
@@ -233,17 +225,20 @@ window.ita = new Vue({
         getAppsSort: function (ctx) {
             this.app.list.sort = ctx.sortBy;
             this.app.list.sortDesc = ctx.sortDesc;
-            this.getApps();
+            this.app.list.page = 0;
+            this.getApps(0);
         },
         getApisSort: function (ctx) {
             this.api.list.sort = ctx.sortBy;
             this.api.list.sortDesc = ctx.sortDesc;
-            this.getApis();
+            this.api.list.page = 0;
+            this.getApis(0);
         },
         getWebhooksSort: function (ctx) {
             this.webhook.list.sort = ctx.sortBy;
             this.webhook.list.sortDesc = ctx.sortDesc;
-            this.getWebhooks();
+            this.webhook.list.page = 0;
+            this.getWebhooks(0);
         },
         //스코프 옵션 초기화
         getScopeOption: function () {
@@ -302,7 +297,8 @@ window.ita = new Vue({
             axios.delete(sUrl)
                 .then(function (res) {
                     if (res.data.code === 200) {
-                        ita.app.list.items.splice(idx, 1);
+                        var addPage = ita.app.list.items.length === 1 ? -1 : 0;
+                        ita.getApps(addPage);
 
                         return;
                     }
@@ -321,8 +317,8 @@ window.ita = new Vue({
             axios.delete(sUrl)
                 .then(function (res) {
                     if (res.data.code === 200) {
-                        ita.webhook.list.items.splice(idx, 1);
-
+                        var addPage = ita.webhook.list.items.length === 1 ? -1 : 0;
+                        ita.getWebhooks(addPage);
                         return;
                     }
 
@@ -342,7 +338,7 @@ window.ita = new Vue({
                 .then(function (res) {
                     if (res.data.code === 200) {
                         ita.webhook.list.items = [];
-
+                        ita.webhook.list.page = 0;
                         return;
                     }
 
@@ -362,6 +358,7 @@ window.ita = new Vue({
                 .then(function (res) {
                     if (res.data.code === 200) {
                         ita.api.list.items = [];
+                        ita.api.list.page = 0;
 
                         return;
                     }
@@ -380,8 +377,8 @@ window.ita = new Vue({
             axios.delete(sUrl)
                 .then(function (res) {
                     if (res.data.code === 200) {
-                        ita.api.list.items.splice(idx, 1);
-
+                        var addPage = ita.api.list.items.length === 1 ? -1 : 0;
+                        ita.getApis(addPage);
                         return;
                     }
 
@@ -434,7 +431,7 @@ window.ita = new Vue({
                 return false;
             }
 
-            let url = CONTEXT_PATH + '/api/v1/api/' + ita.api.manage.values.clientId + '/mallIds';
+            let url = CONTEXT_PATH + '/api/v1/api/' + this.api.manage.values.clientId + '/mallIds';
             axios.get(url)
                 .then(function (res) {
                     if (res.data.code === 200) {
@@ -465,7 +462,12 @@ window.ita = new Vue({
             return regExp.test(this.api.manage.values.version);
         },
         searchAll: function () {
+            this.app.list.page = 0;
+            this.api.list.page = 0;
+            this.webhook.list.page = 0;
+
             this.getApps();
+            this.getApis();
             this.getWebhooks();
         },
         copyUrl: function (event) {
@@ -478,18 +480,15 @@ window.ita = new Vue({
             copyText.style.display = 'none';
         }
     },
-    watch() {
-
-    },
     created() {
         var searchValue = document.getElementsByClassName('inp-search-client-id');
         if (searchValue != null) {
             this.searchForm.clientId = searchValue[0].dataset.client_id;
         }
 
-        this.getApps();
-        this.getApis();
-        this.getWebhooks();
+        this.getApps(0);
+        this.getApis(0);
+        this.getWebhooks(0);
 
         this.getScopeOption();
         this.createAppModalInit();

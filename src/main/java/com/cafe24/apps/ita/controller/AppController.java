@@ -5,6 +5,9 @@ import com.cafe24.apps.ita.dto.PrivateAppDto;
 import com.cafe24.apps.ita.dto.ResponseDto;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.service.AppService;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -21,14 +24,14 @@ public class AppController {
     }
 
     @GetMapping("/apps")
-    public ResponseDto getApps(HttpSession session, Optional<String> clientId) {
-        List<AppDto> appDtos = appService.getApps(session, clientId);
+    public ResponseDto getApps(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC, size = 20) Pageable pageable) {
+        List<AppDto> appDtos = appService.getApps(session, pageable, clientId);
 
         if (appDtos == null) {
             return ResponseDto.badRequest("App 리스트 조회에 실패했습니다.");
         }
 
-        return ResponseDto.success(appDtos);
+        return ResponseDto.success(appDtos, pageable);
     }
 
     @PostMapping("/app")

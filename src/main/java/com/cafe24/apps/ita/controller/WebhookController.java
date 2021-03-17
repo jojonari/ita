@@ -38,11 +38,11 @@ public class WebhookController {
     }
 
     @GetMapping
-    public ResponseDto getWebhooks(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC, size = 100) Pageable pageable) {
+    public ResponseDto getWebhooks(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC, size = 20) Pageable pageable) {
         List<String> clientIds = appService.getAppClientIds(session, clientId);
 
         List<WebhookDto> webhooks = webhookService.getWebhooks(pageable, clientIds);
-        return ResponseDto.success(webhooks);
+        return ResponseDto.success(webhooks, pageable);
     }
 
     @DeleteMapping("/{webhookIdx}")

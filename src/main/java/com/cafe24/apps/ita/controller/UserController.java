@@ -74,6 +74,7 @@ public class UserController {
         if (SessionUtil.isSignIn(request.getSession())) {
             String url = "https://" + request.getServerName() + request.getContextPath() + "/main";
             mv.setViewName("redirect:" + url);
+            return mv;
         }
 
         mv.setViewName("/user/sign-in");
@@ -123,7 +124,7 @@ public class UserController {
         SessionUtil.setUserInfo(session, user);
         log.info(signIn.getUserId() + " 회원이 로그인 하였습니다.");
 
-        String url = "https://" + request.getServerName();
+        String url = request.getScheme() + "://" + request.getServerName();
         if (signIn.getCallbackUrl() != null && !signIn.getCallbackUrl().isEmpty()) {
             url += signIn.getCallbackUrl();
             mv.setViewName("redirect:" + url);

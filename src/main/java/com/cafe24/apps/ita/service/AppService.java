@@ -5,6 +5,7 @@ import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.User;
 import com.cafe24.apps.ita.repository.AppRepository;
 import com.cafe24.apps.ita.util.SessionUtil;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -79,12 +80,13 @@ public class AppService {
      * App 목록 조회
      *
      * @param session
+     * @param pageable
      * @param clientId
      * @return
      */
-    public List<AppDto> getApps(HttpSession session, Optional<String> clientId) {
+    public List<AppDto> getApps(HttpSession session, Pageable pageable, Optional<String> clientId) {
         User user = SessionUtil.getUserInfo(session).toEntity();
-        List<App> apps = appRepository.findAllByUserAndClientIdContainingOrderByIdxDesc(user, clientId.orElse(""));
+        List<App> apps = appRepository.findAllByUserAndClientIdContainingOrderByIdxDesc(pageable, user, clientId.orElse(""));
 
         return apps.stream().map(App::convertDto).collect(Collectors.toList());
 
@@ -117,7 +119,7 @@ public class AppService {
      * @return
      */
     public List<String> getAppClientIds(HttpSession session, Optional<String> clientId) {
-        List<AppDto> appDtos = this.getApps(session, clientId);
+        List<AppDto> appDtos = this.getApps(session, null, clientId);
 
         return appDtos.stream().map(AppDto::getClientId).collect(Collectors.toList());
     }

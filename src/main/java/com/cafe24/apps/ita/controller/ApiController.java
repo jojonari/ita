@@ -45,11 +45,11 @@ public class ApiController {
     }
 
     @GetMapping("/apis")
-    public ResponseDto getApis(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC, size = 100) Pageable pageable) {
+    public ResponseDto getApis(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC, size = 20) Pageable pageable) {
         List<String> clientIds = appService.getAppClientIds(session, clientId);
 
         List<ApiRequestDto> apiRequestDtos = apiService.getApis(pageable, clientIds);
-        return ResponseDto.success(apiRequestDtos);
+        return ResponseDto.success(apiRequestDtos, pageable);
     }
 
     @DeleteMapping("/api/{apiIdx}")
