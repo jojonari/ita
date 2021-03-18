@@ -92,7 +92,14 @@
                                         :sort-by.sync="app.list.sort"
                                         :sort-desc.sync="app.list.sortDesc"
                                         @sort-changed="getAppsSort"
+                                        :busy="app.list.isBusy"
                                 >
+                                    <template #table-busy>
+                                        <div class="text-center text-danger my-2">
+                                            <b-spinner class="align-middle"></b-spinner>
+                                            <strong>Loading...</strong>
+                                        </div>
+                                    </template>
                                     <template #cell(actions)="row">
                                         <b-button size="sm" @click="row.toggleDetails">
                                             {{ row.detailsShowing ? '*' : '' }} 정보 조회
@@ -124,21 +131,21 @@
                                                     <b-list-group style="max-width: 700px;">
                                                         <b-list-group-item class="d-flex align-items-center">
                                                             <b style="min-width: 100px;">app url</b>
-                                                            <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}</span>
+                                                            <span class="mr-auto common-url">{{ window.location.origin }}{{ CONTEXT_PATH }}/auth/{{ row.item.idx }}</span>
                                                             <b-button size="sm" variant="outline-secondary"
                                                                       @click="copyUrl">copy
                                                             </b-button>
                                                         </b-list-group-item>
                                                         <b-list-group-item class="d-flex align-items-center">
                                                             <b style="min-width: 100px;">redirect url</b>
-                                                            <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/auth/{{ row.item.idx }}/redirect</span>
+                                                            <span class="mr-auto common-url">{{ window.location.origin }}{{ CONTEXT_PATH }}/auth/{{ row.item.idx }}/redirect</span>
                                                             <b-button size="sm" variant="outline-secondary"
                                                                       @click="copyUrl">copy
                                                             </b-button>
                                                         </b-list-group-item>
                                                         <b-list-group-item class="d-flex align-items-center">
                                                             <b style="min-width: 100px;">webhook url</b>
-                                                            <span class="mr-auto common-url">{{window.location.protocol }}//{{window.location.hostname }}{{CONTEXT_PATH}}/api/v1/webhooks/{{ row.item.idx }}</span>
+                                                            <span class="mr-auto common-url">{{ window.location.origin }}{{ CONTEXT_PATH}}/api/v1/webhooks/{{ row.item.idx }}</span>
                                                             <b-button size="sm" variant="outline-secondary"
                                                                       @click="copyUrl">copy
                                                             </b-button>
@@ -177,7 +184,14 @@
                                         :sort-by.sync="api.list.sort"
                                         :sort-desc.sync="api.list.sortDesc"
                                         @sort-changed="getApisSort"
+                                        :busy="api.list.isBusy"
                                 >
+                                    <template #table-busy>
+                                        <div class="text-center text-danger my-2">
+                                            <b-spinner class="align-middle"></b-spinner>
+                                            <strong>Loading...</strong>
+                                        </div>
+                                    </template>
                                     <template #cell(actions)="row">
                                         <b-button size="sm" @click="retryCallApi( row.item, $event.target )"
                                                   variant="info">
@@ -227,7 +241,14 @@
                                         :sort-by.sync="webhook.list.sort"
                                         :sort-desc.sync="webhook.list.sortDesc"
                                         @sort-changed="getWebhooksSort"
+                                        :busy="webhook.list.isBusy"
                                 >
+                                    <template #table-busy>
+                                        <div class="text-center text-danger my-2">
+                                            <b-spinner class="align-middle"></b-spinner>
+                                            <strong>Loading...</strong>
+                                        </div>
+                                    </template>
                                     <template #cell(resource)="row">
                                         <b-form-textarea
                                                 v-model="row.value"

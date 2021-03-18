@@ -9,6 +9,7 @@ window.ita = new Vue({
                 sort: 'idx',
                 sortDesc: true,
                 page: 0,
+                isBusy: false,
                 fields: [
                     {key: 'idx', label: 'IDX', sortable: true},
                     {key: 'clientId', label: 'client-id', sortable: true},
@@ -50,6 +51,7 @@ window.ita = new Vue({
                 sort: 'idx',
                 sortDesc: true,
                 page: 0,
+                isBusy: false,
                 fields: [
                     {key: 'idx', label: 'IDX', sortable: true},
                     {key: 'clientId', label: 'client-id', sortable: true},
@@ -93,6 +95,7 @@ window.ita = new Vue({
                 sort: 'idx',
                 sortDesc: true,
                 page: 0,
+                isBusy: false,
                 fields: [
                     {key: 'idx', label: 'IDX', sortable: true},
                     {key: 'clientId', label: 'client-id', sortable: true},
@@ -199,27 +202,35 @@ window.ita = new Vue({
             query.page = list.page + (addPage || 0);
 
             if (query.page < 0) {
-                alert('첫 페이지 입니다.');
+                this.infoToast('첫 페이지 입니다.');
                 return;
             }
 
+            list.isBusy = true;
             axios.get(CONTEXT_PATH + path + this.queryStr(query))
                 .then(function (res) {
                     if (res.data.code !== 200) {
                         console.error(res);
-                        alert(res.data.message);
+                        ita.errorToast(res.data.message);
+                        list.isBusy = false;
+
                         return;
                     }
 
                     if (res.data.pageable.page > 0 && res.data.data.length === 0) {
-                        alert('마지막 페이지 입니다.');
+                        ita.infoToast('마지막 페이지 입니다.');
+                        list.isBusy = false;
+
                         return;
                     }
 
                     list.items = res.data.data;
                     list.page = res.data.pageable.page;
+                    list.isBusy = false;
                 }, function (err) {
+                    list.isBusy = false;
                     console.error(err);
+                    ita.infoToast('리스트 조회에 실패했습니다.');
                 });
         },
         getAppsSort: function (ctx) {
@@ -246,7 +257,7 @@ window.ita = new Vue({
                 .then(function (res) {
                     if (res.data.code !== 200) {
                         console.error(res);
-                        alert("스코프 옵션 세팅에 실패했습니다.");
+                        ita.errorToast("스코프 옵션 세팅에 실패했습니다.");
                         return;
                     }
 
@@ -267,9 +278,10 @@ window.ita = new Vue({
                     }
 
                     console.error(res);
-                    alert("앱 등록에 실패했습니다.(" + res.data.message + ")");
+                    ita.errorToast("앱 등록에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
+                    ita.errorToast("앱 등록에 실패했습니다.");
                 });
         },//앱 수정
         modifyApp: function () {
@@ -279,13 +291,15 @@ window.ita = new Vue({
                     if (res.data.code === 200) {
                         ita.$bvModal.hide("modal-manage-app");
                         ita.app.list.items.splice(ita.app.manage.modifyIdx, 1, res.data.data);
-
+                        ita.infoToast("앱 수정에 성공했습니다.");
                         return;
                     }
 
-                    alert("앱 수정에 실패했습니다.(" + res.data.message + ")");
+                    console.error(res);
+                    ita.errorToast("앱 수정에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
+                    ita.errorToast("앱 수정에 실패했습니다.");
                 });
         },//앱 삭제
         deleteApp: function (idx) {
@@ -299,13 +313,15 @@ window.ita = new Vue({
                     if (res.data.code === 200) {
                         var addPage = ita.app.list.items.length === 1 ? -1 : 0;
                         ita.getApps(addPage);
-
+                        ita.infoToast('앱 삭제에 성공했습니다.');
                         return;
                     }
 
-                    alert("앱 삭제에 실패했습니다.(" + res.data.message + ")");
+                    console.error(res);
+                    ita.errorToast("앱 삭제에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
+                    ita.errorToast("앱 삭제에 실패했습니다.");
                 });
         },//웹훅 삭제
         deleteWebhook: function (idx) {
@@ -318,13 +334,15 @@ window.ita = new Vue({
                 .then(function (res) {
                     if (res.data.code === 200) {
                         var addPage = ita.webhook.list.items.length === 1 ? -1 : 0;
+                        ita.infoToast("웹훅 삭제에 성공했습니다.");
                         ita.getWebhooks(addPage);
                         return;
                     }
 
-                    alert("웹훅 삭제에 실패했습니다.(" + res.data.message + ")");
+                    ita.errorToast("웹훅 삭제에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
+                    ita.errorToast("웹훅 삭제에 실패했습니다.");
                 });
         },
         //웹훅 전체 삭제
@@ -339,12 +357,14 @@ window.ita = new Vue({
                     if (res.data.code === 200) {
                         ita.webhook.list.items = [];
                         ita.webhook.list.page = 0;
+                        ita.infoToast("웹훅 전체 삭제에 성했습니다.");
                         return;
                     }
-
-                    alert("웹훅 삭제에 실패했습니다.(" + res.data.message + ")");
+                    console.error(res);
+                    ita.errorToast("웹훅 전 삭제에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
+                    ita.errorToast("웹훅 전체 삭제에 실패했습니다.");
                 });
         },
         //api 전체 삭제
@@ -359,13 +379,16 @@ window.ita = new Vue({
                     if (res.data.code === 200) {
                         ita.api.list.items = [];
                         ita.api.list.page = 0;
+                        ita.infoToast("전체 Api 삭제에 성공했습니다.");
 
                         return;
                     }
 
-                    alert("전체 Api 요청을 삭제에 실패했습니다. (" + res.data.message + ")");
+                    console.error(res);
+                    ita.errorToast("전체 Api 삭제에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
+                    ita.errorToast("전체 Api 삭제에 실패했습니다.");
                 });
         },//api 단건 삭제
         deleteApi: function (idx) {
@@ -379,12 +402,14 @@ window.ita = new Vue({
                     if (res.data.code === 200) {
                         var addPage = ita.api.list.items.length === 1 ? -1 : 0;
                         ita.getApis(addPage);
+                        ita.infoToast("api 삭제에 성했습니다.");
                         return;
                     }
-
-                    alert("웹훅 삭제에 실패했습니다.(" + res.data.message + ")");
+                    console.error(res);
+                    ita.errorToast("api 삭제에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
+                    ita.errorToast("api 삭제에 실패했습니다.");
                 });
         },
         //API 호출
@@ -392,20 +417,30 @@ window.ita = new Vue({
             this.api.manage.apiCalling = true
             axios.post(CONTEXT_PATH + '/api/v1/api', this.api.manage.values)
                 .then(function (res) {
-                    ita.api.manage.apiCalling = false;
-
                     if (res.data.code === 200) {
-                        ita.api.list.items.push(res.data.data);
                         ita.api.manage.values = res.data.data;
+                        ita.infoToast('api 호출에 성공했습니다.');
+                        if (ita.api.list.page === 0 && ita.api.list.sort === 'idx' && ita.api.list.sortDesc === true) {
+                            ita.api.list.items.shift();
+                            ita.api.list.items.push(res.data.data);
+                        } else {
+                            ita.api.list.page = 0;
+                            ita.api.list.sort = 'idx';
+                            ita.api.list.sortDesc = true;
+                            ita.getApis(0)
+                        }
+                        ita.api.manage.apiCalling = false;
 
                         return;
                     }
 
                     console.error(res);
-                    alert("API 호출에 실패했습니다.(" + res.data.message + ")");
+                    ita.errorToast("API 호출에 실패했습니다.(" + res.data.message + ")");
+                    ita.api.manage.apiCalling = false;
                 }, function (err) {
                     ita.api.manage.apiCalling = false;
                     console.error(err);
+                    ita.errorToast("API 호출에 실패했습니다.");
                 });
         },
         //앱 등록 모달 데이터 초기화
@@ -441,9 +476,10 @@ window.ita = new Vue({
                     }
 
                     console.error(res);
-                    alert("api 호출이 가능한 몰아이디 조회에 실패했습니다.(" + res.data.message + ")");
+                    ita.errorToast("api 호출이 가능한 몰아이디 조회에 실패했습니다.(" + res.data.message + ")");
                 }, function (err) {
                     console.error(err);
+                    ita.errorToast("api 호출이 가능한 몰아이디 조회에 실패했습니다.");
                 });
         },
         queryStr: function (params) {
@@ -466,9 +502,9 @@ window.ita = new Vue({
             this.api.list.page = 0;
             this.webhook.list.page = 0;
 
-            this.getApps();
-            this.getApis();
-            this.getWebhooks();
+            this.getApps(0);
+            this.getApis(0);
+            this.getWebhooks(0);
         },
         copyUrl: function (event) {
             var copyText = document.getElementById('common-input-copy');
@@ -478,6 +514,22 @@ window.ita = new Vue({
             copyText.setSelectionRange(0, 99999);
             document.execCommand("copy");
             copyText.style.display = 'none';
+            this.infoToast("url이 복사되었습니다.");
+        },
+        errorToast:function (msg) {
+            console.error(msg);
+            this.makeToast('ERROR', msg, 'error');
+        },
+        infoToast:function (msg) {
+            this.makeToast('INFO', msg, 'info');
+        },
+        makeToast(title, msg, variant) {
+            this.$bvToast.toast(msg, {
+                title : title,
+                autoHideDelay: 3000,
+                variant: variant,
+                appendToast: true
+            })
         }
     },
     created() {
