@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ApiService {
@@ -118,12 +119,21 @@ public class ApiService {
     public boolean apiValid(App app, ApiRequestDto apiRequestDto, HttpSession session) {
         String operationLevel = app.convertDto().getOperationLevel();
         UserDto userDto = SessionUtil.getUserInfo(session);
+
+        //요청앱의 운영레벨과 유저의 운영레벨이 같은지 확인
         boolean result = userDto.getOperationLevel().contains(operationLevel);
         if (!result) {
             return false;
         }
 
+        //몰의 운영레벨 확인
         List<Mall> malls = mallRepository.findAllByOperationLevel(operationLevel);
-        return malls.contains(apiRequestDto.getMallId());
+        for (Mall mall : malls) {
+            if (mall.getMallId().equals(apiRequestDto.getMallId())){
+                return true;
+            }
+        }
+
+        return false;
     }
 }
