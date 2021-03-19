@@ -94,6 +94,7 @@ public class AuthController {
         if (app == null) {
             return setError(model, "등록된 client가 없습니다.", codeDto);
         }
+
         AccessToken accessToken = authService.getAccessToken(app, codeDto, request);
         authService.saveAccessToken(accessToken);
 

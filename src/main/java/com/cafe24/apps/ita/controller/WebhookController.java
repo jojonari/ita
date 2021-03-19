@@ -38,7 +38,7 @@ public class WebhookController {
     }
 
     @GetMapping
-    public ResponseDto getWebhooks(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC, size = 20) Pageable pageable) {
+    public ResponseDto getWebhooks(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC) Pageable pageable) {
         List<String> clientIds = appService.getAppClientIds(session, clientId);
 
         List<WebhookDto> webhooks = webhookService.getWebhooks(pageable, clientIds);

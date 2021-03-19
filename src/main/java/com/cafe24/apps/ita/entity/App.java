@@ -39,7 +39,7 @@ public class App extends TimeEntity {
     @Column(length = 16, nullable = false)
     private String partnerId;
 
-    @Column(length = 15)
+    @Column(length = 30)
     private String grantType;
 
     @Column(length = 10)

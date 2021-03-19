@@ -26,6 +26,7 @@ public class UserService {
      */
     public User regisertUser(User user) throws NoSuchAlgorithmException {
         user.encryptPassword();
+        user.defaultUserSet();
         return userRepository.save(user);
     }
 

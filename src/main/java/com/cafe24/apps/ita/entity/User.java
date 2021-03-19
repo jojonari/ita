@@ -12,6 +12,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.security.NoSuchAlgorithmException;
+import java.util.Set;
 
 @Entity
 @ToString(exclude = "userPw")
@@ -41,13 +42,25 @@ public class User extends TimeEntity {
     @Column(length = 30, nullable = false)
     private String teamName;
 
+    @CollectionTable(name = "m_user_operationLevel")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(length = 30, nullable = false)
+    private Set<String> operationLevel;
+
+    @CollectionTable(name = "m_user_grantType")
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(length = 30, nullable = false)
+    private Set<String> grantType;
+
     @Builder
-    public User(Long idx, String userId, String userPw, String userName, String teamName) {
+    public User(Long idx, String userId, String userPw, String userName, String teamName, Set<String> operationLevel, Set<String> grantType) {
         this.idx = idx;
         this.userId = userId;
         this.userPw = userPw;
         this.userName = userName;
         this.teamName = teamName;
+        this.operationLevel = operationLevel;
+        this.grantType = grantType;
     }
 
     /**
@@ -62,6 +75,8 @@ public class User extends TimeEntity {
                 .userPw(this.userPw)
                 .userName(this.userName)
                 .teamName(this.teamName)
+                .operationLevel(this.operationLevel)
+                .grantType(this.grantType)
                 .build();
     }
 
@@ -76,6 +91,8 @@ public class User extends TimeEntity {
                 .userId(this.userId)
                 .userName(this.userName)
                 .teamName(this.teamName)
+                .operationLevel(this.operationLevel)
+                .grantType(this.grantType)
                 .build();
     }
 
@@ -88,11 +105,27 @@ public class User extends TimeEntity {
         this.userPw = EncryptUtil.encryptPassword(this.userPw);
     }
 
-    public String getUserId() {
-        return this.userId;
+    /**
+     * 기본 권한 설정
+     */
+    public void defaultUserSet(){
+        //기본 권한 설정
+        this.operationLevel = Set.of("dev", "qa");
+        //기본 인증방식 설정
+        this.grantType = Set.of("authorization_code");
+
     }
 
+    /**
+     * 패스워드 비교
+     * @param encUserPw
+     * @return
+     */
     public boolean isEqualsPassWord(String encUserPw) {
         return this.userPw.equals(encUserPw);
+    }
+
+    public String getUserId() {
+        return this.userId;
     }
 }

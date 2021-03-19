@@ -37,6 +37,11 @@ public class ApiController {
     @PostMapping("/api")
     public ResponseDto callApi(@RequestBody ApiRequestDto apiRequestDto, HttpSession session) throws Exception {
         App app = appService.getApp(session, apiRequestDto.getClientId());
+        boolean resultVlid = apiService.apiValid(app,apiRequestDto, session);
+        if (!resultVlid) {
+            return ResponseDto.badRequest("부여된 권한 내에서만 사용가능합니다.");
+        }
+
         AccessTokenDto accessTokenDto = authService.getAccessToken(app, apiRequestDto.getMallId());
         ResponseEntity<HashMap> response = apiService.callApi(apiRequestDto, accessTokenDto);
         ApiRequest apiRequest = new ApiRequest(apiRequestDto, response);
@@ -45,7 +50,7 @@ public class ApiController {
     }
 
     @GetMapping("/apis")
-    public ResponseDto getApis(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC, size = 20) Pageable pageable) {
+    public ResponseDto getApis(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC) Pageable pageable) {
         List<String> clientIds = appService.getAppClientIds(session, clientId);
 
         List<ApiRequestDto> apiRequestDtos = apiService.getApis(pageable, clientIds);
@@ -68,6 +73,7 @@ public class ApiController {
         List<String> clientIds = appService.getAppClientIds(session, Optional.empty());
 
         apiService.deleteApis(clientIds);
+
         return ResponseDto.success(null);
     }
 
@@ -75,6 +81,7 @@ public class ApiController {
     public ResponseDto getApiMallIds(HttpSession session, @PathVariable String clientId) {
         App app = appService.getApp(session, clientId);
         List<TextValue> textValues = authService.getTextValuesSetMallId(app);
+
         return ResponseDto.success(textValues);
 
     }

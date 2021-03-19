@@ -14,6 +14,9 @@ window.ita = new Vue({
                     {key: 'idx', label: 'IDX', sortable: true},
                     {key: 'clientId', label: 'client-id', sortable: true},
                     {key: 'appName', label: '앱 이름', sortable: true},
+                    {key: 'partnerId', label: '파트너 아이디', sortable: true},
+                    {key: 'grantType', label: '인증 방법', sortable: true},
+                    {key: 'operationLevel', label: '운영 환경', sortable: true},
                     {key: 'modifiedDate', label: '수정일시', sortable: true},
                     {key: 'actions', label: '관리'}
                 ],
@@ -34,14 +37,9 @@ window.ita = new Vue({
                     scopes: []
                 },
                 options: {
-                    grantType: [{text: 'code', value: 'code'}, {text: 'credential', value: 'credential'}],
+                    grantType: [],
                     manageToken: [{text: '갱신', value: 'refresh'}, {text: '유지', value: 'keep'}],
-                    operationLevel: [
-                        {text: 'QA', value: 'qa'},
-                        {text: 'AUTO', value: 'auto'},
-                        {text: 'DEV', value: 'dev'},
-                        {text: 'PROD', value: 'prod'}
-                    ],
+                    operationLevel: [],
                     scopes: []
                 }
             }
@@ -537,6 +535,11 @@ window.ita = new Vue({
         if (searchValue != null) {
             this.searchForm.clientId = searchValue[0].dataset.client_id;
         }
+
+        var permisstions = document.getElementById('span-user-operationLevel');
+        this.app.manage.options.operationLevel = JSON.parse(permisstions.dataset.options);
+        var grantType = document.getElementById('span-user-grantType');
+        this.app.manage.options.grantType = JSON.parse(grantType.dataset.options);
 
         this.getApps(0);
         this.getApis(0);

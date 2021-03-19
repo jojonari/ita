@@ -24,7 +24,7 @@ public class AppController {
     }
 
     @GetMapping("/apps")
-    public ResponseDto getApps(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC, size = 20) Pageable pageable) {
+    public ResponseDto getApps(HttpSession session, Optional<String> clientId, @PageableDefault(sort = "idx", direction = Sort.Direction.DESC) Pageable pageable) {
         List<AppDto> appDtos = appService.getApps(session, pageable, clientId);
 
         if (appDtos == null) {
@@ -42,6 +42,12 @@ public class AppController {
         }
 
         app.setUser(session);
+
+        boolean resultValid = appService.appValid(app);
+        if (!resultValid){
+            return ResponseDto.badRequest("부여된 권한 내에서만 사용가능합니다.");
+        }
+
         App registerApp = appService.registerApp(app.toEntity());
         return ResponseDto.success(registerApp.convertDto());
     }

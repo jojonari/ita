@@ -53,8 +53,17 @@
                             <template #button-content>
                                 <b-button size="sm" class="my-2 my-sm-0">
                                     <b-icon icon="person-circle"></b-icon>
-                                    <span th:text="${user.getUserName()+'['+user.getTeamName()+']'}"></span></b-button>
+                                    <span th:text="${user.getUserName()+'['+user.getTeamName()+']'}"></span>
+                                </b-button>
                             </template>
+                            <b-dropdown-item>
+                                <b-icon icon="check2-square"></b-icon>
+                                <span th:text="${user.getOperationLevel()}" id="span-user-operationLevel" th:data-options="${user.operationLevelTextValue()}"></span>
+                            </b-dropdown-item>
+                            <b-dropdown-item>
+                                <b-icon icon="check2-square"></b-icon>
+                                <span th:text="${user.getGrantType()}" id="span-user-grantType" th:data-options="${user.grantTypeTextValue()}"></span>
+                            </b-dropdown-item>
                             <b-dropdown-item th:href="@{/sign-out}">
                                 <b-icon icon="person"></b-icon>
                                 Sign Out
@@ -577,6 +586,7 @@
 
     </b-container>
 </div>
+<!-- 임시 복사용 -->
 <input type="text" id="common-input-copy" style="display: none;">
 
 <script th:src="@{/js/main.js}"/>

@@ -2,14 +2,20 @@ package com.cafe24.apps.ita.service;
 
 import com.cafe24.apps.ita.dto.AccessTokenDto;
 import com.cafe24.apps.ita.dto.ApiRequestDto;
+import com.cafe24.apps.ita.dto.UserDto;
 import com.cafe24.apps.ita.entity.ApiRequest;
+import com.cafe24.apps.ita.entity.App;
+import com.cafe24.apps.ita.entity.Mall;
 import com.cafe24.apps.ita.repository.ApiRepository;
+import com.cafe24.apps.ita.repository.MallRepository;
+import com.cafe24.apps.ita.util.SessionUtil;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -19,10 +25,12 @@ import java.util.stream.Collectors;
 public class ApiService {
     private final RestTemplate restTemplate;
     private final ApiRepository apiRepository;
+    private final MallRepository mallRepository;
 
-    public ApiService(RestTemplate restTemplate, ApiRepository apiRepository) {
+    public ApiService(RestTemplate restTemplate, ApiRepository apiRepository, MallRepository mallRepository) {
         this.restTemplate = restTemplate;
         this.apiRepository = apiRepository;
+        this.mallRepository = mallRepository;
     }
 
     /**
@@ -97,5 +105,25 @@ public class ApiService {
      */
     public void deleteApis(List<String> clientIds) {
         apiRepository.deleteByClientIdIn(clientIds);
+    }
+
+    /**
+     * apiValid
+     *
+     * @param app
+     * @param apiRequestDto
+     * @param session
+     * @return
+     */
+    public boolean apiValid(App app, ApiRequestDto apiRequestDto, HttpSession session) {
+        String operationLevel = app.convertDto().getOperationLevel();
+        UserDto userDto = SessionUtil.getUserInfo(session);
+        boolean result = userDto.getOperationLevel().contains(operationLevel);
+        if (!result) {
+            return false;
+        }
+
+        List<Mall> malls = mallRepository.findAllByOperationLevel(operationLevel);
+        return malls.contains(apiRequestDto.getMallId());
     }
 }

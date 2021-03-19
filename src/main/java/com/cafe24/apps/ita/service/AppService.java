@@ -1,6 +1,8 @@
 package com.cafe24.apps.ita.service;
 
 import com.cafe24.apps.ita.dto.AppDto;
+import com.cafe24.apps.ita.dto.PrivateAppDto;
+import com.cafe24.apps.ita.dto.UserDto;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.User;
 import com.cafe24.apps.ita.repository.AppRepository;
@@ -122,5 +124,16 @@ public class AppService {
         List<AppDto> appDtos = this.getApps(session, null, clientId);
 
         return appDtos.stream().map(AppDto::getClientId).collect(Collectors.toList());
+    }
+
+    /**
+     * valid
+     *
+     * @param app
+     */
+    public boolean appValid(PrivateAppDto app) {
+        UserDto userDto = app.getUser().convertDto();
+
+        return userDto.getGrantType().contains(app.getGrantType()) && userDto.getOperationLevel().contains(app.getOperationLevel());
     }
 }
