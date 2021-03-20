@@ -31,10 +31,10 @@ window.ita = new Vue({
                     clientId: '',
                     secretKey: '',
                     partnerId: '',
-                    grantType: 'code',
+                    grantType: 'authorization_code',
                     manageToken: 'refresh',
                     operationLevel: 'qa',
-                    scopes: []
+                    scopes: ['mall.read_application', 'mall.write_application']
                 },
                 options: {
                     grantType: [],
@@ -488,8 +488,15 @@ window.ita = new Vue({
         },
         substrPath: function () {
             let path = this.api.manage.values.path || '';
-            if (path.indexOf('/api/') > 0)
-                this.api.manage.values.path = path.substr(path.indexOf('/api/'), path.length)
+            if (path.indexOf('/api/') > 0) {
+                path = path.substr(path.indexOf('/api/'), path.length);
+            }
+
+            if (path.indexOf("'") > 0) {
+                path = path.substr(0, path.indexOf("'"));
+            }
+
+            this.api.manage.values.path = path;
         },
         regexVersion: function () {
             var regExp = /^\d{4}-\d{2}-\d{2}$/;
@@ -514,16 +521,16 @@ window.ita = new Vue({
             copyText.style.display = 'none';
             this.infoToast("url이 복사되었습니다.");
         },
-        errorToast:function (msg) {
+        errorToast: function (msg) {
             console.error(msg);
             this.makeToast('ERROR', msg, 'error');
         },
-        infoToast:function (msg) {
+        infoToast: function (msg) {
             this.makeToast('INFO', msg, 'info');
         },
         makeToast(title, msg, variant) {
             this.$bvToast.toast(msg, {
-                title : title,
+                title: title,
                 autoHideDelay: 3000,
                 variant: variant,
                 appendToast: true

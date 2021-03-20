@@ -58,11 +58,13 @@
                             </template>
                             <b-dropdown-item>
                                 <b-icon icon="check2-square"></b-icon>
-                                <span th:text="${user.getOperationLevel()}" id="span-user-operationLevel" th:data-options="${user.operationLevelTextValue()}"></span>
+                                <span th:text="${user.getOperationLevel()}" id="span-user-operationLevel"
+                                      th:data-options="${user.operationLevelTextValue()}"></span>
                             </b-dropdown-item>
                             <b-dropdown-item>
                                 <b-icon icon="check2-square"></b-icon>
-                                <span th:text="${user.getGrantType()}" id="span-user-grantType" th:data-options="${user.grantTypeTextValue()}"></span>
+                                <span th:text="${user.getGrantType()}" id="span-user-grantType"
+                                      th:data-options="${user.grantTypeTextValue()}"></span>
                             </b-dropdown-item>
                             <b-dropdown-item th:href="@{/sign-out}">
                                 <b-icon icon="person"></b-icon>
@@ -309,7 +311,7 @@
         <!--footer E-->
 
         <!--modal : manage app S-->
-        <b-modal id="modal-manage-app" size="lg" :title="app.manage.mode == 'register' ? 'App 등록' : 'App 수정'">
+        <b-modal id="modal-manage-app" size="xl" :title="app.manage.mode == 'register' ? 'App 등록' : 'App 수정'">
             <div>
                 <b-card bg-variant="light">
                     <b-form-group
@@ -324,6 +326,7 @@
                                 label-for="manage-app-name"
                                 label-cols-sm="3"
                                 label-align-sm="right"
+                                description="개발자센터에 등록한 앱명을 입력하세요."
                         >
                             <b-form-input id="manage-app-name"
                                           minlength="3"
@@ -344,6 +347,7 @@
                                 label-for="manage-app-client-id"
                                 label-cols-sm="3"
                                 label-align-sm="right"
+                                description="개발자센터에서 생성된 앱의 클라이언트 아이디를 입력하세요."
                         >
                             <b-form-input id="manage-app-client-id"
                                           maxlength="22"
@@ -351,7 +355,8 @@
                                           v-model="app.manage.values.clientId"
                                           :state="stateApp_ClientId"
                                           trim
-                                          required></b-form-input>
+                                          required
+                            ></b-form-input>
                             <b-form-invalid-feedback :state="stateApp_ClientId">
                                 Client Id must be 22 characters long.
                             </b-form-invalid-feedback>
@@ -362,6 +367,7 @@
                                 label-for="manage-app-secret-key"
                                 label-cols-sm="3"
                                 label-align-sm="right"
+                                description="개발자센터에서 생성된 앱의 시크릿키를 입력하세요."
                         >
                             <b-form-input id="manage-app-secret-key"
                                           maxlength="22"
@@ -382,6 +388,7 @@
                                 label-for="manage-app-partner-id"
                                 label-cols-sm="3"
                                 label-align-sm="right"
+                                description="앱을 생성한 개발자센터 아이디를 입력하세요."
                         >
                             <b-form-input id="manage-app-partner-id"
                                           maxlength="16"
@@ -397,26 +404,13 @@
                                 label-align-sm="right"
                                 class="mb-0"
                                 v-slot="{ ariaDescribedby }"
+                                description="코드 방식 : AUTHORIZATION_CODE, 크리덴셜 방식: CLIENT_CREDENTIALS"
                         >
                             <b-form-radio-group
+                                    id="popover-grant-type"
                                     class="pt-2"
                                     v-model="app.manage.values.grantType"
                                     :options="app.manage.options.grantType"
-                                    :aria-describedby="ariaDescribedby"
-                            >
-                            </b-form-radio-group>
-                        </b-form-group>
-                        <b-form-group
-                                label="* 토큰 관리 : "
-                                label-cols-sm="3"
-                                label-align-sm="right"
-                                class="mb-0"
-                                v-slot="{ ariaDescribedby }"
-                        >
-                            <b-form-radio-group
-                                    class="pt-2"
-                                    v-model="app.manage.values.manageToken"
-                                    :options="app.manage.options.manageToken"
                                     :aria-describedby="ariaDescribedby"
                             >
                             </b-form-radio-group>
@@ -427,18 +421,36 @@
                                 label-align-sm="right"
                                 class="mb-0"
                                 v-slot="{ ariaDescribedby }"
+                                description="DEV : 개발 서버, QA : QA 테스트 서버, AUTO : 자동화 테스트 서버, PROD : 실서버"
                         >
                             <b-form-radio-group
+                                    id="popover-grant-operationLevel"
                                     class="pt-2"
                                     v-model="app.manage.values.operationLevel"
                                     :options="app.manage.options.operationLevel"
                                     :aria-describedby="ariaDescribedby"
                             ></b-form-radio-group>
                         </b-form-group>
+                        <b-form-group
+                                label="* 토큰 관리 : "
+                                label-cols-sm="3"
+                                label-align-sm="right"
+                                class="mb-0"
+                                v-slot="{ ariaDescribedby }"
+                                description="갱신 : 앱에 접근 할 때마다 토큰 조회, 유지 : Refresh Token 사용"
+                        >
+                            <b-form-radio-group
+                                    class="pt-2"
+                                    v-model="app.manage.values.manageToken"
+                                    :options="app.manage.options.manageToken"
+                                    :aria-describedby="ariaDescribedby"
+                            >
+                            </b-form-radio-group>
+                        </b-form-group>
                     </b-form-group>
                     <div>
                         <b-form-group
-                                label="* API 사용권한 : "
+                                label="* API 사용권한"
                                 v-slot="{ ariaDescribedby }"
                         >
                             <b-row>
@@ -447,11 +459,15 @@
                                         :state="stateApp_Scope"
                                         trim
                                         disabled
+                                        placeholder="개발자센터에서 등록한 사용권한을 아래에서 선택하세요."
                                 >
                                 </b-form-input>
                                 <b-form-invalid-feedback :state="stateApp_Scope">
                                     Please select at least one scope.
                                 </b-form-invalid-feedback>
+                                <b-form-valid-feedback :state="stateApp_Scope">
+                                    개발자센터에서 등록한 사용권한을 아래에서 선택하세요.
+                                </b-form-valid-feedback>
                             </b-row>
                             <b-row>
                                 <b-col>
@@ -491,7 +507,7 @@
         </b-modal>
         <!--modal : manage app E-->
 
-        <!--modal : manage app S-->
+        <!--modal : manage api S-->
         <b-modal id="modal-manage-api" size="lg" title="API 호출">
             <div>
                 <b-card bg-variant="light">
@@ -531,19 +547,20 @@
                     </b-form-group>
 
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm"
-                                  label="Version" label-for="input-sm">
+                                  label="Version" label-for="input-sm"
+                    >
                         <b-form-input v-model="api.manage.values.version" size="sm"
                                       :state="stateApi_Version"></b-form-input>
                         <b-form-invalid-feedback :state="stateApi_Version">
-                            Please select.
+                            ex) 2021-03-01 <a href="https://developer.cafe24.com/app/front/develop/api/versioning#title2">[버전 정보]</a>
                         </b-form-invalid-feedback>
                     </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm"
-                                  label="URL" label-for="input-sm">
+                                  label="Endpoints" label-for="input-sm">
                         <b-form-input v-model="api.manage.values.path" size="sm" :state="stateApi_Path"
-                                      @change="substrPath"></b-form-input>
+                                      @keyUp="substrPath"></b-form-input>
                         <b-form-invalid-feedback :state="stateApi_Path">
-                            Please select.
+                            api의 Endpoints를 입력하세요. <a href="https://developer.cafe24.com/docs/api/admin/#api-index">[Apis]</a>
                         </b-form-invalid-feedback>
                     </b-form-group>
                     <b-form-group label-cols="4" label-cols-lg="2" label-class="font-weight-bold" label-size="sm"
@@ -582,7 +599,7 @@
             </template>
             </template>
         </b-modal>
-        <!--modal : manage app E-->
+        <!--modal : manage api E-->
 
     </b-container>
 </div>

@@ -126,10 +126,10 @@ public class ApiService {
             return false;
         }
 
-        //몰의 운영레벨 확인
+        //호출가능한 몰아이디 확인
         List<Mall> malls = mallRepository.findAllByOperationLevel(operationLevel);
         for (Mall mall : malls) {
-            if (mall.getMallId().equals(apiRequestDto.getMallId())){
+            if (apiRequestDto.getMallId().contains(mall.getMallId())) {
                 return true;
             }
         }
