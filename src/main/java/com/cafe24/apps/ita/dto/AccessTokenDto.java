@@ -43,4 +43,19 @@ public class AccessTokenDto {
                 .build();
     }
 
+    /**
+     * to AccessToken Entity
+     *
+     * @return
+     */
+    public AccessToken toClientCredentialsEntity() {
+        return AccessToken.builder()
+                .accessToken(this.access_token)
+                .expiresAt(LocalDateTime.parse(this.expires_at))
+                .clientId(this.client_id)
+                .scopes(this.scopes)
+                .issuedAt(LocalDateTime.parse(this.issued_at))
+                .build();
+    }
+
 }

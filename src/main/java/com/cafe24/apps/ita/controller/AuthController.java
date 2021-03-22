@@ -62,12 +62,19 @@ public class AuthController {
         if (app == null) {
             return setError(model, "등록된 client가 없습니다.", mallDto);
         }
+
         AppDto appDto = app.convertDto();
         boolean isExpire = authService.isExpireRefreshToken(app, mallDto);
         if (isExpire || app.isRefresh()) {
             //세션에 저장
             session.setAttribute("mallInfo", mallDto);
-            return authService.getCodeRedirectUrl(appDto, mallDto, request);
+            if (app.isAuthorizationCode()) {
+                //code인증 방식의 경우 - çode 발급 url 호출
+                return authService.getCodeRedirectUrl(appDto, mallDto, request);
+            }
+
+            //클라이언트 크리덴셜의 경우
+            authService.getAccessTokenByClientCredential(app, request);
         }
 
         String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + appDto.getClientId();
@@ -96,7 +103,6 @@ public class AuthController {
         }
 
         AccessToken accessToken = authService.getAccessToken(app, codeDto, request);
-        authService.saveAccessToken(accessToken);
 
         String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + accessToken.convertDto().getClient_id();
         return "redirect:" + url;

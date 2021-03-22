@@ -107,10 +107,10 @@ public class AppService {
     /**
      * 앱 삭제
      *
-     * @param appIdx
+     * @param app
      */
-    public void deleteApp(Long appIdx) {
-        appRepository.deleteById(appIdx);
+    public void deleteApp(App app) {
+        appRepository.delete(app);
     }
 
     /**

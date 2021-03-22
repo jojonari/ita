@@ -161,6 +161,14 @@
                                                                       @click="copyUrl">copy
                                                             </b-button>
                                                         </b-list-group-item>
+
+                                                        <b-list-group-item class="d-flex align-items-center" v-if="row.item.grantType === 'client_credentials'">
+                                                            <b style="min-width: 100px;">host Ip addr</b>
+                                                            <span class="mr-auto common-url" th:text="${hostAddr}"></span>
+                                                            <b-button size="sm" variant="outline-secondary"
+                                                                      @click="copyUrl">copy
+                                                            </b-button>
+                                                        </b-list-group-item>
                                                     </b-list-group>
                                                 </b-col>
                                             </b-row>

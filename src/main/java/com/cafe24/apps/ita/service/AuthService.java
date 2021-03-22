@@ -3,8 +3,10 @@ package com.cafe24.apps.ita.service;
 import com.cafe24.apps.ita.dto.*;
 import com.cafe24.apps.ita.entity.AccessToken;
 import com.cafe24.apps.ita.entity.App;
+import com.cafe24.apps.ita.entity.Mall;
 import com.cafe24.apps.ita.repository.AccessTokenRepository;
 import com.cafe24.apps.ita.repository.AppRepository;
+import com.cafe24.apps.ita.repository.MallRepository;
 import com.cafe24.apps.ita.util.EncryptUtil;
 import com.cafe24.apps.ita.util.SessionUtil;
 import org.springframework.http.HttpEntity;
@@ -32,11 +34,13 @@ public class AuthService {
     private final AppRepository appRepository;
     private final AccessTokenRepository accessTokenRepository;
     private final RestTemplate restTemplate;
+    private final MallRepository mallRepository;
 
-    public AuthService(AppRepository appRepository, AccessTokenRepository accessTokenRepository, RestTemplate restTemplate) {
+    public AuthService(AppRepository appRepository, AccessTokenRepository accessTokenRepository, RestTemplate restTemplate, MallRepository mallRepository) {
         this.appRepository = appRepository;
         this.accessTokenRepository = accessTokenRepository;
         this.restTemplate = restTemplate;
+        this.mallRepository = mallRepository;
     }
 
     /**
@@ -81,6 +85,18 @@ public class AuthService {
      * @return
      */
     public boolean isExpireRefreshToken(App app, MallDto mallDto) {
+        //client credentials 일 때
+        if (!app.isAuthorizationCode()) {
+            Optional<AccessToken> accessToken = accessTokenRepository.findByApp(app);
+            //토큰이 없으면
+            if (accessToken.isEmpty()) {
+                return true;
+            }
+
+            return accessToken.get().isAccessTokenExpire();
+        }
+
+        //authorization_code 일 때
         Optional<AccessToken> accessToken = accessTokenRepository.findByAppAndMallId(app, mallDto.getMall_id());
         //토큰이 없으면
         if (accessToken.isEmpty()) {
@@ -142,6 +158,7 @@ public class AuthService {
 
         AccessToken accessToken = accessTokenDto.toEntity();
         accessToken.setApp(app);
+        this.saveAccessToken(accessToken);
 
         return accessToken;
     }
@@ -160,6 +177,17 @@ public class AuthService {
     }
 
     /**
+     * AccessToken CC 저장
+     *
+     * @param accessToken
+     * @return
+     */
+    public void saveAccessTokenOfClientCredentials(AccessToken accessToken) {
+        accessTokenRepository.deleteByClientId(accessToken.getClientId());
+        accessTokenRepository.save(accessToken);
+    }
+
+    /**
      * AccessToken 조회
      *
      * @param app
@@ -167,11 +195,16 @@ public class AuthService {
      * @return
      */
     public AccessTokenDto getAccessToken(App app, String mallId) throws Exception {
-        Optional<AccessToken> accessTokenOptional = accessTokenRepository.findByAppAndMallId(app, mallId);
+        Optional<AccessToken> accessTokenOptional;
+        if (app.isAuthorizationCode()) {
+            accessTokenOptional = accessTokenRepository.findByAppAndMallId(app, mallId);
+        } else {
+            accessTokenOptional = accessTokenRepository.findByApp(app);
+        }
 
         AccessToken accessToken = accessTokenOptional.orElseThrow(() -> new Exception("access token이 없습니다."));
         if (!accessToken.isAccessTokenExpire()) {
-            return accessToken.convertDto();
+            return accessToken.convertApiDto();
         }
 
         if (accessToken.isRefreshTokenExpire()) {
@@ -220,5 +253,46 @@ public class AuthService {
         List<AccessToken> accessTokens = accessTokenRepository.findAllByApp(app);
 
         return accessTokens.stream().map(AccessToken::convertTextValueSetMallId).collect(Collectors.toList());
+    }
+
+    /**
+     * Api 호출용 mallIds의 TextValue 조회
+     *
+     * @param app
+     * @return
+     */
+    public List<TextValue> getTextValuesSetMallIdByOperationLevel(App app) {
+        List<Mall> accessTokens = mallRepository.findAllByOperationLevel(app.getOperationLevel());
+
+        return accessTokens.stream().map(Mall::ToTextValue).collect(Collectors.toList());
+    }
+
+    /**
+     * 클라이언트 크리덴셜 앱의 토큰 발급
+     *
+     * @param app
+     * @param request
+     * @return
+     */
+    public void getAccessTokenByClientCredential(App app, HttpServletRequest request) throws Exception {
+        MallDto mallInfo = SessionUtil.getMallInfo(request.getSession());
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.AUTHORIZATION, app.getAuthorization());
+        header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("grant_type", "client_credentials");
+
+        String url = API_OAUTH_TOKEN.replace("{{mall_id}}", mallInfo.getMall_id());
+
+        AccessTokenDto accessTokenDto = restTemplate.postForObject(url, new HttpEntity<>(requestBody, header), AccessTokenDto.class);
+        if (accessTokenDto == null) {
+            throw new Exception("Access Token 발급에 실패했습니다.");
+        }
+
+        AccessToken accessToken = accessTokenDto.toClientCredentialsEntity();
+        accessToken.setApp(app);
+        this.saveAccessTokenOfClientCredentials(accessToken);
     }
 }

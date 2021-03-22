@@ -73,7 +73,7 @@ public class AppController {
             return ResponseDto.badRequest("등록된 client가 없습니다.");
         }
 
-        appService.deleteApp(appIdx);
+        appService.deleteApp(app);
         return ResponseDto.success(null);
     }
 }

@@ -1,5 +1,6 @@
 package com.cafe24.apps.ita.entity;
 
+import com.cafe24.apps.ita.dto.TextValue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +25,8 @@ public class Mall extends TimeEntity {
 
     @Column(length = 10, nullable = false)
     private String operationLevel;
+
+    public TextValue ToTextValue() {
+        return new TextValue(this.mallId, this.mallId);
+    }
 }

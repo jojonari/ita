@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 
 @Controller
 public class mainController {
@@ -21,6 +24,7 @@ public class mainController {
     public ModelAndView index(HttpSession session, ModelAndView mv) throws Exception {
         if (SessionUtil.isSignIn(session)) {
             mv.addObject("user", SessionUtil.getUserInfo(session));
+            mv.addObject("hostAddr", InetAddress.getLocalHost().getHostAddress());
             mv.setViewName("/main");
 
             return mv;
@@ -37,10 +41,12 @@ public class mainController {
      * @return
      */
     @GetMapping("/main")
-    public ModelAndView main(HttpSession session, ModelAndView mv, @RequestParam @Nullable String clientId) {
+    public ModelAndView main(HttpSession session, ModelAndView mv, @RequestParam @Nullable String clientId) throws UnknownHostException {
         if (clientId != null && !clientId.isBlank()) {
             mv.addObject("cleintId", clientId);
         }
+
+        mv.addObject("hostAddr", InetAddress.getLocalHost().getHostAddress());
 
         if (SessionUtil.isSignIn(session)) {
             mv.addObject("user", SessionUtil.getUserInfo(session));

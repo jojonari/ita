@@ -28,19 +28,19 @@ public class AccessToken extends TimeEntity {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    @Column(length = 64, nullable = false)
+    @Column(length = 64)
     private String refreshToken;
 
-    @Column(nullable = false)
+    @Column()
     private LocalDateTime refreshTokenExpiresAt;
 
-    @Column(length = 16, nullable = false)
+    @Column(length = 16)
     private String mallId;
 
     @Column(length = 22, nullable = false)
     private String clientId;
 
-    @Column(length = 16, nullable = false)
+    @Column(length = 16)
     private String userId;
 
     @Column(nullable = false)
@@ -51,7 +51,7 @@ public class AccessToken extends TimeEntity {
     @Column(columnDefinition = "TEXT")
     private Set<String> scopes;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "m_app_token", joinColumns = @JoinColumn(name = "token_idx"), inverseJoinColumns = @JoinColumn(name = "app_idx"))
     private App app;
 
@@ -88,6 +88,21 @@ public class AccessToken extends TimeEntity {
     }
 
     /**
+     * convert DTO
+     *
+     * @return AccessTokenDto
+     */
+    public AccessTokenDto convertApiDto() {
+        return AccessTokenDto.builder().
+                access_token(this.accessToken)
+                .issued_at(this.issuedAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .expires_at(this.expiresAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .client_id(this.clientId)
+                .scopes(this.scopes)
+                .build();
+    }
+
+    /**
      * convertTextValueSetMallId
      *
      * @return TextValue
@@ -102,6 +117,10 @@ public class AccessToken extends TimeEntity {
 
     public void setApp(App app) {
         this.app = app;
+    }
+
+    public String getClientId() {
+        return clientId;
     }
 
     /**

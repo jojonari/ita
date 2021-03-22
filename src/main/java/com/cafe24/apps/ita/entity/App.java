@@ -23,7 +23,7 @@ public class App extends TimeEntity {
     @GeneratedValue
     private Long idx;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn
     private User user;
 
@@ -39,7 +39,7 @@ public class App extends TimeEntity {
     @Column(length = 16, nullable = false)
     private String partnerId;
 
-    @Column(length = 30)
+    @Column(length = 30)//authorization_code, client_credentials
     private String grantType;
 
     @Column(length = 10)
@@ -59,6 +59,10 @@ public class App extends TimeEntity {
 
     public void setUser(HttpSession session) {
         this.user = SessionUtil.getUserInfo(session).toEntity();
+    }
+
+    public String getOperationLevel() {
+        return operationLevel;
     }
 
     /**
@@ -127,5 +131,15 @@ public class App extends TimeEntity {
         this.manageToken = manageToken;
         this.operationLevel = operationLevel;
         this.scopes = scopes;
+    }
+
+    /**
+     * 인증 방법 확인
+     * authorization_code : true
+     *
+     * @return
+     */
+    public boolean isAuthorizationCode() {
+        return this.grantType.equals("authorization_code");
     }
 }
