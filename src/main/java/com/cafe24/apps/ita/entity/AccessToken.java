@@ -1,7 +1,6 @@
 package com.cafe24.apps.ita.entity;
 
 import com.cafe24.apps.ita.dto.AccessTokenDto;
-import com.cafe24.apps.ita.dto.TextValue;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -51,12 +50,12 @@ public class AccessToken extends TimeEntity {
     @Column(columnDefinition = "TEXT")
     private Set<String> scopes;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "m_app_token", joinColumns = @JoinColumn(name = "token_idx"), inverseJoinColumns = @JoinColumn(name = "app_idx"))
     private App app;
 
     @Builder
-    public AccessToken(String accessToken, LocalDateTime expiresAt, String refreshToken, LocalDateTime refreshTokenExpiresAt, String mallId, String clientId, String userId, LocalDateTime issuedAt, Set<String> scopes) {
+    public AccessToken(String accessToken, LocalDateTime expiresAt, String refreshToken, LocalDateTime refreshTokenExpiresAt, String mallId, String clientId, String userId, LocalDateTime issuedAt, Set<String> scopes, App app) {
         this.accessToken = accessToken;
         this.expiresAt = expiresAt;
         this.refreshToken = refreshToken;
@@ -66,6 +65,7 @@ public class AccessToken extends TimeEntity {
         this.userId = userId;
         this.issuedAt = issuedAt;
         this.scopes = scopes;
+        this.app = app;
     }
 
     /**
@@ -100,46 +100,5 @@ public class AccessToken extends TimeEntity {
                 .client_id(this.clientId)
                 .scopes(this.scopes)
                 .build();
-    }
-
-    /**
-     * convertTextValueSetMallId
-     *
-     * @return TextValue
-     */
-    public TextValue convertTextValueSetMallId() {
-        if (this.isRefreshTokenExpire()) {
-            return new TextValue(this.mallId, this.mallId, true);
-        }
-
-        return new TextValue(this.mallId, this.mallId);
-    }
-
-    public void setApp(App app) {
-        this.app = app;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    /**
-     * Access token 만료 조회
-     * 만료 : true
-     *
-     * @return Boolean
-     */
-    public Boolean isAccessTokenExpire() {
-        return LocalDateTime.now().isAfter(expiresAt);
-    }
-
-    /**
-     * Refresh token 만료 조회
-     * 만료 : true
-     *
-     * @return Boolean
-     */
-    public Boolean isRefreshTokenExpire() {
-        return LocalDateTime.now().isAfter(refreshTokenExpiresAt);
     }
 }

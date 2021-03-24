@@ -1,25 +1,19 @@
 package com.cafe24.apps.ita.dto;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
 
 @Data
-@NoArgsConstructor
 public class MallDto {
+    private Long idx;
+    private String mallId;
+    private String operationLevel;
 
-    private String is_multi_shop;
-    private String lang;
-    @NotEmpty(message = "mall_id는 필수 값입니다.")
-    private String mall_id;
-    private String shop_no;
-    @Positive(message = "timestamp는 필수 값입니다.")
-    private long timestamp;
-    private String user_id;
-    private String user_type;
-    @NotEmpty(message = "hmac는 필수 값입니다.")
-    private String hmac;
-
+    @Builder
+    public MallDto(Long idx, String mallId, String operationLevel) {
+        this.idx = idx;
+        this.mallId = mallId;
+        this.operationLevel = operationLevel;
+    }
 }
+

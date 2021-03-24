@@ -1,6 +1,7 @@
 package com.cafe24.apps.ita.dto;
 
 import com.cafe24.apps.ita.entity.AccessToken;
+import com.cafe24.apps.ita.entity.App;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -29,7 +30,7 @@ public class AccessTokenDto {
      *
      * @return
      */
-    public AccessToken toEntity() {
+    public AccessToken toEntity(App app) {
         return AccessToken.builder()
                 .accessToken(this.access_token)
                 .expiresAt(LocalDateTime.parse(this.expires_at))
@@ -39,6 +40,7 @@ public class AccessTokenDto {
                 .clientId(this.client_id)
                 .userId(this.user_id)
                 .scopes(this.scopes)
+                .app(app)
                 .issuedAt(LocalDateTime.parse(this.issued_at))
                 .build();
     }
@@ -48,14 +50,49 @@ public class AccessTokenDto {
      *
      * @return
      */
-    public AccessToken toClientCredentialsEntity() {
+    public AccessToken toClientCredentialsEntity(App app) {
         return AccessToken.builder()
                 .accessToken(this.access_token)
                 .expiresAt(LocalDateTime.parse(this.expires_at))
                 .clientId(this.client_id)
                 .scopes(this.scopes)
                 .issuedAt(LocalDateTime.parse(this.issued_at))
+                .app(app)
                 .build();
+    }
+
+
+    /**
+     * convertTextValueSetMallId
+     *
+     * @return TextValue
+     */
+    public TextValue convertTextValueSetMallId() {
+        if (this.isRefreshTokenExpire()) {
+            return new TextValue(this.mall_id, this.mall_id, true);
+        }
+
+        return new TextValue(this.mall_id, this.mall_id);
+    }
+
+    /**
+     * Access token 만료 조회
+     * 만료 : true
+     *
+     * @return Boolean
+     */
+    public Boolean isAccessTokenExpire() {
+        return LocalDateTime.now().isAfter(LocalDateTime.parse(this.expires_at));
+    }
+
+    /**
+     * Refresh token 만료 조회
+     * 만료 : true
+     *
+     * @return Boolean
+     */
+    public Boolean isRefreshTokenExpire() {
+        return LocalDateTime.now().isAfter(LocalDateTime.parse(this.refresh_token_expires_at));
     }
 
 }

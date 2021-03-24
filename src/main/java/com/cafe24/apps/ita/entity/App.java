@@ -2,16 +2,13 @@ package com.cafe24.apps.ita.entity;
 
 import com.cafe24.apps.ita.dto.AppDto;
 import com.cafe24.apps.ita.dto.PrivateAppDto;
-import com.cafe24.apps.ita.util.SessionUtil;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import javax.servlet.http.HttpSession;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.Set;
 
 @Entity
@@ -23,7 +20,7 @@ public class App extends TimeEntity {
     @GeneratedValue
     private Long idx;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn
     private User user;
 
@@ -52,34 +49,6 @@ public class App extends TimeEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(columnDefinition = "TEXT")
     private Set<String> scopes;
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setUser(HttpSession session) {
-        this.user = SessionUtil.getUserInfo(session).toEntity();
-    }
-
-    public String getOperationLevel() {
-        return operationLevel;
-    }
-
-    /**
-     * Authorization 조회
-     */
-    public String getAuthorization() {
-        return String.format("Basic %s", new String(Base64.getEncoder().encode((this.clientId + ":" + this.secretKey).getBytes())));
-    }
-
-    /**
-     * 토큰 갱신 여부
-     *
-     * @return
-     */
-    public boolean isRefresh() {
-        return this.manageToken.equals("refresh");
-    }
 
     /**
      * convert DTO
@@ -131,15 +100,5 @@ public class App extends TimeEntity {
         this.manageToken = manageToken;
         this.operationLevel = operationLevel;
         this.scopes = scopes;
-    }
-
-    /**
-     * 인증 방법 확인
-     * authorization_code : true
-     *
-     * @return
-     */
-    public boolean isAuthorizationCode() {
-        return this.grantType.equals("authorization_code");
     }
 }

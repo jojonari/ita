@@ -1,12 +1,13 @@
 package com.cafe24.apps.ita.service;
 
+import com.cafe24.apps.ita.dto.ScopeDto;
 import com.cafe24.apps.ita.dto.TextValue;
 import com.cafe24.apps.ita.entity.Scope;
 import com.cafe24.apps.ita.repository.ScopeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ScopeService {
@@ -24,11 +25,9 @@ public class ScopeService {
      */
     public List<TextValue> getScopesOptions() {
         List<Scope> scopes = scopeRepository.findAll();
-        List<TextValue> textValues = new ArrayList<>();
-        for (Scope scope : scopes) {
-            textValues.add(scope.ToTextValue());
-        }
-
-        return textValues;
+        return scopes.stream()
+                .map(Scope::convertDto)
+                .map(ScopeDto::toTextValue)
+                .collect(Collectors.toList());
     }
 }

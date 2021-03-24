@@ -5,6 +5,7 @@ import com.cafe24.apps.ita.dto.PrivateAppDto;
 import com.cafe24.apps.ita.dto.ResponseDto;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.service.AppService;
+import com.cafe24.apps.ita.util.SessionUtil;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -35,45 +36,45 @@ public class AppController {
     }
 
     @PostMapping("/app")
-    public ResponseDto registerApp(@RequestBody PrivateAppDto app, HttpSession session) {
-        App result = appService.getApp(app.getClientId());
+    public ResponseDto registerApp(@RequestBody PrivateAppDto privateAppDto, HttpSession session) {
+        App result = appService.getApp(privateAppDto.getClientId());
         if (result != null) {
             return ResponseDto.badRequest("이미 등록된 ClientId 입니다.");
         }
 
-        app.setUser(session);
+        privateAppDto.setUser(SessionUtil.getUserInfo(session).toEntity());
 
-        boolean resultValid = appService.appValid(app);
-        if (!resultValid){
+        boolean resultValid = appService.appValid(privateAppDto);
+        if (!resultValid) {
             return ResponseDto.badRequest("부여된 권한 내에서만 사용가능합니다.");
         }
 
-        App registerApp = appService.registerApp(app.toEntity());
+        App registerApp = appService.registerApp(privateAppDto.toEntity());
         return ResponseDto.success(registerApp.convertDto());
     }
 
     @PutMapping("/app/{appIdx}")
     public ResponseDto modifyApp(@PathVariable Long appIdx, @RequestBody PrivateAppDto privateAppDto, HttpSession session) {
-        App result = appService.getApp(session, appIdx);
-        if (result == null) {
+        PrivateAppDto appDto = appService.getApp(session, appIdx);
+        if (appDto == null) {
             return ResponseDto.badRequest("등록된 client가 없습니다.");
         }
 
-        privateAppDto.setUser(session);
-        privateAppDto.setModifySecretKey(result.convertPrivateDto().getSecretKey());
+        privateAppDto.setUser(SessionUtil.getUserInfo(session).toEntity());
+        privateAppDto.setModifySecretKey(appDto.getSecretKey());
 
-        App modifyApp = appService.modifyApp(privateAppDto.toEntity());
-        return ResponseDto.success(modifyApp.convertDto());
+        AppDto modifyApp = appService.modifyApp(privateAppDto.toEntity());
+        return ResponseDto.success(modifyApp);
     }
 
     @DeleteMapping("/app/{appIdx}")
     public ResponseDto deleteApp(@PathVariable Long appIdx, HttpSession session) {
-        App app = appService.getApp(session, appIdx);
-        if (app == null) {
+        PrivateAppDto privateAppDto = appService.getApp(session, appIdx);
+        if (privateAppDto == null) {
             return ResponseDto.badRequest("등록된 client가 없습니다.");
         }
 
-        appService.deleteApp(app);
+        appService.deleteApp(privateAppDto.toEntity());
         return ResponseDto.success(null);
     }
 }

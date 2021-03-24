@@ -40,13 +40,13 @@ public class UserController {
      * 회원가입
      *
      * @param request
-     * @param userDto
+     * @param privateUserDto
      * @return
      * @throws NoSuchAlgorithmException
      */
     @PostMapping(value = "/sign-up")
-    public ModelAndView signUp(PrivateUserDto userDto, ModelAndView mv, HttpServletRequest request) throws NoSuchAlgorithmException {
-        Optional<User> userInfo = userService.getUser(userDto.getUserId());
+    public ModelAndView signUp(PrivateUserDto privateUserDto, ModelAndView mv, HttpServletRequest request) throws NoSuchAlgorithmException {
+        Optional<User> userInfo = userService.getUser(privateUserDto.getUserId());
         if (userInfo.isPresent()) {
             mv.addObject("user", userInfo.get().convertDto());
             mv.setViewName("/user/sign-up");
@@ -54,8 +54,8 @@ public class UserController {
             return mv;
         }
 
-        User regisertUser = userService.regisertUser(userDto.toEntity());
-        SessionUtil.setUserInfo(request.getSession(), regisertUser);
+        PrivateUserDto saveUserDto = userService.regisertUser(privateUserDto);
+        SessionUtil.setUserInfo(request.getSession(), saveUserDto);
 
         String url = "https://" + request.getServerName() + request.getContextPath() + "/main";
         mv.setViewName("redirect:" + url);
@@ -112,8 +112,8 @@ public class UserController {
             return mv;
         }
 
-        User user = optionalUser.get();
-        boolean isLogin = userService.doLogin(signIn, user);
+        PrivateUserDto privateUserDto = optionalUser.get().convertPrivateDto();
+        boolean isLogin = userService.doLogin(signIn, privateUserDto);
         if (!isLogin) {
             mv.setViewName("/user/sign-in");
             mv.addObject("error_msg", "패스워드를 틀렸습니다.");
@@ -121,7 +121,7 @@ public class UserController {
             return mv;
         }
 
-        SessionUtil.setUserInfo(session, user);
+        SessionUtil.setUserInfo(session, privateUserDto);
         log.info(signIn.getUserId() + " 회원이 로그인 하였습니다.");
 
         String url = request.getScheme() + "://" + request.getServerName();

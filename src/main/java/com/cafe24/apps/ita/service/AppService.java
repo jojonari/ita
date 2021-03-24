@@ -61,9 +61,10 @@ public class AppService {
      * @param appIdx
      * @return
      */
-    public App getApp(HttpSession session, Long appIdx) {
+    public PrivateAppDto getApp(HttpSession session, Long appIdx) {
         User user = SessionUtil.getUserInfo(session).toEntity();
-        return appRepository.findByIdxAndUser(appIdx, user);
+        App app = appRepository.findByIdxAndUser(appIdx, user);
+        return app.convertPrivateDto();
     }
 
     /**
@@ -73,9 +74,10 @@ public class AppService {
      * @param clientId
      * @return
      */
-    public App getApp(HttpSession session, String clientId) {
+    public PrivateAppDto getApp(HttpSession session, String clientId) {
         User user = SessionUtil.getUserInfo(session).toEntity();
-        return appRepository.findByUserAndClientId(user, clientId);
+        App app = appRepository.findByUserAndClientId(user, clientId);
+        return app.convertPrivateDto();
     }
 
     /**
@@ -100,8 +102,9 @@ public class AppService {
      * @param app
      * @return
      */
-    public App modifyApp(App app) {
-        return appRepository.saveAndFlush(app);
+    public AppDto modifyApp(App app) {
+        App saveApp = appRepository.saveAndFlush(app);
+        return saveApp.convertDto();
     }
 
     /**

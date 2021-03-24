@@ -20,7 +20,7 @@ public class Webhook extends TimeEntity {
     @GeneratedValue
     private Long idx;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "m_app_webhook", joinColumns = @JoinColumn(name = "app_idx"), inverseJoinColumns = @JoinColumn(name = "webhook_idx"))
     private App app;
 
@@ -45,7 +45,6 @@ public class Webhook extends TimeEntity {
         this.xTraceId = xTraceId;
         this.resource = resource;
     }
-
 
     /**
      * convert DTO

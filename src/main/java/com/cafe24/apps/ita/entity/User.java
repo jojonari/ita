@@ -2,7 +2,6 @@ package com.cafe24.apps.ita.entity;
 
 import com.cafe24.apps.ita.dto.PrivateUserDto;
 import com.cafe24.apps.ita.dto.UserDto;
-import com.cafe24.apps.ita.util.EncryptUtil;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,6 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 
 @Entity
@@ -94,38 +92,5 @@ public class User extends TimeEntity {
                 .operationLevel(this.operationLevel)
                 .grantType(this.grantType)
                 .build();
-    }
-
-    /**
-     * 패스워드 암호화
-     *
-     * @throws NoSuchAlgorithmException
-     */
-    public void encryptPassword() throws NoSuchAlgorithmException {
-        this.userPw = EncryptUtil.encryptPassword(this.userPw);
-    }
-
-    /**
-     * 기본 권한 설정
-     */
-    public void defaultUserSet(){
-        //기본 권한 설정
-        this.operationLevel = Set.of("dev", "qa");
-        //기본 인증방식 설정
-        this.grantType = Set.of("authorization_code");
-
-    }
-
-    /**
-     * 패스워드 비교
-     * @param encUserPw
-     * @return
-     */
-    public boolean isEqualsPassWord(String encUserPw) {
-        return this.userPw.equals(encUserPw);
-    }
-
-    public String getUserId() {
-        return this.userId;
     }
 }

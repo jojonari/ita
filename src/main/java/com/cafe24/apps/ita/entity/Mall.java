@@ -1,8 +1,7 @@
 package com.cafe24.apps.ita.entity;
 
-import com.cafe24.apps.ita.dto.TextValue;
+import com.cafe24.apps.ita.dto.MallDto;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -11,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
@@ -26,7 +24,11 @@ public class Mall extends TimeEntity {
     @Column(length = 10, nullable = false)
     private String operationLevel;
 
-    public TextValue ToTextValue() {
-        return new TextValue(this.mallId, this.mallId);
+    public MallDto convertDto() {
+        return MallDto.builder()
+                .idx(this.idx)
+                .mallId(this.mallId)
+                .operationLevel(this.operationLevel)
+                .build();
     }
 }

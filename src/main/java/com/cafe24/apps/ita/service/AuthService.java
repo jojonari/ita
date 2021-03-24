@@ -46,13 +46,13 @@ public class AuthService {
     /**
      * hmac 검증 : +-1분내에 생성된 요청만 처리
      *
-     * @param mallDto
+     * @param authMallDto
      * @return
      */
-    public boolean checkTimestamp(MallDto mallDto) {
+    public boolean checkTimestamp(AuthMallDto authMallDto) {
         LocalDateTime afterOne = LocalDateTime.now().plusMinutes(1L);
         LocalDateTime beforeOne = LocalDateTime.now().minusMinutes(1L);
-        LocalDateTime timestamp = new Timestamp(mallDto.getTimestamp() * 1000).toLocalDateTime();
+        LocalDateTime timestamp = new Timestamp(authMallDto.getTimestamp() * 1000).toLocalDateTime();
 
         return timestamp.isBefore(afterOne) && timestamp.isAfter(beforeOne);
     }
@@ -80,69 +80,69 @@ public class AuthService {
      * Refresh Token 만료확인
      * 만료 : true
      *
-     * @param app
-     * @param mallDto
+     * @param privateAppDto
+     * @param mallId
      * @return
      */
-    public boolean isExpireRefreshToken(App app, MallDto mallDto) {
+    public boolean isExpireRefreshToken(PrivateAppDto privateAppDto, String mallId) {
         //client credentials 일 때
-        if (!app.isAuthorizationCode()) {
-            Optional<AccessToken> accessToken = accessTokenRepository.findByApp(app);
+        if (!privateAppDto.isAuthorizationCode()) {
+            Optional<AccessToken> accessToken = accessTokenRepository.findByApp(privateAppDto.toEntity());
             //토큰이 없으면
             if (accessToken.isEmpty()) {
                 return true;
             }
 
-            return accessToken.get().isAccessTokenExpire();
+            return accessToken.get().convertDto().isAccessTokenExpire();
         }
 
         //authorization_code 일 때
-        Optional<AccessToken> accessToken = accessTokenRepository.findByAppAndMallId(app, mallDto.getMall_id());
+        Optional<AccessToken> accessToken = accessTokenRepository.findByAppAndMallId(privateAppDto.toEntity(), mallId);
         //토큰이 없으면
         if (accessToken.isEmpty()) {
             return true;
         }
 
         //리프레시토큰 만료
-        return accessToken.get().isRefreshTokenExpire();
+        return accessToken.get().convertDto().isRefreshTokenExpire();
     }
 
     /**
      * 코드 발급 url
      *
-     * @param appDto
-     * @param mallDto
+     * @param privateAppDto
+     * @param authMallDto
      * @param request
      * @return
      */
-    public String getCodeRedirectUrl(AppDto appDto, MallDto mallDto, HttpServletRequest request) {
+    public String getCodeRedirectUrl(PrivateAppDto privateAppDto, AuthMallDto authMallDto, HttpServletRequest request) {
         String requestUrl = request.getRequestURL().toString().replace("http://", "https://");
 
         return "redirect:" +
-                "https://" + mallDto.getMall_id() + ".cafe24api.com" +
+                "https://" + authMallDto.getMall_id() + ".cafe24api.com" +
                 "/api/v2/oauth/authorize" +
                 "?response_type=" + "code" +
-                "&client_id=" + appDto.getClientId() +
+                "&client_id=" + privateAppDto.getClientId() +
                 "&state=" + request.getRequestedSessionId() +
                 "&redirect_uri=" + requestUrl + "/redirect" +
-                "&scope=" + String.join(",", appDto.getScopes());
+                "&scope=" + String.join(",", privateAppDto.getScopes());
     }
 
     /**
      * Access token
      *
-     * @param app
+     * @param privateAppDto
      * @param codeDto
      * @param request
      * @return
      */
-    public AccessToken getAccessToken(App app, CodeDto codeDto, HttpServletRequest request) throws Exception {
-        MallDto mallInfo = SessionUtil.getMallInfo(request.getSession());
+    public AccessToken getAccessToken(PrivateAppDto privateAppDto, CodeDto codeDto, HttpServletRequest request) throws Exception {
+        AuthMallDto mallInfo = SessionUtil.getMallInfo(request.getSession());
 
         HttpHeaders header = new HttpHeaders();
-        header.add(HttpHeaders.AUTHORIZATION, app.getAuthorization());
+        header.add(HttpHeaders.AUTHORIZATION, privateAppDto.getAuthorization());
         header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-        String callbackUrl = "https://" + request.getServerName() + request.getContextPath() + "/auth/" + app.convertDto().getIdx() + "/redirect";
+        String callbackUrl = "https://" + request.getServerName() + request.getContextPath() + "/auth/" + privateAppDto.getIdx() + "/redirect";
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("grant_type", "authorization_code");
@@ -156,8 +156,7 @@ public class AuthService {
             throw new Exception("Access Token 발급에 실패했습니다.");
         }
 
-        AccessToken accessToken = accessTokenDto.toEntity();
-        accessToken.setApp(app);
+        AccessToken accessToken = accessTokenDto.toEntity(privateAppDto.toEntity());
         this.saveAccessToken(accessToken);
 
         return accessToken;
@@ -183,46 +182,51 @@ public class AuthService {
      * @return
      */
     public void saveAccessTokenOfClientCredentials(AccessToken accessToken) {
-        accessTokenRepository.deleteByClientId(accessToken.getClientId());
+        accessTokenRepository.deleteByClientId(accessToken.convertApiDto().getClient_id());
         accessTokenRepository.save(accessToken);
     }
 
     /**
      * AccessToken 조회
      *
-     * @param app
+     * @param privateAppDto
      * @param mallId
      * @return
      */
-    public AccessTokenDto getAccessToken(App app, String mallId) throws Exception {
+    public AccessTokenDto getAccessToken(PrivateAppDto privateAppDto, String mallId) throws Exception {
         Optional<AccessToken> accessTokenOptional;
-        if (app.isAuthorizationCode()) {
-            accessTokenOptional = accessTokenRepository.findByAppAndMallId(app, mallId);
+        if (privateAppDto.isAuthorizationCode()) {
+            accessTokenOptional = accessTokenRepository.findByAppAndMallId(privateAppDto.toEntity(), mallId);
         } else {
-            accessTokenOptional = accessTokenRepository.findByApp(app);
+            accessTokenOptional = accessTokenRepository.findByApp(privateAppDto.toEntity());
         }
 
         AccessToken accessToken = accessTokenOptional.orElseThrow(() -> new Exception("access token이 없습니다."));
-        if (!accessToken.isAccessTokenExpire()) {
-            return accessToken.convertApiDto();
+        AccessTokenDto accessTokenApiDto = accessToken.convertApiDto();
+        if (!accessTokenApiDto.isAccessTokenExpire()) {
+            return accessTokenApiDto;
         }
 
-        if (accessToken.isRefreshTokenExpire()) {
+        if (privateAppDto.isClientCredentials()) {
+            return this.getAccessTokenByClientCredential(privateAppDto, mallId);
+        }
+
+        if (accessTokenApiDto.isRefreshTokenExpire()) {
             throw new Exception("refresh token이 만료되어 API를 호출 할 수 없습니다.");
         }
 
-        return this.getAccessTokenWithRefreshToken(app, accessToken.convertDto());
+        return this.getAccessTokenWithRefreshToken(privateAppDto, accessTokenApiDto);
     }
 
     /**
      * 리프레시토큰을 사용하여 토큰 조회
      *
-     * @param app
+     * @param privateAppDto
      * @param accessToken
      */
-    private AccessTokenDto getAccessTokenWithRefreshToken(App app, AccessTokenDto accessToken) throws Exception {
+    private AccessTokenDto getAccessTokenWithRefreshToken(PrivateAppDto privateAppDto, AccessTokenDto accessToken) throws Exception {
         HttpHeaders header = new HttpHeaders();
-        header.add(HttpHeaders.AUTHORIZATION, app.getAuthorization());
+        header.add(HttpHeaders.AUTHORIZATION, privateAppDto.getAuthorization());
         header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
@@ -236,8 +240,7 @@ public class AuthService {
             throw new Exception("Access Token 발급에 실패했습니다.");
         }
 
-        AccessToken accessTokenRefresh = accessTokenDto.toEntity();
-        accessTokenRefresh.setApp(app);
+        AccessToken accessTokenRefresh = accessTokenDto.toEntity(privateAppDto.toEntity());
         this.saveAccessToken(accessTokenRefresh);
 
         return accessTokenDto;
@@ -246,53 +249,51 @@ public class AuthService {
     /**
      * Api 호출용 mallIds의 TextValue 조회
      *
-     * @param app
+     * @param privateAppDto
      * @return
      */
-    public List<TextValue> getTextValuesSetMallId(App app) {
-        List<AccessToken> accessTokens = accessTokenRepository.findAllByApp(app);
+    public List<TextValue> getTextValuesSetMallId(PrivateAppDto privateAppDto) {
+        List<AccessToken> accessTokens = accessTokenRepository.findAllByApp(privateAppDto.toEntity());
 
-        return accessTokens.stream().map(AccessToken::convertTextValueSetMallId).collect(Collectors.toList());
+        return accessTokens.stream().map(AccessToken::convertDto).map(AccessTokenDto::convertTextValueSetMallId).collect(Collectors.toList());
     }
 
     /**
      * Api 호출용 mallIds의 TextValue 조회
      *
-     * @param app
+     * @param privateAppDto
      * @return
      */
-    public List<TextValue> getTextValuesSetMallIdByOperationLevel(App app) {
-        List<Mall> accessTokens = mallRepository.findAllByOperationLevel(app.getOperationLevel());
+    public List<TextValue> getTextValuesSetMallIdByOperationLevel(PrivateAppDto privateAppDto) {
+        List<Mall> malls = mallRepository.findAllByOperationLevel(privateAppDto.getOperationLevel());
 
-        return accessTokens.stream().map(Mall::ToTextValue).collect(Collectors.toList());
+        return malls.stream().map(Mall::convertDto).map(m -> new TextValue(m.getMallId(), m.getMallId())).collect(Collectors.toList());
     }
 
     /**
      * 클라이언트 크리덴셜 앱의 토큰 발급
      *
-     * @param app
-     * @param request
+     * @param privateAppDto
+     * @param mallId
      * @return
      */
-    public void getAccessTokenByClientCredential(App app, HttpServletRequest request) throws Exception {
-        MallDto mallInfo = SessionUtil.getMallInfo(request.getSession());
-
+    public AccessTokenDto getAccessTokenByClientCredential(PrivateAppDto privateAppDto, String mallId) throws Exception {
         HttpHeaders header = new HttpHeaders();
-        header.add(HttpHeaders.AUTHORIZATION, app.getAuthorization());
+        header.add(HttpHeaders.AUTHORIZATION, privateAppDto.getAuthorization());
         header.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("grant_type", "client_credentials");
 
-        String url = API_OAUTH_TOKEN.replace("{{mall_id}}", mallInfo.getMall_id());
+        String url = API_OAUTH_TOKEN.replace("{{mall_id}}", mallId);
 
         AccessTokenDto accessTokenDto = restTemplate.postForObject(url, new HttpEntity<>(requestBody, header), AccessTokenDto.class);
         if (accessTokenDto == null) {
             throw new Exception("Access Token 발급에 실패했습니다.");
         }
 
-        AccessToken accessToken = accessTokenDto.toClientCredentialsEntity();
-        accessToken.setApp(app);
+        AccessToken accessToken = accessTokenDto.toClientCredentialsEntity(privateAppDto.toEntity());
         this.saveAccessTokenOfClientCredentials(accessToken);
+        return accessToken.convertApiDto();
     }
 }

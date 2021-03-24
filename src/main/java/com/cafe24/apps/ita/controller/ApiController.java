@@ -1,11 +1,7 @@
 package com.cafe24.apps.ita.controller;
 
-import com.cafe24.apps.ita.dto.AccessTokenDto;
-import com.cafe24.apps.ita.dto.ApiRequestDto;
-import com.cafe24.apps.ita.dto.ResponseDto;
-import com.cafe24.apps.ita.dto.TextValue;
+import com.cafe24.apps.ita.dto.*;
 import com.cafe24.apps.ita.entity.ApiRequest;
-import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.service.ApiService;
 import com.cafe24.apps.ita.service.AppService;
 import com.cafe24.apps.ita.service.AuthService;
@@ -36,13 +32,13 @@ public class ApiController {
 
     @PostMapping("/api")
     public ResponseDto callApi(@RequestBody ApiRequestDto apiRequestDto, HttpSession session) throws Exception {
-        App app = appService.getApp(session, apiRequestDto.getClientId());
-        boolean resultVlid = apiService.apiValid(app, apiRequestDto, session);
+        PrivateAppDto privateAppDto = appService.getApp(session, apiRequestDto.getClientId());
+        boolean resultVlid = apiService.apiValid(privateAppDto, apiRequestDto, session);
         if (!resultVlid) {
             return ResponseDto.badRequest("부여된 권한 내에서만 사용가능합니다.");
         }
 
-        AccessTokenDto accessTokenDto = authService.getAccessToken(app, apiRequestDto.getMallId());
+        AccessTokenDto accessTokenDto = authService.getAccessToken(privateAppDto, apiRequestDto.getMallId());
         ResponseEntity<HashMap> response = apiService.callApi(apiRequestDto, accessTokenDto);
         ApiRequest apiRequest = new ApiRequest(apiRequestDto, response);
         apiService.saveApiRequest(apiRequest);
@@ -79,14 +75,14 @@ public class ApiController {
 
     @GetMapping("/api/{clientId}/mallIds")
     public ResponseDto getApiMallIds(HttpSession session, @PathVariable String clientId) {
-        App app = appService.getApp(session, clientId);
+        PrivateAppDto privateAppDto = appService.getApp(session, clientId);
         List<TextValue> textValues;
-        if (app.isAuthorizationCode()) {
-            textValues = authService.getTextValuesSetMallId(app);
+        if (privateAppDto.isAuthorizationCode()) {
+            textValues = authService.getTextValuesSetMallId(privateAppDto);
             return ResponseDto.success(textValues);
         }
 
-        textValues = authService.getTextValuesSetMallIdByOperationLevel(app);
+        textValues = authService.getTextValuesSetMallIdByOperationLevel(privateAppDto);
         return ResponseDto.success(textValues);
 
     }

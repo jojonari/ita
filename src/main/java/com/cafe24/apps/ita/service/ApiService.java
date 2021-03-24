@@ -2,9 +2,9 @@ package com.cafe24.apps.ita.service;
 
 import com.cafe24.apps.ita.dto.AccessTokenDto;
 import com.cafe24.apps.ita.dto.ApiRequestDto;
-import com.cafe24.apps.ita.dto.UserDto;
+import com.cafe24.apps.ita.dto.PrivateAppDto;
+import com.cafe24.apps.ita.dto.PrivateUserDto;
 import com.cafe24.apps.ita.entity.ApiRequest;
-import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.Mall;
 import com.cafe24.apps.ita.repository.ApiRepository;
 import com.cafe24.apps.ita.repository.MallRepository;
@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ApiService {
@@ -111,17 +110,17 @@ public class ApiService {
     /**
      * apiValid
      *
-     * @param app
+     * @param privateAppDto
      * @param apiRequestDto
      * @param session
      * @return
      */
-    public boolean apiValid(App app, ApiRequestDto apiRequestDto, HttpSession session) {
-        String operationLevel = app.convertDto().getOperationLevel();
-        UserDto userDto = SessionUtil.getUserInfo(session);
+    public boolean apiValid(PrivateAppDto privateAppDto, ApiRequestDto apiRequestDto, HttpSession session) {
+        String operationLevel = privateAppDto.getOperationLevel();
+        PrivateUserDto privateUserDto = SessionUtil.getUserInfo(session);
 
         //요청앱의 운영레벨과 유저의 운영레벨이 같은지 확인
-        boolean result = userDto.getOperationLevel().contains(operationLevel);
+        boolean result = privateUserDto.getOperationLevel().contains(operationLevel);
         if (!result) {
             return false;
         }
@@ -129,7 +128,7 @@ public class ApiService {
         //호출가능한 몰아이디 확인
         List<Mall> malls = mallRepository.findAllByOperationLevel(operationLevel);
         for (Mall mall : malls) {
-            if (apiRequestDto.getMallId().contains(mall.getMallId())) {
+            if (apiRequestDto.getMallId().contains(mall.convertDto().getMallId())) {
                 return true;
             }
         }

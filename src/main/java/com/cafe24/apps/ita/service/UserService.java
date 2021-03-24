@@ -1,5 +1,6 @@
 package com.cafe24.apps.ita.service;
 
+import com.cafe24.apps.ita.dto.PrivateUserDto;
 import com.cafe24.apps.ita.dto.SignIn;
 import com.cafe24.apps.ita.entity.User;
 import com.cafe24.apps.ita.repository.UserRepository;
@@ -20,26 +21,27 @@ public class UserService {
     /**
      * 회원 가입
      *
-     * @param user
+     * @param privateUserDto
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public User regisertUser(User user) throws NoSuchAlgorithmException {
-        user.encryptPassword();
-        user.defaultUserSet();
-        return userRepository.save(user);
+    public PrivateUserDto regisertUser(PrivateUserDto privateUserDto) throws NoSuchAlgorithmException {
+        privateUserDto.encryptPassword();
+        privateUserDto.defaultUserSet();
+        User saveUser = userRepository.save(privateUserDto.toEntity());
+        return saveUser.convertPrivateDto();
     }
 
     /**
      * 로그인 시도
      *
      * @param signIn
-     * @param user
+     * @param privateUserDto
      * @return
      * @throws Exception
      */
-    public boolean doLogin(SignIn signIn, User user) throws NoSuchAlgorithmException {
-        return signIn.isEqualsPassWord(user);
+    public boolean doLogin(SignIn signIn, PrivateUserDto privateUserDto) throws NoSuchAlgorithmException {
+        return signIn.isEqualsPassWord(privateUserDto);
     }
 
     /**

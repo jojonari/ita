@@ -13,6 +13,7 @@ import java.util.Optional;
 @Transactional
 public interface AccessTokenRepository extends JpaRepository<AccessToken, Long> {
     Optional<AccessToken> findByAppAndMallId(App app, String mallId);
+
     Optional<AccessToken> findByApp(App app);
 
     void deleteByClientIdAndMallId(String clientId, String mallId);

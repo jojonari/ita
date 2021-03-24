@@ -2,11 +2,10 @@ package com.cafe24.apps.ita.dto;
 
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.User;
-import com.cafe24.apps.ita.util.SessionUtil;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.servlet.http.HttpSession;
+import java.util.Base64;
 import java.util.Set;
 
 
@@ -24,10 +23,6 @@ public class PrivateAppDto {
     private String manageToken;
     private String operationLevel;
     private Set<String> scopes;
-
-    public void setUser(HttpSession session) {
-        this.user = SessionUtil.getUserInfo(session).toEntity();
-    }
 
     /**
      * toEntity
@@ -59,4 +54,42 @@ public class PrivateAppDto {
             this.secretKey = secretKey;
         }
     }
+
+    /**
+     * 인증 방법 확인
+     * authorization_code : true
+     *
+     * @return
+     */
+    public boolean isAuthorizationCode() {
+        return this.grantType.equals("authorization_code");
+    }
+
+    /**
+     * 인증 방법 확인
+     * client_credentials : true
+     *
+     * @return
+     */
+    public boolean isClientCredentials() {
+        return this.grantType.equals("client_credentials");
+    }
+
+    /**
+     * Authorization 조회
+     */
+    public String getAuthorization() {
+        return String.format("Basic %s", new String(Base64.getEncoder().encode((this.clientId + ":" + this.secretKey).getBytes())));
+    }
+
+    /**
+     * 토큰 갱신 여부
+     *
+     * @return
+     */
+    public boolean isRefresh() {
+        return this.manageToken.equals("refresh");
+    }
+
+
 }

@@ -309,7 +309,9 @@ window.ita = new Vue({
             axios.delete(sUrl)
                 .then(function (res) {
                     if (res.data.code === 200) {
+                        ita.app.list.items.splice(idx, 1);
                         var addPage = ita.app.list.items.length === 1 ? -1 : 0;
+
                         ita.getApps(addPage);
                         ita.infoToast('앱 삭제에 성공했습니다.');
                         return;
@@ -331,6 +333,7 @@ window.ita = new Vue({
             axios.delete(sUrl)
                 .then(function (res) {
                     if (res.data.code === 200) {
+                        ita.webhook.list.items.splice(idx, 1);
                         var addPage = ita.webhook.list.items.length === 1 ? -1 : 0;
                         ita.infoToast("웹훅 삭제에 성공했습니다.");
                         ita.getWebhooks(addPage);
@@ -398,6 +401,7 @@ window.ita = new Vue({
             axios.delete(sUrl)
                 .then(function (res) {
                     if (res.data.code === 200) {
+                        ita.api.list.items.splice(idx, 1);
                         var addPage = ita.api.list.items.length === 1 ? -1 : 0;
                         ita.getApis(addPage);
                         ita.infoToast("api 삭제에 성했습니다.");

@@ -1,10 +1,9 @@
 package com.cafe24.apps.ita.controller;
 
-import com.cafe24.apps.ita.dto.AppDto;
+import com.cafe24.apps.ita.dto.AuthMallDto;
 import com.cafe24.apps.ita.dto.CodeDto;
-import com.cafe24.apps.ita.dto.MallDto;
+import com.cafe24.apps.ita.dto.PrivateAppDto;
 import com.cafe24.apps.ita.entity.AccessToken;
-import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.service.AppService;
 import com.cafe24.apps.ita.service.AuthService;
 import com.cafe24.apps.ita.util.SessionUtil;
@@ -35,14 +34,14 @@ public class AuthController {
      *
      * @param session
      * @param appIdx
-     * @param mallDto
+     * @param authMallDto
      * @param model
      * @param request
      * @return
      * @throws Exception
      */
     @GetMapping("/{appIdx}")
-    public String auth(@PathVariable Long appIdx, @Valid MallDto mallDto, HttpSession session, Model model, HttpServletRequest request) throws Exception {
+    public String auth(@PathVariable Long appIdx, @Valid AuthMallDto authMallDto, HttpSession session, Model model, HttpServletRequest request) throws Exception {
         if (!SessionUtil.isSignIn(session)) {
             String callbackUrl = request.getRequestURI() + "?" + request.getQueryString();
             model.addAttribute("callbackUrl", callbackUrl);
@@ -50,34 +49,35 @@ public class AuthController {
             return "/user/sign-in";
         }
 
-        if (!authService.checkTimestamp(mallDto)) {
-            return setError(model, "timestamp 검증에 실패했습니다.", mallDto);
+        if (!authService.checkTimestamp(authMallDto)) {
+            return setError(model, "timestamp 검증에 실패했습니다.", authMallDto);
         }
 
         if (!authService.checkHmac(appIdx, request.getQueryString())) {
-            return setError(model, "hmac 검증에 실패했습니다.", mallDto);
+            return setError(model, "hmac 검증에 실패했습니다.", authMallDto);
         }
 
-        App app = appService.getApp(session, appIdx);
-        if (app == null) {
-            return setError(model, "등록된 client가 없습니다.", mallDto);
+        PrivateAppDto privateAppDto = appService.getApp(session, appIdx);
+        if (privateAppDto == null) {
+            return setError(model, "등록된 client가 없습니다.", authMallDto);
         }
 
-        AppDto appDto = app.convertDto();
-        boolean isExpire = authService.isExpireRefreshToken(app, mallDto);
-        if (isExpire || app.isRefresh()) {
+        String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + privateAppDto.getClientId();
+
+        if (privateAppDto.isClientCredentials()) {
+            return "redirect:" + url;
+        }
+
+        boolean isExpire = authService.isExpireRefreshToken(privateAppDto, authMallDto.getMall_id());
+        if (isExpire || privateAppDto.isRefresh()) {
             //세션에 저장
-            session.setAttribute("mallInfo", mallDto);
-            if (app.isAuthorizationCode()) {
+            session.setAttribute("mallInfo", authMallDto);
+            if (privateAppDto.isAuthorizationCode()) {
                 //code인증 방식의 경우 - çode 발급 url 호출
-                return authService.getCodeRedirectUrl(appDto, mallDto, request);
+                return authService.getCodeRedirectUrl(privateAppDto, authMallDto, request);
             }
-
-            //클라이언트 크리덴셜의 경우
-            authService.getAccessTokenByClientCredential(app, request);
         }
 
-        String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + appDto.getClientId();
         return "redirect:" + url;
     }
 
@@ -97,12 +97,12 @@ public class AuthController {
             return setError(model, "state 변조", codeDto);
         }
 
-        App app = appService.getApp(request.getSession(), appIdx);
-        if (app == null) {
+        PrivateAppDto privateAppDto = appService.getApp(request.getSession(), appIdx);
+        if (privateAppDto == null) {
             return setError(model, "등록된 client가 없습니다.", codeDto);
         }
 
-        AccessToken accessToken = authService.getAccessToken(app, codeDto, request);
+        AccessToken accessToken = authService.getAccessToken(privateAppDto, codeDto, request);
 
         String url = "https://" + request.getServerName() + request.getContextPath() + "/main?clientId=" + accessToken.convertDto().getClient_id();
         return "redirect:" + url;

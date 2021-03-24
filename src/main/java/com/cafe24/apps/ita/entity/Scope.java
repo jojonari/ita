@@ -1,6 +1,6 @@
 package com.cafe24.apps.ita.entity;
 
-import com.cafe24.apps.ita.dto.TextValue;
+import com.cafe24.apps.ita.dto.ScopeDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,15 +39,18 @@ public class Scope extends TimeEntity {
         this.codeName = codeName;
     }
 
-    public TextValue ToTextValue() {
-        return new TextValue(getText(), getValue());
-    }
-
-    private String getText() {
-        return codeName + " ::: " + scopeName;
-    }
-
-    private String getValue() {
-        return code;
+    /**
+     * convertDto
+     *
+     * @return
+     */
+    public ScopeDto convertDto() {
+        return ScopeDto.builder()
+                .idx(idx)
+                .scope(scope)
+                .scopeName(scopeName)
+                .code(code)
+                .codeName(codeName)
+                .build();
     }
 }
