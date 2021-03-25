@@ -50,7 +50,7 @@ public class AccessToken extends TimeEntity {
     @Column(columnDefinition = "TEXT")
     private Set<String> scopes;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinTable(name = "m_app_token", joinColumns = @JoinColumn(name = "token_idx"), inverseJoinColumns = @JoinColumn(name = "app_idx"))
     private App app;
 

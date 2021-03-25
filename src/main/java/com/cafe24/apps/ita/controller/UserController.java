@@ -124,7 +124,7 @@ public class UserController {
         SessionUtil.setUserInfo(session, privateUserDto);
         log.info(signIn.getUserId() + " 회원이 로그인 하였습니다.");
 
-        String url = request.getScheme() + "://" + request.getServerName();
+        String url = "https://" + request.getServerName();
         if (signIn.getCallbackUrl() != null && !signIn.getCallbackUrl().isEmpty()) {
             url += signIn.getCallbackUrl();
             mv.setViewName("redirect:" + url);

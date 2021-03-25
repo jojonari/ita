@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 
@@ -53,10 +54,10 @@ public class AccessTokenDto {
     public AccessToken toClientCredentialsEntity(App app) {
         return AccessToken.builder()
                 .accessToken(this.access_token)
-                .expiresAt(LocalDateTime.parse(this.expires_at))
+                .expiresAt(LocalDateTime.parse(this.expires_at, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .clientId(this.client_id)
                 .scopes(this.scopes)
-                .issuedAt(LocalDateTime.parse(this.issued_at))
+                .issuedAt(LocalDateTime.parse(this.issued_at, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .app(app)
                 .build();
     }
@@ -82,7 +83,7 @@ public class AccessTokenDto {
      * @return Boolean
      */
     public Boolean isAccessTokenExpire() {
-        return LocalDateTime.now().isAfter(LocalDateTime.parse(this.expires_at));
+        return LocalDateTime.now().isAfter(LocalDateTime.parse(this.expires_at, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
     /**
@@ -92,7 +93,7 @@ public class AccessTokenDto {
      * @return Boolean
      */
     public Boolean isRefreshTokenExpire() {
-        return LocalDateTime.now().isAfter(LocalDateTime.parse(this.refresh_token_expires_at));
+        return LocalDateTime.now().isAfter(LocalDateTime.parse(this.refresh_token_expires_at, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     }
 
 }

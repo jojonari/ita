@@ -37,7 +37,6 @@ public class ApiController {
         if (!resultVlid) {
             return ResponseDto.badRequest("부여된 권한 내에서만 사용가능합니다.");
         }
-
         AccessTokenDto accessTokenDto = authService.getAccessToken(privateAppDto, apiRequestDto.getMallId());
         ResponseEntity<HashMap> response = apiService.callApi(apiRequestDto, accessTokenDto);
         ApiRequest apiRequest = new ApiRequest(apiRequestDto, response);
