@@ -40,7 +40,9 @@ public class AppService {
      * @return
      */
     public App getApp(String clientId) {
-        return appRepository.findByClientId(clientId);
+        Optional<App> optionalApp = appRepository.findByClientId(clientId);
+
+        return optionalApp.isEmpty() ? null : optionalApp.get();
     }
 
     /**
@@ -63,8 +65,9 @@ public class AppService {
      */
     public PrivateAppDto getApp(HttpSession session, Long appIdx) {
         User user = SessionUtil.getUserInfo(session).toEntity();
-        App app = appRepository.findByIdxAndUser(appIdx, user);
-        return app.convertPrivateDto();
+        Optional<App> app = appRepository.findByIdxAndUser(appIdx, user);
+
+        return app.isEmpty() ? null : app.get().convertPrivateDto();
     }
 
     /**
@@ -76,8 +79,8 @@ public class AppService {
      */
     public PrivateAppDto getApp(HttpSession session, String clientId) {
         User user = SessionUtil.getUserInfo(session).toEntity();
-        App app = appRepository.findByUserAndClientId(user, clientId);
-        return app.convertPrivateDto();
+        Optional<App> optionalApp = appRepository.findByUserAndClientId(user, clientId);
+        return optionalApp.isEmpty() ? null : optionalApp.get().convertPrivateDto();
     }
 
     /**

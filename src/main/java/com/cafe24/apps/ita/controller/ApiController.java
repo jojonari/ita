@@ -33,6 +33,10 @@ public class ApiController {
     @PostMapping("/api")
     public ResponseDto callApi(@RequestBody ApiRequestDto apiRequestDto, HttpSession session) throws Exception {
         PrivateAppDto privateAppDto = appService.getApp(session, apiRequestDto.getClientId());
+        if (privateAppDto == null) {
+            return ResponseDto.badRequest("등록된 client가 없습니다.");
+        }
+
         boolean resultVlid = apiService.apiValid(privateAppDto, apiRequestDto, session);
         if (!resultVlid) {
             return ResponseDto.badRequest("부여된 권한 내에서만 사용가능합니다.");
@@ -75,6 +79,10 @@ public class ApiController {
     @GetMapping("/api/{clientId}/mallIds")
     public ResponseDto getApiMallIds(HttpSession session, @PathVariable String clientId) {
         PrivateAppDto privateAppDto = appService.getApp(session, clientId);
+        if (privateAppDto == null) {
+            return ResponseDto.badRequest("등록된 client가 없습니다.");
+        }
+
         List<TextValue> textValues;
         if (privateAppDto.isAuthorizationCode()) {
             textValues = authService.getTextValuesSetMallId(privateAppDto);
