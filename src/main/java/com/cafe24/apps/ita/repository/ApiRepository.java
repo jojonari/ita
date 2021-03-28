@@ -15,4 +15,6 @@ public interface ApiRepository extends JpaRepository<ApiRequest, Long> {
     List<ApiRequest> findAllByClientIdIn(Pageable pageable, List<String> clientId);
 
     void deleteByClientIdIn(List<String> clientIds);
+
+    void deleteByClientId(String clientId);
 }

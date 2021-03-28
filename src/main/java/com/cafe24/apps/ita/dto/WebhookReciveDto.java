@@ -21,7 +21,6 @@ public class WebhookReciveDto {
      */
     public Webhook toEntity(App app, String xTraceId) {
         return Webhook.builder()
-                .app(app)
                 .xTraceId(xTraceId)
                 .eventNo(this.event_no)
                 .clientId(app.convertDto().getClientId())

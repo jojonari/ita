@@ -5,7 +5,9 @@ import com.cafe24.apps.ita.dto.PrivateAppDto;
 import com.cafe24.apps.ita.dto.UserDto;
 import com.cafe24.apps.ita.entity.App;
 import com.cafe24.apps.ita.entity.User;
+import com.cafe24.apps.ita.repository.ApiRepository;
 import com.cafe24.apps.ita.repository.AppRepository;
+import com.cafe24.apps.ita.repository.WebhookRepository;
 import com.cafe24.apps.ita.util.SessionUtil;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,13 @@ import java.util.stream.Collectors;
 @Service
 public class AppService {
     private final AppRepository appRepository;
+    private final WebhookRepository webhookRepository;
+    private final ApiRepository apiRepository;
 
-    public AppService(AppRepository appRepository) {
+    public AppService(AppRepository appRepository, WebhookRepository webhookRepository, ApiRepository apiRepository) {
         this.appRepository = appRepository;
+        this.webhookRepository = webhookRepository;
+        this.apiRepository = apiRepository;
     }
 
     /**
@@ -116,6 +122,10 @@ public class AppService {
      * @param app
      */
     public void deleteApp(App app) {
+        String clientId = app.convertPrivateDto().getClientId();
+
+        apiRepository.deleteByClientId(clientId);
+        webhookRepository.deleteByClientId(clientId);
         appRepository.delete(app);
     }
 

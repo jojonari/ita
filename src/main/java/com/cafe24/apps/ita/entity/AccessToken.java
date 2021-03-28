@@ -55,7 +55,8 @@ public class AccessToken extends TimeEntity {
     private App app;
 
     @Builder
-    public AccessToken(String accessToken, LocalDateTime expiresAt, String refreshToken, LocalDateTime refreshTokenExpiresAt, String mallId, String clientId, String userId, LocalDateTime issuedAt, Set<String> scopes, App app) {
+    public AccessToken(Long idx, String accessToken, LocalDateTime expiresAt, String refreshToken, LocalDateTime refreshTokenExpiresAt, String mallId, String clientId, String userId, LocalDateTime issuedAt, Set<String> scopes, App app) {
+        this.idx = idx;
         this.accessToken = accessToken;
         this.expiresAt = expiresAt;
         this.refreshToken = refreshToken;

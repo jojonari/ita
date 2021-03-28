@@ -15,4 +15,6 @@ public interface WebhookRepository extends JpaRepository<Webhook, Long> {
     List<Webhook> findAllByClientIdIn(Pageable pageable, List<String> clientId);
 
     void deleteByClientIdIn(List<String> clientIds);
+
+    void deleteByClientId(String clientId);
 }

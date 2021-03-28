@@ -20,10 +20,6 @@ public class Webhook extends TimeEntity {
     @GeneratedValue
     private Long idx;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinTable(name = "m_app_webhook", joinColumns = @JoinColumn(name = "app_idx"), inverseJoinColumns = @JoinColumn(name = "webhook_idx"))
-    private App app;
-
     @Column(length = 22, nullable = false)
     private String clientId;
 
@@ -37,9 +33,8 @@ public class Webhook extends TimeEntity {
     private String resource;
 
     @Builder
-    public Webhook(Long idx, App app, String clientId, int eventNo, String xTraceId, String resource) {
+    public Webhook(Long idx, String clientId, int eventNo, String xTraceId, String resource) {
         this.idx = idx;
-        this.app = app;
         this.clientId = clientId;
         this.eventNo = eventNo;
         this.xTraceId = xTraceId;
