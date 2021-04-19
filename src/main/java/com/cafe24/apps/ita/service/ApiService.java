@@ -9,6 +9,7 @@ import com.cafe24.apps.ita.entity.Mall;
 import com.cafe24.apps.ita.repository.ApiRepository;
 import com.cafe24.apps.ita.repository.MallRepository;
 import com.cafe24.apps.ita.util.SessionUtil;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Log4j2
 public class ApiService {
     private final RestTemplate restTemplate;
     private final ApiRepository apiRepository;

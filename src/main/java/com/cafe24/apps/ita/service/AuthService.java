@@ -44,14 +44,14 @@ public class AuthService {
     }
 
     /**
-     * hmac 검증 : +-1분내에 생성된 요청만 처리
+     * hmac 검증 : +-10분내에 생성된 요청만 처리
      *
      * @param authMallDto
      * @return
      */
     public boolean checkTimestamp(AuthMallDto authMallDto) {
-        LocalDateTime afterOne = LocalDateTime.now().plusMinutes(1L);
-        LocalDateTime beforeOne = LocalDateTime.now().minusMinutes(1L);
+        LocalDateTime afterOne = LocalDateTime.now().plusMinutes(10L);
+        LocalDateTime beforeOne = LocalDateTime.now().minusMinutes(10L);
         LocalDateTime timestamp = new Timestamp(authMallDto.getTimestamp() * 1000).toLocalDateTime();
 
         return timestamp.isBefore(afterOne) && timestamp.isAfter(beforeOne);
@@ -198,17 +198,13 @@ public class AuthService {
         if (privateAppDto.isAuthorizationCode()) {
             accessTokenOptional = accessTokenRepository.findByAppAndMallId(privateAppDto.toEntity(), mallId);
         } else {
-            accessTokenOptional = accessTokenRepository.findByApp(privateAppDto.toEntity());
+            return this.getAccessTokenByClientCredential(privateAppDto, mallId);
         }
 
         AccessToken accessToken = accessTokenOptional.orElseThrow(() -> new Exception("access token이 없습니다."));
         AccessTokenDto accessTokenApiDto = accessToken.convertApiDto();
         if (!accessTokenApiDto.isAccessTokenExpire()) {
             return accessTokenApiDto;
-        }
-
-        if (privateAppDto.isClientCredentials()) {
-            return this.getAccessTokenByClientCredential(privateAppDto, mallId);
         }
 
         if (accessTokenApiDto.isRefreshTokenExpire()) {

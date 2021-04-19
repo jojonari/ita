@@ -54,14 +54,23 @@ public class AccessTokenDto {
     public AccessToken toClientCredentialsEntity(App app) {
         return AccessToken.builder()
                 .accessToken(this.access_token)
-                .expiresAt(LocalDateTime.parse(this.expires_at, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .expiresAt(this.getExpiresAtLocalDateTime())
                 .clientId(this.client_id)
                 .scopes(this.scopes)
-                .issuedAt(LocalDateTime.parse(this.issued_at, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .issuedAt(this.getIssuedAtLocalDateTime())
                 .app(app)
                 .build();
     }
 
+    public LocalDateTime getExpiresAtLocalDateTime() {
+        String pattern = this.expires_at.indexOf("T") > 0 ? "yyyy-MM-dd'T'HH:mm:ss.SSS": "yyyy-MM-dd HH:mm:ss";
+        return LocalDateTime.parse(this.expires_at, DateTimeFormatter.ofPattern(pattern));
+    }
+
+    public LocalDateTime getIssuedAtLocalDateTime() {
+        String pattern = this.issued_at.indexOf("T") > 0 ? "yyyy-MM-dd'T'HH:mm:ss.SSS": "yyyy-MM-dd HH:mm:ss";
+        return LocalDateTime.parse(this.issued_at, DateTimeFormatter.ofPattern(pattern));
+    }
 
     /**
      * convertTextValueSetMallId
